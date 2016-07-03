@@ -304,9 +304,9 @@ var App = {
 				{
 					oauth_req.style.display = 'none';
 					App.resizeContainer();
+					App.getTimeline();
 					App.execStream();
 					//getAboutme();
-					//getTimeline();
 				}
 			});
 		});
@@ -527,10 +527,11 @@ var App = {
 
 	getTimeline: function()
 	{ 
-		Client.get('https://api.twitter.com/1.1/statuses/home_timeline', {since_id: App.getTimeline.since_id}, function(error, event, response){
+		Client.get('https://api.twitter.com/1.1/statuses/home_timeline', {since_id: App.getTimeline.since_id|""}, function(error, event, response){
 			if(!error) {
-				Array.from(event).forEach(function(item) {
+				Array.from(event).reverse().forEach(function(item) {
 					console.log(item);
+					App.addItem(home_timeline, new Tweet(item));
 					App.getTimeline.since_id = item.id_str;
 				});
 			}
