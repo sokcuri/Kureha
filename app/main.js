@@ -790,9 +790,15 @@ function Tweet(tweet) {
 	a.innerHTML += tweet_div.format(tweet.user.profile_image_url_https, tweet.user.screen_name, tweet.user.name, id_str_org, tweet.user.screen_name, text);
 					 //<!--<input type="button" value="-" onclick="removeRow(this.parentNode)">//-->
 	
-	if(tweet.entities.media)
+	var entities = tweet.extended_entities || tweet.entities || null;
+	if(entities.media)
 	{
-		a.innerHTML += '<div class="tweet-image"><img src="' + tweet.entities.media[0].media_url_https + '" /></div>';
+		var container = document.createElement('div');
+		container.setAttribute('data-media-count', entities.media.length);
+		container.className = 'tweet-media-container';
+		for (var i in entities.media)
+			container.innerHTML += '<div class="tweet-image"><img src="' + entities.media[i].media_url_https + '"/></div>';
+		a.innerHTML += container.outerHTML;
 	}
 
 

@@ -236,14 +236,34 @@ body {
 	color: #2B8FCC;
 }
 
-.tweet-image {
-	height: 250px;
-	padding: 0px 10px 10px 60px;
+.tweet-media-container
+{
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 10px 10px 60px;
+    height: 250px;
 }
+
+.tweet-image {
+    box-sizing: border-box;
+	/*height: 250px;*/
+	padding: 5px;
+}
+    .tweet-media-container[data-media-count='1'] .tweet-image
+    { width: 100%; height: 100%; }
+    .tweet-media-container[data-media-count='2'] .tweet-image
+    { width: 50%; height: 100%; }
+    .tweet-media-container[data-media-count='3'] .tweet-image,
+    .tweet-media-container[data-media-count='4'] .tweet-image
+    { width: 50%; height: 50%; }
+    .tweet-media-container[data-media-count='3'] .tweet-image:first-of-type
+    { width: 100%; }
+
 .tweet-image img {
 	object-fit: cover;
 	width: 100%;
 	height: 100%;
+    border-radius: 5px;
 }
 .infobox {
     position: absolute;
