@@ -48,6 +48,7 @@ Date.prototype.format = function(f) {
 };
 
 var Twitter = require('twitter');
+var Twitter_text = require('twitter-text');
 var Util = require('util');
 var OAuth = new (require('oauth').OAuth)(
 	'https://api.twitter.com/oauth/request_token',
@@ -505,7 +506,16 @@ var App = {
 		writebox.hidden = false;
 		console.log(id);
 		App.resizeContainer();
-		tweetbox.value = '@' + document.querySelector('[data-tweet-text="' + id + '"]').getAttribute('data-tweet-name') + ' ';
+		console.log(id);
+//		var usernames = Twitter_text.extractMentions("Mentioning @twitter and @jack")
+		tweetbox.value = '';
+		var usernames = Twitter_text.extractMentions(document.querySelector('[data-tweet-text="' + id + '"]').innerText);
+		usernames.push(document.querySelector('[data-tweet-text="' + id + '"]').getAttribute('data-tweet-name'));
+		Array.from(usernames).forEach(function(name) {
+			if(name != App.screen_name)
+				tweetbox.value += '@' + name + ' ';
+		});
+
 		in_reply_to_status_id.value = id;
 		tweetbox.focus();
 	},
