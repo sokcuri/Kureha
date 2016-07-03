@@ -29,6 +29,9 @@ window.onload = function(e)
 		index = index.split('=')[1];
 		image.src = decodeURIComponent(index);
 	}
+	image.addEventListener("click", function() {
+		window.close();
+	});
 };
 </script>
 <body>
