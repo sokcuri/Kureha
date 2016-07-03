@@ -389,6 +389,10 @@ var App = {
 			countElement.innerText++;
 			Client.post('statuses/retweet/' + e, function(error, tweet, response) {
 				if (error) {
+					// already retweeted
+					if(error[0].code == 327)
+						return;
+
 					Element.classList.remove('retweeted');
 					if(countElement.innerText == "1")
 						countElement.innerText = "";
@@ -428,6 +432,10 @@ var App = {
 			countElement.innerText++;
 			Client.post('favorites/create', {id: e}, function(error, tweet, response) {
 				if (error) {
+					// already favorited
+					if(error[0].code == 139)
+						return;
+
 					Element.classList.remove('favorited');
 					if(countElement.innerText == "1")
 						countElement.innerText = "";
@@ -448,6 +456,10 @@ var App = {
 
 			Client.post('favorites/destroy', {id: e}, function(error, tweet, response) {
 				if (error) {
+					// no status found
+					if(error[0].code == 144)
+						return;
+
 					Element.classList.add('favorited');
 					countElement.innerText++;
 				}
