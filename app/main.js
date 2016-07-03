@@ -551,7 +551,7 @@ var App = {
 		var usernames = [];
 		var tweet_author = document.querySelector('[data-tweet-text="' + id + '"]').getAttribute('data-tweet-name');
 		usernames.push(tweet_author);
-		Array.from(Twitter_text.extractMentions(document.querySelector('[data-tweet-text="' + id + '"]').innerText)).
+		Array.from(Twitter_text.extractMentions(document.querySelector('[data-tweet-text="' + id + '"]').innerHTML)).
 			forEach(function(name) {
 				if(name != tweet_author)
 					usernames.push(name);
