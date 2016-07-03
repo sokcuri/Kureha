@@ -797,7 +797,7 @@ function Tweet(tweet) {
 		container.setAttribute('data-media-count', entities.media.length);
 		container.className = 'tweet-media-container';
 		for (var i in entities.media)
-			container.innerHTML += '<div class="tweet-image"><img src="' + entities.media[i].media_url_https + '"/></div>';
+			container.innerHTML += '<div class="tweet-image"><a href="#" onclick="openPopup(\'' + entities.media[i].media_url_https + ':orig\')"><img src="' + entities.media[i].media_url_https + '"/></a></div>';
 		a.innerHTML += container.outerHTML;
 	}
 
