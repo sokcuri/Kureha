@@ -349,6 +349,18 @@ var App = {
 					if(App.config.debug)
 						console.log(tweet);
 					
+					// 리트윗된 트윗이 아닐때 멘션되었으면 멘션창으로 이동시킴
+					var copy_mention = false;
+					if(!tweet.retweeted_status)
+					Array.from(Twitter_text.extractMentions(tweet.text)).forEach(function(name) {
+						if(App.screen_name == name)
+							copy_mention = true;
+					});
+					if(copy_mention)
+					{
+						App.addItem(notification, new Tweet(tweet));
+					}
+					
 					// 리트윗시 원문이 노티로 가게
 					if(tweet.retweeted_status)
 						tweet = tweet.retweeted_status;
@@ -565,6 +577,19 @@ var App = {
 			else
 			{
 				console.log(error);
+			}
+		});
+	},
+
+	getMentionsTimeline: function() {
+		Client.get('statuses/mentions_timeline', function(error, event, response) {
+			if(error)
+			{
+				console.error(error);
+			}
+			else
+			{
+				console.log(event);
 			}
 		});
 	},
