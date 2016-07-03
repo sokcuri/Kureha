@@ -3,7 +3,7 @@ function urlify(text) {
 var urlRegex = /(https?:\/\/[^\s]+)/g;
 	return text.replace(urlRegex, function(url) {
 		//return '<a href="' + url + '" target="_blank">' + url + '</a>';
-	    return '<a href="#" onclick="openPopup(\'' + url + '\')">' + url + '</a>';
+	    return '<a href="javascript:void(0)" onclick="openPopup(\'' + url + '\')">' + url + '</a>';
 	})
 }
 
