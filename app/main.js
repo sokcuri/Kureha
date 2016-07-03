@@ -547,10 +547,12 @@ var App = {
 	{	
 		App.openTweetBox();
 		var usernames = [];
-		usernames.push(document.querySelector('[data-tweet-text="' + id + '"]').getAttribute('data-tweet-name'));
+		var tweet_author = document.querySelector('[data-tweet-text="' + id + '"]').getAttribute('data-tweet-name');
+		usernames.push(tweet_author);
 		Array.from(Twitter_text.extractMentions(document.querySelector('[data-tweet-text="' + id + '"]').innerText)).
 			forEach(function(name) {
-				usernames.push(name);
+				if(name != tweet_author)
+					usernames.push(name);
 		});
 
 		Array.from(usernames).forEach(function(name) {
