@@ -504,19 +504,24 @@ var App = {
 	tryReply: function(id)
 	{		
 		writebox.hidden = false;
-		console.log(id);
 		App.resizeContainer();
-		console.log(id);
 //		var usernames = Twitter_text.extractMentions("Mentioning @twitter and @jack")
 		tweetbox.value = '';
-		var usernames = Twitter_text.extractMentions(document.querySelector('[data-tweet-text="' + id + '"]').innerText);
+		var usernames = [];
+		
 		usernames.push(document.querySelector('[data-tweet-text="' + id + '"]').getAttribute('data-tweet-name'));
+		Array.from(Twitter_text.extractMentions(document.querySelector('[data-tweet-text="' + id + '"]').innerText)).
+			forEach(function(name) {
+				usernames.push(name);
+		});
+
 		Array.from(usernames).forEach(function(name) {
 			if(name != App.screen_name)
 				tweetbox.value += '@' + name + ' ';
 		});
 
 		in_reply_to_status_id.value = id;
+		tweetlen.innerHTML = 140 - tweetbox.value.length;
 		tweetbox.focus();
 	},
 
@@ -685,6 +690,11 @@ window.onload = function(e) {
 
 	}, false);
 
+	tweetbox.addEventListener('onpropertychange', function() {
+		tweetlen.innerHTML = 140 - tweetbox.value.length;
+
+	}, false);
+
 	// scrollbar hack
 	home_timeline.onmousedown = function() {
 		window.scrolling = true;
@@ -714,11 +724,69 @@ window.onload = function(e) {
 	header.innerHTML += '<span class="navigator"><a href="#" onclick="naviSelect(2)">' + App.symbol.dm + '</a></div>';
 	header.innerHTML += '<span class="navigator"><a href="#" onclick="naviSelect(3)">' + App.symbol.search + '</a></div>';
 	header.innerHTML += '<span class="navigator"><a href="#" onclick="naviSelect(4)">' + App.symbol.write + '</a></div>';
-	
+
 	// run Application
 	App.run();
 };
 
+var KEY = {
+	NUMBER_1: 49,
+	NUMBER_2: 50,
+	NUMBER_3: 51,
+	T: 84,
+	ESC: 27,
+    WASD_LEFT:  65,
+    WASD_RIGHT: 68,
+    WASD_UP:    87,
+    WASD_DOWN:  83
+}
+
+document.onkeydown = function (e) {
+	if(document.activeElement == tweetbox)
+	{
+		switch (e.keyCode) {
+			case KEY.ESC:
+				naviSelect(4);
+			return false;
+		}
+	}
+	else
+	{
+		switch (e.keyCode) {
+			case KEY.NUMBER_1:
+				naviSelect(0);
+				break;
+			case KEY.NUMBER_2:
+				naviSelect(1);
+				break;
+			case KEY.NUMBER_3:
+				naviSelect(2);
+				break;
+			case KEY.T:	
+				if(writebox.hidden)
+					naviSelect(4);
+				else tweetbox.focus();
+				return false;
+			
+			/*
+			case KEY.WASD_LEFT:
+				alert('Left');
+				break;
+			case KEY.WASD_RIGHT:
+				alert('Right');
+				break;
+			case KEY.WASD_UP:
+				alert('Up');
+				break;
+			case KEY.WASD_DOWN:
+				alert('Down');
+				break;
+	*/
+			default:
+				return; // exit this handler for other keys
+		}
+    }
+};
 function scrollTo(element, to, duration) {
     if (duration <= 0) return;
     var difference = to - element.scrollTop;
@@ -760,6 +828,7 @@ function naviSelect(e)
 
 				tweetbox.value = "";
 				in_reply_to_status_id.value = "";
+				tweetlen.innerText = '140';
 				tweetbox.focus();
 				App.resizeContainer();
 			}
