@@ -496,17 +496,39 @@ var App = {
 	{
 		writebox.hidden = true;
 		App.resizeContainer();
-		var param = {status: tweetbox.value};
-		if(in_reply_to_status_id.value) param.in_reply_to_status_id = in_reply_to_status_id.value;
 
-		Client.post('statuses/update', param, function(error, event, response) {
+		if(fileDialog.value)
+		{
+			var data = require('fs').readFileSync(fileDialog.value);
+			App.showMsgBox("트윗을 올리는 중입니다", "msgbox_orange", 30000);
+			Client.post('media/upload', {media: data}, function(error, media, response) {
+
 			if (!error) {
-				App.showMsgBox("트윗했습니다", "msgbox_blue", 3000);
+				console.log(media);
+				return ex(media);
+			}else {
+				return App.showMsgBox("오류가 발생했습니다<br />" + error[0].code + ": " + error[0].message, "msgbox_tomato", 5000);
 			}
-			else {
-				App.showMsgBox("오류가 발생했습니다<br />" + error[0].code + ": " + error[0].message, "msgbox_tomato", 5000);
-			}
-		});
+			});
+		}
+		else return ex();
+
+		function ex(media)
+		{
+			var param = {status: tweetbox.value};
+			if (media) param.media_ids = media.media_id_string;
+
+			if(in_reply_to_status_id.value) param.in_reply_to_status_id = in_reply_to_status_id.value;
+
+			Client.post('statuses/update', param, function(error, event, response) {
+				if (!error) {
+					App.showMsgBox("트윗했습니다", "msgbox_blue", 3000);
+				}
+				else {
+					App.showMsgBox("오류가 발생했습니다<br />" + error[0].code + ": " + error[0].message, "msgbox_tomato", 5000);
+				}
+			});
+		}
 	},
 
 	tryReply: function(id)
@@ -637,6 +659,7 @@ var App = {
 		in_reply_to_status_id.value = "";
 		tweetlen.innerText = '140';
 		tweetbox.focus();
+		fileDialog.value = "";
 		App.resizeContainer();
 	},
 
@@ -646,6 +669,7 @@ var App = {
 		in_reply_to_status_id.value = "";
 		tweetlen.innerText = '140';
 		tweetbox.focus();
+		fileDialog.value = "";
 		App.resizeContainer();
 	},
 
@@ -802,6 +826,7 @@ window.onload = function(e) {
 	header.innerHTML += '<span class="navigator"><a href="#" onclick="naviSelect(3)">' + App.symbol.search + '</a></div>';
 	header.innerHTML += '<span class="navigator"><a href="#" onclick="naviSelect(4)">' + App.symbol.write + '</a></div>';
 
+	//chooseFile('#fileDialog');
 	// run Application
 	App.run();
 };
@@ -939,3 +964,11 @@ function naviSelect(e)
 		}
 	}
 }
+function chooseFile(name) {
+    var chooser = document.querySelector(name);
+    chooser.addEventListener("change", function(evt) {
+      console.log(this.value);
+    }, false);
+
+    chooser.click();  
+ }
