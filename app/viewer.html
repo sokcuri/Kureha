@@ -1,40 +1,66 @@
+<!doctype html>
 <html>
-<head>
-</head>
-<style>
-body {
-	background-color: #000;
-	height:100%;
-	margin:0;
-}
-.centered {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  /* bring your own prefixes */
-  transform: translate(-50%, -50%);
-}
-#image {
-	max-width:100%;
-	max-height:100%;
-}
-</style>
-<script>
-window.onload = function(e)
-{
-	var url = window.location.href;
-	var index = null;
-	if(url.lastIndexOf('?') != -1) {
-	    index = url.split('?')[1];
-		index = index.split('=')[1];
-		image.src = decodeURIComponent(index);
-	}
-	image.addEventListener("click", function() {
-		window.close();
-	});
-};
-</script>
-<body>
-<img id="image" class="centered" />
-</body>
+	<head>
+		<meta charset="utf-8">
+		<title>Image Viewer</title>
+		<link rel="stylesheet" href="viewer.css">
+		<script>
+		window.onload = function(e)
+		{
+			var url = window.location.href,
+				query = window.location.search.substring(1),
+				args = query.split('&').map(function(x){ return x.split('='); }),
+				src = decodeURIComponent(args[0][1]);
+			/* args[0][0]: "img"
+			 * args[0][1]: url of selected image
+			 * args[1][0]: "more"
+			 * args[1][1]: list of image urls delimited by ';' */
+			window.more = decodeURIComponent(args[1][1]).split(';');
+			image.src = src + ":orig";
+
+			window.index = -1;
+			for (var i = 0; i < more.length; i++)
+				if (src === more[i])
+				{
+					index = i;
+					break;
+				}
+			
+			updateHeader = function()
+			{
+				indicator.innerHTML = (index + 1) + " / " + (more.length);
+				prev_image.className = (index == 0) ? "page disabled" : "page";
+				next_image.className = (index == more.length - 1) ? "page disabled" : "page";
+			}
+
+			updateHeader();
+
+			image.addEventListener("click", function() {
+				window.close();
+			});
+
+			prev_image.addEventListener("click", function() {
+				if (index == 0) return false;
+				image.src = more[--index] + ":orig";
+				updateHeader();
+			});
+			next_image.addEventListener("click", function() {
+				if (index == more.length - 1) return false;
+				image.src = more[++index] + ":orig";
+				updateHeader();
+			});
+		};
+		</script>
+	</head>
+	<body>
+		<div id="wrapper">
+			<div id="header">
+				<a class="page" id="prev_image" href="#">◀</a>
+				<a class="page" id="next_image" href="#">▶</a>
+				&nbsp;
+				<span id="indicator"></span>
+			</div>
+			<div id="image-container"><img id="image" class="centered"></div>
+		</div>
+	</body>
 </html>

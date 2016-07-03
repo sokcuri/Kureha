@@ -802,10 +802,12 @@ function Tweet(tweet) {
 	if(entities.media)
 	{
 		var container = document.createElement('div');
+		var urls = entities.media.map(function(x){return x.media_url_https;});
+		var urlstr = urls.join(';');
 		container.setAttribute('data-media-count', entities.media.length);
 		container.className = 'tweet-media-container';
-		for (var i in entities.media)
-			container.innerHTML += '<div class="tweet-image"><a href="#" onclick="openImageview(\'' + entities.media[i].media_url_https + ':orig\')"><img src="' + entities.media[i].media_url_https + '"/></a></div>';
+		for (var i in urls)
+			container.innerHTML += '<div class="tweet-image"><a href="#" onclick="openImageview(\'' + urls[i] + '\', \'' + urlstr + '\')"><img src="' + urls[i] + '"/></a></div>';
 		a.innerHTML += container.outerHTML;
 	}
 
