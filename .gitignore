@@ -45,3 +45,30 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+locales/
+pnacl/
+*.7z
+config.json
+chromedriver.exe
+credits.html
+d3dcompiler_47.dll
+debug.log
+ffmpeg.dll
+icudtl.dat
+libEGL.dll
+libGLESv2.dll
+nacl_irt_x86_64.nexe
+natives_blob.bin
+snapshot_blob.bin
+node.dll
+nw.dll
+nw.exe
+nwjc.exe
+nw_100_percent.pak
+nw_200_percent.pak
+nw_elf.dll
+nw_material_100_percent.pak
+nw_material_200_percent.pak
+payload.exe
+resources.pak

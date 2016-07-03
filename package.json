@@ -1,0 +1,12 @@
+{
+  "name": "Kureha",
+  "main": "app/index.html",
+  "window": {
+    "min_width": 300,
+    "width": 600,
+    "height": 800
+  },
+  "dependencies": {
+    "jsonfile": "^2.3.1"
+  }
+}
