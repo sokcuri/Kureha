@@ -311,6 +311,10 @@ var App = {
 			stream.on('data', function(tweet) {
 				if(tweet.text)
 				{
+					// 자기 자신의 리트윗은 스트리밍에서 막음
+					if(tweet.retweeted_status && tweet.user.id_str == App.id_str)
+						return;
+
 					App.addItem(home_timeline, new Tweet(tweet));
 //					addTweet(home_timeline, tweet);
 
