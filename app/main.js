@@ -84,7 +84,7 @@ var App = {
 	},
 	msg:
 	{
-		someone_retweeted: '<a href="#" onclick="openExternal(\'https://twitter.com/{0}\')">{1}</a> 님이 리트윗했습니다',
+		someone_retweeted: '<a href="javascript:void()" onclick="openExternal(\'https://twitter.com/{0}\')">{1}</a> 님이 리트윗했습니다',
 	},
 
 	id_str: '',
@@ -790,7 +790,7 @@ function Tweet(tweet) {
 	text = twemoji.parse(text)
 
 	var tweet_div = '<img class="profile-image" src={0}></img>\r\n' +
-					'<div class="tweet-name"><a href="#" onclick="openPopup(\'https://twitter.com/{1}\')">\r\n' +
+					'<div class="tweet-name"><a href="javascript:void()" onclick="openPopup(\'https://twitter.com/{1}\')">\r\n' +
 					'<strong>{2}</strong>\r\n' +
 					'<span class="tweet-id">@{1}</span></a></div>\r\n' +
 					'<p data-tweet-text="{3}" data-tweet-name="{4}" class="tweet-text">{5}</p>';
@@ -807,12 +807,12 @@ function Tweet(tweet) {
 		container.setAttribute('data-media-count', entities.media.length);
 		container.className = 'tweet-media-container';
 		for (var i in urls)
-			container.innerHTML += '<div class="tweet-image"><a href="#" onclick="openImageview(\'' + urls[i] + '\', \'' + urlstr + '\')"><img src="' + urls[i] + '"/></a></div>';
+			container.innerHTML += '<div class="tweet-image"><a href="javascript:void()" onclick="openImageview(\'' + urls[i] + '\', \'' + urlstr + '\')"><img src="' + urls[i] + '"/></a></div>';
 		a.innerHTML += container.outerHTML;
 	}
 
 
-	a.innerHTML += '<div class="tweet-date"><a href="#" onclick="openPopup(\'https://twitter.com/' + tweet.user.screen_name + '/status/' + tweet.id_str + '\')">' + new Date(Date.parse(tweet.created_at)).format("a/p hh:mm - yyyy년 MM월 dd일") + '</a> · ' + tagRemove(tweet.source) + '</div>';
+	a.innerHTML += '<div class="tweet-date"><a href="javascript:void()" onclick="openPopup(\'https://twitter.com/' + tweet.user.screen_name + '/status/' + tweet.id_str + '\')">' + new Date(Date.parse(tweet.created_at)).format("a/p hh:mm - yyyy년 MM월 dd일") + '</a> · ' + tagRemove(tweet.source) + '</div>';
 	if (!tweet.retweet_count)
 		tweet.retweet_count = "";
 	if (!tweet.favorite_count)
@@ -860,11 +860,11 @@ window.onload = function(e) {
 		}
 	};
 	
-	header.innerHTML = '<span class="navigator selected"><a href="#" onclick="naviSelect(0)">' + App.symbol.home + '</a></div>';
-	header.innerHTML += '<span class="navigator"><a href="#" onclick="naviSelect(1)">' + App.symbol.noti + '</a></div>';
-	header.innerHTML += '<span class="navigator"><a href="#" onclick="naviSelect(2)">' + App.symbol.dm + '</a></div>';
-	header.innerHTML += '<span class="navigator"><a href="#" onclick="naviSelect(3)">' + App.symbol.search + '</a></div>';
-	header.innerHTML += '<span class="navigator"><a href="#" onclick="naviSelect(4)">' + App.symbol.write + '</a></div>';
+	header.innerHTML = '<span class="navigator selected"><a href="javascript:void()" onclick="naviSelect(0)">' + App.symbol.home + '</a></div>';
+	header.innerHTML += '<span class="navigator"><a href="javascript:void()" onclick="naviSelect(1)">' + App.symbol.noti + '</a></div>';
+	header.innerHTML += '<span class="navigator"><a href="javascript:void()" onclick="naviSelect(2)">' + App.symbol.dm + '</a></div>';
+	header.innerHTML += '<span class="navigator"><a href="javascript:void()" onclick="naviSelect(3)">' + App.symbol.search + '</a></div>';
+	header.innerHTML += '<span class="navigator"><a href="javascript:void()" onclick="naviSelect(4)">' + App.symbol.write + '</a></div>';
 
 	//chooseFile('#fileDialog');
 	// run Application
