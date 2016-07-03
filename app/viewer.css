@@ -44,13 +44,12 @@ a.page.disabled:link
 
 #image-container
 {
-	object-fit: contain;
 	width: 100%;
 	height: calc(100% - 40px);
 }
 
 #image {
-	object-fit: contain;
+	object-fit: scale-down;
 	width: 100%;
 	height: calc(100% - 5px);
 }
