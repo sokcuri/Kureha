@@ -24,15 +24,16 @@
 			oauth 인증이 필요합니다.
 			<input type="button" value="토큰 요청" onclick="App.getRequestToken()">
 		</div>
-		<div class="msgbox_blue" style="display:none">
+		<div id="msgbox" class="msgbox_blue hidden">
 			타임라인을 불러왔습니다
 		</div>
 		<div class="msgbox_tomato" style="display:none">
 			트위터를 10시간 이상 하셨습니다. 적당한 휴식이 필요합니다.
 		</div>
 		<div id="writebox" class="writebox" hidden>
+			<input type="hidden" id="in_reply_to_status_id">
 			<textarea id="tweetbox" rows="4" cols="50"></textarea>
-			<div align="right"><span>140</span>&nbsp;<input type="button" value="토큰 요청" onclick="tweetProc()"></div>
+			<div align="right"><span>140</span>&nbsp;<input type="button" value="트윗하기" onclick="App.execTweet()"></div>
 		</div>
 	</div>
 	<div id="container">
@@ -44,7 +45,7 @@
 		</div>
 		<div id="notification" class="content hidden">
 			<div class="timeline">
-			<a href="#" onclick="addRow(notification, '테스트입니다')">
+			<a href="#" onclick="App.addItem(notification, new Test('테스트입니다'))">
 			<strong>테스트</strong></a>
 			</div>
 		</div>

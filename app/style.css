@@ -120,7 +120,8 @@ body {
 }
  
 .hidden {
-	display: none;
+	visibility: hidden;
+	position: absolute;
 }
 
 .disappear {
