@@ -495,16 +495,16 @@ var App = {
 			setTimeout(function(id)
 			{
 				if(msgbox.getAttribute('timestamp') == timestamp)
-					clearMsgBox();
+					App.clearMsgBox();
 			}, c);
 		}
 	},
 
-	clearMsgBox: function(a, b, c)
+	clearMsgBox: function()
 	{
 		msgbox.classList.add('hidden');	
 		App.resizeContainer();
-	}
+	},
 
 	resizeContainer: function()
 	{
