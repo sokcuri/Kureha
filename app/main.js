@@ -779,6 +779,7 @@ function Tweet(tweet) {
 
 	text = urlify(tweet.text);
 	text = text.replace(/(\r\n|\n|\r)/gm, '<br>');
+	text = twemoji.parse(text)
 
 	var tweet_div = '<img class="profile-image" src={0}></img>\r\n' +
 					'<div class="tweet-name"><a href="#" onclick="openPopup(\'https://twitter.com/{1}\')">\r\n' +

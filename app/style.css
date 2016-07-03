@@ -140,6 +140,12 @@ body {
 	opacity: 0;
     animation: new-item-animation .15s linear forwards;
 }
+
+.emoji {
+	width: 16px;
+	height: 16px;
+}
+
 @keyframes new-item-animation {
     from {
         opacity: 0;
