@@ -419,6 +419,7 @@ var App = {
 			
 		}
 		console.log(e);	
+		document.activeElement.blur();
 	},
 
 	execFavorite: function(e)
@@ -467,6 +468,7 @@ var App = {
 			
 		}
 		console.log(e);
+		document.activeElement.blur();
 	},
 
 	showMsgBox: function(a, b, c)
@@ -958,16 +960,19 @@ function naviSelect(e)
 			case 0:
 			{
 				scrollTo(home_timeline, 0, 200);
+				document.activeElement.blur();
 			}
 			break;
 			case 1:
 			{
 				scrollTo(notification, 0, 200);
+				document.activeElement.blur();
 			}
 			break;
 			case 2:
 			{
 				scrollTo(direct_message, 0, 200);
+				document.activeElement.blur();
 			}
 			break;
 			case 4:
@@ -994,7 +999,7 @@ function naviSelect(e)
 				header.children[i].classList.add('selected');
 			}
 		}
-	}
+	}	
 }
 function chooseFile(name) {
     var chooser = document.querySelector(name);
