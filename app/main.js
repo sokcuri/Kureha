@@ -738,6 +738,17 @@ function Tweet(tweet) {
 	a.setAttribute('data-tweet-timestamp', tweet.timestamp_ms);
 	a.innerHTML = "";
 
+	var mentioned_me = false;
+	if(!tweet.retweeted_status)
+	Array.from(Twitter_text.extractMentions(tweet.text)).forEach(function(name) {
+		if(App.screen_name == name)
+			mentioned_me = true;
+	});
+	if(mentioned_me)
+	{
+		a.classList.add('tweet_emp_blue');
+	}
+
 	// retweeted / favorited
 	var retweeted = "";
 	var favorited = "";

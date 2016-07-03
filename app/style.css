@@ -129,6 +129,7 @@ body {
 }
 
 .tweet {
+	border: 0px;
 	padding: 10px;
 	overflow: hidden;
 	min-height: 50px;
@@ -157,6 +158,12 @@ body {
 
 .disappear {
 	visibility: hidden;
+}
+
+.tweet_emp_blue {
+	border-left: 10px;
+	border-style: inset;
+	border-left-color: rgba(29, 161, 242, 0.8);
 }
 
 .tweet a
