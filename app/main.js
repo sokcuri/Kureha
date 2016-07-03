@@ -378,6 +378,7 @@ var App = {
 		countElement = document.querySelector('[data-retweet-count="' + e + '"]');
 		if(!Element.classList.contains('retweeted'))
 		{
+			App.showMsgBox("리트윗했습니다", "msgbox_blue", 1000);
 			Element.classList.add('retweeted');
 			countElement.innerText++;
 			Client.post('statuses/retweet/' + e, function(error, tweet, response) {
@@ -392,6 +393,7 @@ var App = {
 		}
 		else
 		{
+			App.showMsgBox("언리트윗했습니다", "msgbox_blue", 1000);
 			Element.classList.remove('retweeted');
 			if(countElement.innerText == "1")
 				countElement.innerText = "";
@@ -411,6 +413,7 @@ var App = {
 
 	execFavorite: function(e)
 	{	
+		App.showMsgBox("마음에 드는 트윗으로 지정했습니다", "msgbox_blue", 1000);
 		Element = document.querySelector('[data-favorite="' + e + '"]');
 		countElement = document.querySelector('[data-favorite-count="' + e + '"]');
 		if(!Element.classList.contains('favorited'))
@@ -429,7 +432,8 @@ var App = {
 			
 		}
 		else
-		{
+		{	
+			App.showMsgBox("마음에 드는 트윗을 해제했습니다", "msgbox_blue", 1000);
 			Element.classList.remove('favorited');
 			if(countElement.innerText == "1")
 				countElement.innerText = "";
@@ -457,14 +461,19 @@ var App = {
 
 		msgbox.innerHTML = a;
 		msgbox.className = b;
+		msgbox.setAttribute('timestamp', new Date().getTime());
 		App.resizeContainer();
 
 		if(c)
 		{
-			setTimeout(function()
+			var timestamp = msgbox.getAttribute('timestamp');
+			setTimeout(function(id)
 			{
-				msgbox.classList.add('hidden');	
-				App.resizeContainer();
+				if(msgbox.getAttribute('timestamp') == timestamp)
+				{
+					msgbox.classList.add('hidden');	
+					App.resizeContainer();
+				}
 			}, c);
 		}
 	},
@@ -660,6 +669,12 @@ function Tweet(tweet) {
 }
 
 window.onload = function(e) {
+	// tweetbox onchange event
+	tweetbox.addEventListener('input', function() {
+		tweetlen.innerHTML = 140 - tweetbox.value.length;
+
+	}, false);
+
 	// scrollbar hack
 	home_timeline.onmousedown = function() {
 		window.scrolling = true;
