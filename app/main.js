@@ -281,7 +281,7 @@ var App = {
 			}
 			else
 			{
-				App.showMsgBox("", 0);
+				App.clearMsgBox();
 				App.id_str = event.id_str;
 				App.name = event.name;
 				App.screen_name = event.screen_name;
@@ -323,6 +323,19 @@ var App = {
 		});
 	},
 		
+	getLimitStatus: function() {
+		Client.get('application/rate_limit_status', function(error, event, response) {
+			if(error)
+			{
+				console.error(error);
+			}
+			else
+			{
+				console.log(event);
+			}
+		});
+	},
+
 	execStream: function()
 	{
 		Client.stream('user', 'include_followings_activity: true', function(stream) {
@@ -482,13 +495,16 @@ var App = {
 			setTimeout(function(id)
 			{
 				if(msgbox.getAttribute('timestamp') == timestamp)
-				{
-					msgbox.classList.add('hidden');	
-					App.resizeContainer();
-				}
+					clearMsgBox();
 			}, c);
 		}
 	},
+
+	clearMsgBox: function(a, b, c)
+	{
+		msgbox.classList.add('hidden');	
+		App.resizeContainer();
+	}
 
 	resizeContainer: function()
 	{
