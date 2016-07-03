@@ -103,11 +103,19 @@ body {
     font-family: 'Segoe UI', 'Yu Gothic UI', 'Meiryo UI', 'Malgun Gothic', Tahoma, Gulim, sans-serif;
 }
 
+.writebox textarea:focus {
+	outline-color: #55acee;
+}
+
 .writebox .buttons
 {
 	display: flex;
     justify-content: space-between;
     align-items: flex-end;
+}
+
+.buttons *:focus {
+	outline-color: #55acee;
 }
 
 
