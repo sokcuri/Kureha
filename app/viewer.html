@@ -26,6 +26,10 @@
 					break;
 				}
 			
+			image.addEventListener("load", function() {
+				image.classList.remove('hidden');
+			});
+			
 			updateHeader = function()
 			{
 				indicator.innerHTML = (index + 1) + " / " + (more.length);
@@ -41,11 +45,13 @@
 
 			prev_image.addEventListener("click", function() {
 				if (index == 0) return false;
+				image.classList.add('hidden');
 				image.src = more[--index] + ":orig";
 				updateHeader();
 			});
 			next_image.addEventListener("click", function() {
 				if (index == more.length - 1) return false;
+				image.classList.add('hidden');
 				image.src = more[++index] + ":orig";
 				updateHeader();
 			});
@@ -60,7 +66,7 @@
 				&nbsp;
 				<span id="indicator"></span>
 			</div>
-			<div id="image-container"><img id="image" class="centered"></div>
+			<div id="image-container"><img id="image" class="centered hidden"></div>
 		</div>
 	</body>
 </html>

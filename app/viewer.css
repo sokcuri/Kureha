@@ -44,6 +44,7 @@ a.page.disabled:link
 
 #image-container
 {
+	object-fit: contain;
 	width: 100%;
 	height: calc(100% - 40px);
 }
@@ -52,4 +53,8 @@ a.page.disabled:link
 	object-fit: contain;
 	width: 100%;
 	height: calc(100% - 5px);
+}
+
+.hidden {
+	visibility: hidden;
 }
