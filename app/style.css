@@ -193,6 +193,7 @@ body {
 
 .deleted {
 	text-decoration: line-through;
+    pointer-events: none;
 }
 
 .tweet-name {
