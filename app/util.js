@@ -40,3 +40,18 @@ function openPopup(href) {
   var wind = nw.Window.get(win)
   wind.focus();
 }
+function openImageview(href) {
+  	nw.Window.open('app/viewer.html?img=' + encodeURIComponent(href), {id: 'popup'}, 
+	function(win) {
+		var w = 1000;
+		var h = 800;
+		var left = (screen.width/2)-(w/2);
+		var top = (screen.height/2)-(h/2);
+
+		win.width = w;
+		win.height = h;
+		win.x = left;
+		win.y = top;
+	    win.focus();
+  });
+}

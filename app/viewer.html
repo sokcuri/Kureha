@@ -1,0 +1,19 @@
+<html>
+<head>
+</head>
+<script>
+window.onload = function(e)
+{
+	var url = window.location.href;
+	var index = null;
+	if(url.lastIndexOf('?') != -1) {
+	    index = url.split('?')[1];
+		index = index.split('=')[1];
+		image.src = decodeURIComponent(index);
+	}
+};
+</script>
+<body>
+<img id="image" />
+</body>
+</html>
