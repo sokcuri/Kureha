@@ -5,9 +5,12 @@ html {
 }
 
 body {
+	background-image: linear-gradient(transparent, rgba(0,0,0,0.5));
 	margin: 0px;
 	height: 100%;
 	overflow: hidden;
+	font-family: 'Segoe UI', 'Yu Gothic UI', 'Meiryo UI', 'Malgun Gothic', Tahoma, Gulim, sans-serif;
+	font-size: 10.5pt;
 }
 
 #header {
@@ -86,15 +89,34 @@ body {
 }
 
 .writebox {
-	padding: 10px;
-	margin-right: 5px;
-	margin-bottom: -5px;
+	padding: 10px 10px 10px 10px;
 	background: white;
 }
 
 .writebox textarea {
-	width: 100%;
-	resize: none;
+	box-sizing: border-box;
+    width: 100%;
+    resize: none;
+    margin-bottom: 1px;
+    font-size: 10.5pt;
+    font-family: 'Segoe UI', 'Yu Gothic UI', 'Meiryo UI', 'Malgun Gothic', Tahoma, Gulim, sans-serif;
+}
+
+.writebox input[type=button]
+{
+	border: 0;
+    margin-left: 10px;
+    padding: 5px 15px;
+    font-size: 12pt;
+    font-weight: bold;
+    color: white;
+    background: #55acee;
+    border-radius: 3px;
+}
+
+.writebox input[type=button]:disabled
+{
+	background: silver;
 }
 
 .tweet {
