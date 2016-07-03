@@ -10,7 +10,7 @@ body {
 	height: 100%;
 	overflow: hidden;
 	font-family: 'Segoe UI', 'Yu Gothic UI', 'Meiryo UI', 'Malgun Gothic', Tahoma, Gulim, sans-serif;
-	font-size: 10.5pt;
+	font-size: 11pt;
 }
 
 #header {
@@ -18,7 +18,7 @@ body {
 	width: 100%;
 	height: 50px;
 	background-color: #ffffff;
-	box-shadow: 2px 2px 2px rgba(0,0,0,0.1);
+	box-shadow: 0 2px 2px rgba(0,0,0,0.1);
 }
 
 #wrapper {
@@ -91,6 +91,7 @@ body {
 .writebox {
 	padding: 10px 10px 10px 10px;
 	background: white;
+	box-shadow: 0 2px 2px rgba(0,0,0,0.1);
 }
 
 .writebox textarea {
@@ -101,6 +102,14 @@ body {
     font-size: 10.5pt;
     font-family: 'Segoe UI', 'Yu Gothic UI', 'Meiryo UI', 'Malgun Gothic', Tahoma, Gulim, sans-serif;
 }
+
+.writebox .buttons
+{
+	display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
 
 .writebox input[type=button]
 {
