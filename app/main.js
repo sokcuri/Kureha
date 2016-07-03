@@ -510,13 +510,9 @@ var App = {
 	},
 
 	tryReply: function(id)
-	{		
-		writebox.hidden = false;
-		App.resizeContainer();
-//		var usernames = Twitter_text.extractMentions("Mentioning @twitter and @jack")
-		tweetbox.value = '';
+	{	
+		App.openTweetBox();
 		var usernames = [];
-		
 		usernames.push(document.querySelector('[data-tweet-text="' + id + '"]').getAttribute('data-tweet-name'));
 		Array.from(Twitter_text.extractMentions(document.querySelector('[data-tweet-text="' + id + '"]').innerText)).
 			forEach(function(name) {
@@ -633,6 +629,24 @@ var App = {
 			}
 			i++;
 		});
+	},
+
+	openTweetBox: function() {
+		writebox.hidden = false;
+		tweetbox.value = "";
+		in_reply_to_status_id.value = "";
+		tweetlen.innerText = '140';
+		tweetbox.focus();
+		App.resizeContainer();
+	},
+
+	closeTweetBox: function() {
+		writebox.hidden = true;
+		tweetbox.value = "";
+		in_reply_to_status_id.value = "";
+		tweetlen.innerText = '140';
+		tweetbox.focus();
+		App.resizeContainer();
 	},
 
 	run: function() {
@@ -902,15 +916,9 @@ function naviSelect(e)
 			case 4:
 			{
 				if(writebox.hidden)
-					writebox.hidden = false;
+					App.openTweetBox();
 				else
-					writebox.hidden = true;
-
-				tweetbox.value = "";
-				in_reply_to_status_id.value = "";
-				tweetlen.innerText = '140';
-				tweetbox.focus();
-				App.resizeContainer();
+					App.closeTweetBox();
 			}
 		}
 	}
