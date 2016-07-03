@@ -733,7 +733,8 @@ var KEY = {
 	NUMBER_1: 49,
 	NUMBER_2: 50,
 	NUMBER_3: 51,
-	T: 84,
+	N: 78,
+	ENTER: 13,
 	ESC: 27,
     WASD_LEFT:  65,
     WASD_RIGHT: 68,
@@ -742,9 +743,25 @@ var KEY = {
 }
 
 document.onkeydown = function (e) {
+	var isShift;
+	if(window.event) {
+		key = window.event.keyCode;
+		isShift = !!window.event.shiftKey;
+	} else {
+		key = e.which;
+		isShift = !!e.shiftKey;
+	}
+
 	if(document.activeElement == tweetbox)
 	{
-		switch (e.keyCode) {
+		switch (key) {
+			case 16:
+			break;
+			case KEY.ENTER:
+				// shift+enter: line feed
+				if(!isShift)
+					App.execTweet();
+			break;
 			case KEY.ESC:
 				naviSelect(4);
 			return false;
@@ -762,7 +779,7 @@ document.onkeydown = function (e) {
 			case KEY.NUMBER_3:
 				naviSelect(2);
 				break;
-			case KEY.T:	
+			case KEY.N:	
 				if(writebox.hidden)
 					naviSelect(4);
 				else tweetbox.focus();
