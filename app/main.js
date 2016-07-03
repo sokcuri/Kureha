@@ -292,37 +292,6 @@ var App = {
 		});
 	},
 
-	run: function() {
-		App.loadConfig(function() {
-			App.initializeClient(App.config.ConsumerKey, App.config.ConsumerSecret, App.config.AccessToken, App.config.AccessSecret);
-				
-			if(!App.config.AccessToken || !App.config.AccessSecret)
-			{
-				oauth_req.style.display = '';
-				App.resizeContainer();
-				return App.confirmAuthFirst();
-			}
-
-			App.vertifyCredentials(function(error) {
-				if(error)
-				{
-					oauth_req.style.display = '';
-					App.resizeContainer();
-
-					return App.confirmAuth();
-				}
-				else
-				{
-					oauth_req.style.display = 'none';
-					App.resizeContainer();
-					App.getTimeline();
-					App.execStream();
-					//getAboutme();
-				}
-			});
-		});
-	},
-		
 	getLimitStatus: function() {
 		Client.get('application/rate_limit_status', function(error, event, response) {
 			if(error)
@@ -582,10 +551,14 @@ var App = {
 	},
 
 	getMentionsTimeline: function() {
-		Client.get('statuses/mentions_timeline', function(error, event, response) {
-			if(error)
+		Client.get('statuses/mentions_timeline', {since_id: App.getMentionsTimeline.since_id|""}, function(error, event, response) {
+			if(!error)
 			{
-				console.error(error);
+				Array.from(event).reverse().forEach(function(item) {
+					console.log(item);
+					App.addItem(notification, new Tweet(item));
+					App.getMentionsTimeline.since_id = item.id_str;
+				});
 			}
 			else
 			{
@@ -657,10 +630,43 @@ var App = {
 			i++;
 		});
 	},
+
+	run: function() {
+		App.loadConfig(function() {
+			App.initializeClient(App.config.ConsumerKey, App.config.ConsumerSecret, App.config.AccessToken, App.config.AccessSecret);
+				
+			if(!App.config.AccessToken || !App.config.AccessSecret)
+			{
+				oauth_req.style.display = '';
+				App.resizeContainer();
+				return App.confirmAuthFirst();
+			}
+
+			App.vertifyCredentials(function(error) {
+				if(error)
+				{
+					oauth_req.style.display = '';
+					App.resizeContainer();
+
+					return App.confirmAuth();
+				}
+				else
+				{
+					oauth_req.style.display = 'none';
+					App.resizeContainer();
+					App.getTimeline();
+					App.getMentionsTimeline();
+					App.execStream();
+					//getAboutme();
+				}
+			});
+		});
+	},
 }
 
 // Static variable
 App.getTimeline.since_id = '1';
+App.getMentionsTimeline.since_id = '1';
 App.getAboutme.max_position = 0;
 App.execStream.sequence = 0;
 
