@@ -751,9 +751,9 @@ function Activity(event) {
 	this.element = a;
 }
 
-function Tweet(tweet) {
-	a = document.createElement('article');
-	a.className = 'tweet';
+function Tweet(tweet, quoted) {
+	var a = document.createElement('article');
+	a.className = quoted ? 'tweet quoted' : 'tweet';
 	a.setAttribute('data-tweet-id', tweet.id_str);
 	a.setAttribute('data-tweet-timestamp', tweet.timestamp_ms);
 	a.innerHTML = "";
@@ -766,7 +766,8 @@ function Tweet(tweet) {
 	});
 	if(mentioned_me)
 	{
-		a.classList.add('tweet_emp_blue');
+		a.classList.add('tweet_emp');
+		a.classList.add('blue');
 	}
 
 	// retweeted / favorited
@@ -793,7 +794,7 @@ function Tweet(tweet) {
 					'<div class="tweet-name"><a href="javascript:void(0)" onclick="openPopup(\'https://twitter.com/{1}\')">\r\n' +
 					'<strong>{2}</strong>\r\n' +
 					'<span class="tweet-id">@{1}</span></a></div>\r\n' +
-					'<p data-tweet-text="{3}" data-tweet-name="{4}" class="tweet-text">{5}</p>';
+					'<p data-tweet-text="{3}" data-tweet-name="{4}" class="tweet-text lpad">{5}</p>';
 
 	a.innerHTML += tweet_div.format(tweet.user.profile_image_url_https, tweet.user.screen_name, tweet.user.name, id_str_org, tweet.user.screen_name, text);
 					 //<!--<input type="button" value="-" onclick="removeRow(this.parentNode)">//-->
@@ -811,14 +812,23 @@ function Tweet(tweet) {
 		a.innerHTML += container.outerHTML;
 	}
 
+	var quoted_status = tweet.quoted_status || null;
+	if (!quoted && quoted_status)
+	{
+		//a.innerHTML += quoted_status.text;
+		var twt = new Tweet(quoted_status, true)
+		//a.element.style.fontSize = "0.75em";
+		a.innerHTML += twt.element.outerHTML;
+	}
 
-	a.innerHTML += '<div class="tweet-date"><a href="javascript:void(0)" onclick="openPopup(\'https://twitter.com/' + tweet.user.screen_name + '/status/' + tweet.id_str + '\')">' + new Date(Date.parse(tweet.created_at)).format("a/p hh:mm - yyyy년 MM월 dd일") + '</a> · ' + tagRemove(tweet.source) + '</div>';
+	a.innerHTML += '<div class="tweet-date lpad"><a href="javascript:void(0)" onclick="openPopup(\'https://twitter.com/' + tweet.user.screen_name + '/status/' + tweet.id_str + '\')">' + new Date(Date.parse(tweet.created_at)).format("a/p hh:mm - yyyy년 MM월 dd일") + '</a> · ' + tagRemove(tweet.source) + '</div>';
 	if (!tweet.retweet_count)
 		tweet.retweet_count = "";
 	if (!tweet.favorite_count)
 		tweet.favorite_count = "";
 	
-	a.innerHTML += '<div aria-label="트윗 작업" role="group" class="tweet-task">' + 
+	if (!quoted)
+		a.innerHTML += '<div aria-label="트윗 작업" role="group" class="tweet-task lpad">' + 
 					 '<div class="tweet-task-box"><button aria-label="답글" data-testid="reply" type="button" onclick="App.tryReply(\'' + id_str_org + '\')">' + 
 					 '<span>' + App.symbol.reply + '</span></button></div><div class="tweet-task-box ' + retweeted + '" data-retweet="' + id_str_org + '"><button aria-label="리트윗 1회. 리트윗" data-testid="retweet" type="button" onclick="App.execRetweet(\'' + id_str_org + '\')"><span class="tweet-task-count">' + App.symbol.retweet + '&nbsp;<span><span data-retweet-count="' + id_str_org + '">' + tweet.retweet_count + '</span></span></span></button></div><div class="tweet-task-box ' + favorited + '" data-favorite="' + id_str_org + '"><button aria-label="마음에 들어요" data-testid="like" type="button" onclick="App.execFavorite(\'' + id_str_org + '\')"><span>' + App.symbol.like + '&nbsp;<span class="tweet-task-count"><span data-favorite-count="' + id_str_org + '">' + tweet.favorite_count + '</span></span></span></button></div></div>';
 	this.element = a;

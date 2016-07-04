@@ -136,19 +136,6 @@ body {
 	background: silver;
 }
 
-.tweet {
-	border: 0px;
-	padding: 10px;
-	overflow: hidden;
-	min-height: 50px;
-	border-radius: 4px;
-	margin: 5px 5px 10px 5px;
-	background-color: rgba(255, 255, 255, 0.7);
-	color: #000;
-	opacity: 0;
-    animation: new-item-animation .15s linear forwards;
-}
-
 .emoji {
 	width: 16px;
 	height: 16px;
@@ -174,11 +161,27 @@ body {
 	visibility: hidden;
 }
 
-.tweet_emp_blue {
-	border-left: 10px;
-	border-style: inset;
-	border-left-color: rgba(29, 161, 242, 0.8);
+.tweet {
+	border: 0px;
+	padding: 10px;
+	overflow: hidden;
+	min-height: 50px;
+	border-radius: 4px;
+	margin: 5px 5px 10px 5px;
+	background-color: rgba(255, 255, 255, 0.7);
+	color: #000;
+	opacity: 0;
+    animation: new-item-animation .15s linear forwards;
 }
+
+.tweet .lpad { padding-left: 60px; }
+
+.tweet_emp
+{
+    border-left: 10px;
+    border-style: inset;
+}
+.tweet_emp.blue { border-left-color: rgba(29, 161, 242, 0.8); }
 
 .tweet a
 {
@@ -224,14 +227,12 @@ body {
 }
 
 .tweet-text {
-	padding-left: 60px;
 	padding-bottom: 10px;
 	margin: 0px;
 	color: #000;
 }
 
 .tweet-date {
-	padding-left: 60px;
 	padding-bottom: 10px;
 	margin: 0px;
 	color: #000;
@@ -255,7 +256,6 @@ body {
 
 .tweet-image {
     box-sizing: border-box;
-	/*height: 250px;*/
 	padding: 5px;
 }
     .tweet-media-container[data-media-count='1'] .tweet-image
@@ -274,6 +274,21 @@ body {
 	height: 100%;
     border-radius: 5px;
 }
+
+    .tweet.quoted
+    {
+        margin-left: 60px;
+        font-size: 0.9em;
+        border: 1px solid silver;
+        opacity: 0.7;
+    }
+    .tweet.quoted .tweet_emp { border-left: 1px gray; }
+    .tweet.quoted .lpad { padding-left: 0; }
+    .tweet.quoted .profile-image { display: none; }
+    .tweet.quoted .tweet-name { margin-left: 0; }
+    .tweet.quoted .tweet-date { padding-bottom: 0; }
+    .tweet.quoted .tweet-media-container { padding: 0; }
+
 .infobox {
     position: absolute;
     margin-left: 70%;
@@ -356,7 +371,6 @@ body {
 }
 
 .tweet-task {
-	padding-left: 60px;
 }
 
 .tweet-task-box {
