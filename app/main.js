@@ -92,6 +92,38 @@ var App = {
 	screen_name: '',
 	tweet_count: 0,
 
+	// List of files to be uploaded
+	mediaUploadManager: new (function() {
+		this.selectedFiles = [];
+		this.addFile = (path) => {
+			if (this.selectedFiles.indexOf(path) != -1)
+			{
+				App.showMsgBox('같은 파일을 중복으로 선택할 수 없습니다.', 'tomato', 3000);
+				return;
+			}
+			if (this.selectedFiles.length == 0)
+				App.showMsgBox('썸네일을 클릭하면 이미지를 삭제할 수 있습니다.', 'blue', 3000);
+			thumbnails.appendChild((() => {
+				var e = document.createElement('div');
+				e.className = 'thumbnail';
+				e.setAttribute('data-media', path);
+				e.style.backgroundImage = "url('" + path.replace(/\\/g, '/') + "')";
+				e.addEventListener('click', (e) => {
+					var path = e.target.getAttribute('data-media'),
+						idx = this.selectedFiles.indexOf(path);
+					this.selectedFiles.splice(idx, 1);
+					e.target.outerHTML = '';
+					fileDialog.disabled = false;
+					fileDialogContainer.classList.remove('disabled');
+
+					console.log(this.selectedFiles);
+				})
+				return e;
+			})());
+			this.selectedFiles.push(path);
+		};
+	})(),
+
 	symbol: {
 		reply: '<svg viewBox="0 0 62 72"><path d="M41 31h-9V19c0-1.14-.647-2.183-1.668-2.688-1.022-.507-2.243-.39-3.15.302l-21 16C5.438 33.18 5 34.064 5 35s.437 1.82 1.182 2.387l21 16c.533.405 1.174.613 1.82.613.453 0 .908-.103 1.33-.312C31.354 53.183 32 52.14 32 51V39h9c5.514 0 10 4.486 10 10 0 2.21 1.79 4 4 4s4-1.79 4-4c0-9.925-8.075-18-18-18z"></path></svg>',
 		retweet: '<svg viewBox="0 0 74 72"><path d="M70.676 36.644C70.166 35.636 69.13 35 68 35h-7V19c0-2.21-1.79-4-4-4H34c-2.21 0-4 1.79-4 4s1.79 4 4 4h18c.552 0 .998.446 1 .998V35h-7c-1.13 0-2.165.636-2.676 1.644-.51 1.01-.412 2.22.257 3.13l11 15C55.148 55.545 56.046 56 57 56s1.855-.455 2.42-1.226l11-15c.668-.912.767-2.122.256-3.13zM40 48H22c-.54 0-.97-.427-.992-.96L21 36h7c1.13 0 2.166-.636 2.677-1.644.51-1.01.412-2.22-.257-3.13l-11-15C18.854 15.455 17.956 15 17 15s-1.854.455-2.42 1.226l-11 15c-.667.912-.767 2.122-.255 3.13C3.835 35.365 4.87 36 6 36h7l.012 16.003c.002 2.208 1.792 3.997 4 3.997h22.99c2.208 0 4-1.79 4-4s-1.792-4-4-4z"></path></svg>',
@@ -274,7 +306,7 @@ var App = {
 				// retry vertifyCredentials if limit
 				if(error[0].code == 88)
 				{
-					App.showMsgBox("API 리밋으로 연결이 지연되고 있습니다. 잠시만 기다려 주세요", "msgbox_tomato", 12000);
+					App.showMsgBox("API 리밋으로 연결이 지연되고 있습니다. 잠시만 기다려 주세요", "tomato", 12000);
 					return setTimeout(function(){ App.vertifyCredentials(callback) }, 10000);
 				}
 				// limit error?
@@ -388,7 +420,7 @@ var App = {
 		countElement = document.querySelector('[data-retweet-count="' + e + '"]');
 		if(!Element.classList.contains('retweeted'))
 		{
-			App.showMsgBox("리트윗했습니다", "msgbox_blue", 1000);
+			App.showMsgBox("리트윗했습니다", "blue", 1000);
 			Element.classList.add('retweeted');
 			countElement.innerText++;
 			Client.post('statuses/retweet/' + e, function(error, tweet, response) {
@@ -407,7 +439,7 @@ var App = {
 		}
 		else
 		{
-			App.showMsgBox("언리트윗했습니다", "msgbox_blue", 1000);
+			App.showMsgBox("언리트윗했습니다", "blue", 1000);
 			Element.classList.remove('retweeted');
 			if(countElement.innerText == "1")
 				countElement.innerText = "";
@@ -428,7 +460,7 @@ var App = {
 
 	execFavorite: function(e)
 	{	
-		App.showMsgBox("마음에 드는 트윗으로 지정했습니다", "msgbox_blue", 1000);
+		App.showMsgBox("마음에 드는 트윗으로 지정했습니다", "blue", 1000);
 		Element = document.querySelector('[data-favorite="' + e + '"]');
 		countElement = document.querySelector('[data-favorite-count="' + e + '"]');
 		if(!Element.classList.contains('favorited'))
@@ -452,7 +484,7 @@ var App = {
 		}
 		else
 		{	
-			App.showMsgBox("마음에 드는 트윗을 해제했습니다", "msgbox_blue", 1000);
+			App.showMsgBox("마음에 드는 트윗을 해제했습니다", "blue", 1000);
 			Element.classList.remove('favorited');
 			if(countElement.innerText == "1")
 				countElement.innerText = "";
@@ -477,14 +509,18 @@ var App = {
 
 	showMsgBox: function(a, b, c)
 	{
+		/* 2-argument: 
+		 *   a: message, b: duration (default color is blue)
+		 * 3-argument:
+		 *   a: message, b: color, c: duration (in msec) */
 		if(!c)
 		{
 			c = b;
-			b = 'msgbox_blue';
+			b = 'blue';
 		}
 
 		msgbox.innerHTML = a;
-		msgbox.className = b;
+		msgbox.className = 'msgbox ' + b;
 		msgbox.setAttribute('timestamp', new Date().getTime());
 		App.resizeContainer();
 
@@ -515,12 +551,12 @@ var App = {
 		writebox.hidden = true;
 		App.resizeContainer();
 
-		if(fileDialog.value)
+		if(App.mediaUploadManager.selectedFiles.length != 0)
 		{
-			var path = fileDialog.value.split(';');
+			var path = App.mediaUploadManager.selectedFiles;
 			var files = [];
 
-			App.showMsgBox("트윗을 올리는 중입니다", "msgbox_orange", 30000);
+			App.showMsgBox("트윗을 올리는 중입니다", "orange", 30000);
 			for (var i = 0; i < path.length; i++)
 				(function (index) {
 					var data = require('fs').readFileSync(path[index]);
@@ -532,7 +568,7 @@ var App = {
 							if (files.filter((f)=>{return f !== undefined;}).length === path.length)
 								return ex(files.map((x)=>{return x.media_id_string}).join(','));
 						} else {
-							return App.showMsgBox("오류가 발생했습니다<br />" + error[0].code + ": " + error[0].message, "msgbox_tomato", 5000);
+							return App.showMsgBox("오류가 발생했습니다<br />" + error[0].code + ": " + error[0].message, "tomato", 5000);
 						}
 					});
 				})(i);
@@ -548,10 +584,10 @@ var App = {
 
 			Client.post('statuses/update', param, function(error, event, response) {
 				if (!error) {
-					App.showMsgBox("트윗했습니다", "msgbox_blue", 3000);
+					App.showMsgBox("트윗했습니다", "blue", 3000);
 				}
 				else {
-					App.showMsgBox("오류가 발생했습니다<br />" + error[0].code + ": " + error[0].message, "msgbox_tomato", 5000);
+					App.showMsgBox("오류가 발생했습니다<br />" + error[0].code + ": " + error[0].message, "tomato", 5000);
 				}
 			});
 		}
@@ -688,6 +724,10 @@ var App = {
 		tweetlen.innerText = '140';
 		tweetbox.focus();
 		fileDialog.value = "";
+		fileDialog.disabled = false;
+		fileDialogContainer.classList.remove('disabled');
+		thumbnails.innerHTML = '';
+		App.mediaUploadManager.selectedFiles = [];
 		App.resizeContainer();
 	},
 
@@ -842,12 +882,25 @@ window.onload = function(e) {
 	// tweetbox onchange event
 	tweetbox.addEventListener('input', function() {
 		tweetlen.innerHTML = 140 - tweetbox.value.length;
-
 	}, false);
 
 	tweetbox.addEventListener('onpropertychange', function() {
 		tweetlen.innerHTML = 140 - tweetbox.value.length;
+	}, false);
 
+	// when a user selects a file
+	fileDialog.addEventListener('change', function(e)
+	{
+		App.mediaUploadManager.addFile(e.target.value);
+		
+		console.log(App.mediaUploadManager.selectedFiles);
+		e.target.value = '';
+		
+		if (App.mediaUploadManager.selectedFiles.length == 4)
+		{
+			e.target.disabled = true;
+			fileDialogContainer.classList.add('disabled');
+		}
 	}, false);
 
 	// scrollbar hack

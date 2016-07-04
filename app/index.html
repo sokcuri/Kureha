@@ -21,22 +21,26 @@
 	<div id="new_tweet_noti" class="new_tweet_noti" hidden><a href="javascript:void(0)" style="transform: translate3d(0px, 3em, 0px);"><span class="_3CHNprH4 _1h3kllfv _1rwV18JF"><svg viewBox="0 0 38 72"><path d="M22 52V27.243l7.88 7.878c1.17 1.173 3.07 1.173 4.24 0 1.173-1.17 1.173-3.07 0-4.24l-13-13c-1.17-1.173-3.07-1.173-4.24 0l-13 13C3.292 31.463 3 32.23 3 33s.293 1.536.88 2.12c1.17 1.173 3.07 1.173 4.24 0L16 27.244V52c0 1.657 1.343 3 3 3s3-1.343 3-3z"></path></svg>새 트윗</span></a></div>
 	<div id="info_box" class="infobox" hidden>인포박스입니다</div>
 	<div id="toolbox">
-		<div id="oauth_req" class="msgbox_orange" style="display:none">
+		<div id="oauth_req" class="msgbox orange" style="display:none">
 			oauth 인증이 필요합니다.
 			<input type="button" value="토큰 요청" onclick="App.getRequestToken()">
 		</div>
-		<div id="msgbox" class="msgbox_blue hidden">
+		<div id="msgbox" class="msgbox blue hidden">
 			타임라인을 불러왔습니다
 		</div>
-		<div class="msgbox_tomato" style="display:none">
+		<div class="msgbox tomato" style="display:none">
 			트위터를 10시간 이상 하셨습니다. 적당한 휴식이 필요합니다.
 		</div>
 		<div id="writebox" class="writebox" hidden>
 			<input type="hidden" id="in_reply_to_status_id">
 			<textarea id="tweetbox" rows="4"></textarea>
 			<div class="buttons">
-				<div><a href="javascript:App.closeTweetBox()"><svg width="20" height="20"><g style="stroke-width:3px;stroke:#777"><line x1="3" y1="3" x2="17" y2="17"/><line x1="3" y1="17" x2="17" y2="3"/></g></svg></a></div><input id="fileDialog" type="file" multiple />
-				<div><span id="tweetlen">140</span><input type="button" value="트윗하기" onclick="App.execTweet()"></div>
+				<div><a href="javascript:App.closeTweetBox()"><svg width="20" height="20"><g style="stroke-width:3px;stroke:#777"><line x1="3" y1="3" x2="17" y2="17"/><line x1="3" y1="17" x2="17" y2="3"/></g></svg></a></div>
+				<div class="media-uploader">
+					<div id="thumbnails" style="font-size: 0;"></div>
+					<div id="fileDialogContainer" class="bluebutton"><span>파일 추가</span><input id="fileDialog" type="file" accept=".png,.jpg,.gif,.mp4" /></div>
+				</div>
+				<div><span id="tweetlen">140</span><input class="bluebutton" type="button" value="트윗하기" onclick="App.execTweet()"></div>
 			</div>
 		</div>
 	</div>
