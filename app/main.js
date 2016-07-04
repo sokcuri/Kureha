@@ -517,24 +517,32 @@ var App = {
 
 		if(fileDialog.value)
 		{
-			var data = require('fs').readFileSync(fileDialog.value);
-			App.showMsgBox("트윗을 올리는 중입니다", "msgbox_orange", 30000);
-			Client.post('media/upload', {media: data}, function(error, media, response) {
+			var path = fileDialog.value.split(';');
+			var files = [];
 
-			if (!error) {
-				console.log(media);
-				return ex(media);
-			}else {
-				return App.showMsgBox("오류가 발생했습니다<br />" + error[0].code + ": " + error[0].message, "msgbox_tomato", 5000);
-			}
-			});
+			App.showMsgBox("트윗을 올리는 중입니다", "msgbox_orange", 30000);
+			for (var i = 0; i < path.length; i++)
+				(function (index) {
+					var data = require('fs').readFileSync(path[index]);
+					Client.post('media/upload', {media: data}, function(error, media, response) {
+						if (!error) {
+							console.log(media);
+							files[index] = media;
+							// make sure all files are successfully uploaded.
+							if (files.filter((f)=>{return f !== undefined;}).length === path.length)
+								return ex(files.map((x)=>{return x.media_id_string}).join(','));
+						} else {
+							return App.showMsgBox("오류가 발생했습니다<br />" + error[0].code + ": " + error[0].message, "msgbox_tomato", 5000);
+						}
+					});
+				})(i);
 		}
 		else return ex();
 
-		function ex(media)
+		function ex(media_ids)
 		{
 			var param = {status: tweetbox.value};
-			if (media) param.media_ids = media.media_id_string;
+			if (media_ids) param.media_ids = media_ids;
 
 			if(in_reply_to_status_id.value) param.in_reply_to_status_id = in_reply_to_status_id.value;
 
