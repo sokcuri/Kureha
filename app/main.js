@@ -756,7 +756,6 @@ function Tweet(tweet, quoted) {
 	a.className = quoted ? 'tweet quoted' : 'tweet';
 	a.setAttribute('data-tweet-id', tweet.id_str);
 	a.setAttribute('data-tweet-timestamp', tweet.timestamp_ms);
-	a.innerHTML = "";
 
 	var mentioned_me = false;
 	if(!tweet.retweeted_status)
@@ -766,8 +765,7 @@ function Tweet(tweet, quoted) {
 	});
 	if(mentioned_me)
 	{
-		a.classList.add('tweet_emp');
-		a.classList.add('blue');
+		a.classList.add(['tweet_emp', 'blue']);
 	}
 
 	// retweeted / favorited
@@ -809,16 +807,14 @@ function Tweet(tweet, quoted) {
 		container.className = 'tweet-media-container';
 		for (var i in urls)
 			container.innerHTML += '<div class="tweet-image"><a href="javascript:void(0)" onclick="openImageview(\'' + urls[i] + '\', \'' + urlstr + '\')"><img src="' + urls[i] + '"/></a></div>';
-		a.innerHTML += container.outerHTML;
+		a.appendChild(container);
 	}
 
 	var quoted_status = tweet.quoted_status || null;
 	if (!quoted && quoted_status)
 	{
-		//a.innerHTML += quoted_status.text;
 		var twt = new Tweet(quoted_status, true)
-		//a.element.style.fontSize = "0.75em";
-		a.innerHTML += twt.element.outerHTML;
+		a.appendChild(twt.element);
 	}
 
 	a.innerHTML += '<div class="tweet-date lpad"><a href="javascript:void(0)" onclick="openPopup(\'https://twitter.com/' + tweet.user.screen_name + '/status/' + tweet.id_str + '\')">' + new Date(Date.parse(tweet.created_at)).format("a/p hh:mm - yyyy년 MM월 dd일") + '</a> · ' + tagRemove(tweet.source) + '</div>';
