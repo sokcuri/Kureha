@@ -92,7 +92,6 @@ var App = {
 	screen_name: '',
 	tweet_count: 0,
 
-	// List of files to be uploaded
 	mediaUploadManager: new (function() {
 		this.selectedFiles = [];
 		this.addFile = (path) => {
@@ -927,11 +926,12 @@ window.onload = function(e) {
 		}
 	};
 	
-	header.innerHTML = '<span class="navigator selected"><a href="javascript:void(0)" onclick="naviSelect(0)">' + App.symbol.home + '</a></div>';
+	header.innerHTML += '<span class="navigator selected"><a href="javascript:void(0)" onclick="naviSelect(0)">' + App.symbol.home + '</a></div>';
 	header.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(1)">' + App.symbol.noti + '</a></div>';
 	header.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(2)">' + App.symbol.dm + '</a></div>';
 	header.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(3)">' + App.symbol.search + '</a></div>';
 	header.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(4)">' + App.symbol.write + '</a></div>';
+	header.innerHTML += '<div id="page_indicator"></div>'
 
 	//chooseFile('#fileDialog');
 	// run Application
@@ -1060,18 +1060,11 @@ function naviSelect(e)
 	else
 	{
 		for (var i = 0; i < container.childElementCount; i++)
-		{
-			if (i != e)
-			{
-				container.children[i].classList.add('hidden');
-				header.children[i].classList.remove('selected');
-			}
-			else
-			{
-				container.children[i].classList.remove('hidden');
-				header.children[i].classList.add('selected');
-			}
-		}
+			header.children[i].classList.remove('selected');
+		header.children[e].classList.add('selected');
+		
+		page_indicator.style.left = (e * 20) + '%';
+		container.style.left = (e * (-100)) + 'vw';
 	}	
 }
 function chooseFile(name) {
