@@ -84,7 +84,7 @@ var App = {
 	},
 	msg:
 	{
-		someone_retweeted: '<a href="javascript:void(0)" onclick="openExternal(\'https://twitter.com/{0}\')">{1}</a> 님이 리트윗했습니다',
+		someone_retweeted: '<a href="javascript:void(0)" onclick="openPopup(\'https://twitter.com/{0}\')">{1}</a> 님이 리트윗했습니다',
 	},
 
 	id_str: '',
