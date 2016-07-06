@@ -43,19 +43,15 @@ function openPopup(href) {
 
 function openImageview(href, more) {
 	if(window.popup) nw.Window.get(window.popup).close(true);
-  	window.popup = nw.Window.open('app/viewer.html?img=' + encodeURIComponent(href) + '&more=' + encodeURIComponent(more), 
+	var w = 1000;
+	var h = 650;
+	var left = (screen.width/2)-(w/2);
+	var top = (screen.height/2)-(h/2);
+	window.popup = nw.Window.open('app/viewer.html?img=' + encodeURIComponent(href) + '&more=' + encodeURIComponent(more), 
+	{x: left, y: top, width: w, height: h},
 	function(win) {
-		var w = 1000;
-		var h = 650;
-		var left = (screen.width/2)-(w/2);
-		var top = (screen.height/2)-(h/2);
-
 		window.popup = win.window;
 		win.id = 'popup';
-		win.width = w;
-		win.height = h;
-		win.x = left;
-		win.y = top;
 	    win.focus();
   });
 }

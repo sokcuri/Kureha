@@ -545,6 +545,25 @@ var App = {
 		container.style.height = 'calc(100% - ' + toolbox.getClientRects()[0].height + 'px)';
 	},
 
+	openSettings: function()
+	{
+		var w = 800;
+		var h = 500;
+		var left = (screen.width/2)-(w/2);
+		var top = (screen.height/2)-(h/2);
+		if(window.setting) nw.Window.get(window.popup).focus();
+		nw.Window.open('app/setting.html', {x: left, y: top, width: w, height: h}, 
+		function(win) {
+			window.setting = win.window;
+			win.id = 'setting';
+//			win.width = w;
+//			win.height = h;
+//			win.x = left;
+//			win.y = top;
+			win.focus();
+	  });
+	},
+
 	procOffscreen: function()
 	{
 		Array.from(home_timeline.firstElementChild.children).forEach(function(item) {
@@ -696,8 +715,8 @@ var App = {
 		var tl = t.firstElementChild;
 
 		// 100개가 넘어가면 90개만 남기고 나머지를 비운다
-		//if(tl.childElementCount > 100)
-		//	App.removeItems(tl, 90);
+		if(tl.childElementCount > 100)
+			App.removeItems(tl, 90);
 
 		// 유저가 스크롤바를 잡고 있을때는 추가되는 트윗을 감춤.
 		// onmouseup 이벤트 발생시 트윗들을 다시 꺼냄
@@ -977,12 +996,12 @@ window.onload = function(e) {
 		}
 	}
 	
-	header.innerHTML += '<span class="navigator selected"><a href="javascript:void(0)" onclick="naviSelect(0)">' + App.symbol.home + '</a></div>';
-	header.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(1)">' + App.symbol.noti + '</a></div>';
-	header.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(2)">' + App.symbol.dm + '</a></div>';
-	header.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(3)">' + App.symbol.search + '</a></div>';
-	header.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(4)">' + App.symbol.write + '</a></div>';
-	header.innerHTML += '<div id="page_indicator"></div>'
+	header_navi.innerHTML += '<span class="navigator selected"><a href="javascript:void(0)" onclick="naviSelect(0)">' + App.symbol.home + '</a></div>';
+	header_navi.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(1)">' + App.symbol.noti + '</a></div>';
+	header_navi.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(2)">' + App.symbol.dm + '</a></div>';
+	header_navi.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(3)">' + App.symbol.search + '</a></div>';
+	header_navi.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(4)">' + App.symbol.write + '</a></div>';
+	header_navi.innerHTML += '<div id="page_indicator"></div>'
 
 	//chooseFile('#fileDialog');
 	// run Application
@@ -1077,7 +1096,7 @@ function scrollTo(element, to, duration) {
 }
 function naviSelect(e)
 {
-	if(e > 2 || header.children[e].classList.contains('selected'))
+	if(e > 2 || header_navi.children[e].classList.contains('selected'))
 	{
 		switch(e)
 		{
@@ -1112,8 +1131,8 @@ function naviSelect(e)
 	else
 	{
 		for (var i = 0; i < container.childElementCount; i++)
-			header.children[i].classList.remove('selected');
-		header.children[e].classList.add('selected');
+			header_navi.children[i].classList.remove('selected');
+		header_navi.children[e].classList.add('selected');
 
 		page_indicator.style.left = (e * 20) + '%';
 		container.style.left = (e * (-100)) + 'vw';
