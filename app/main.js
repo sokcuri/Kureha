@@ -957,6 +957,26 @@ window.onload = function(e) {
 		App.procOffscreen();
 	}
 	
+	window.magicScroll = false;
+	home_timeline.onwheel = function(e) {
+		var tl = e.target,
+			dy = e.deltaY;
+		while (tl.id != 'home_timeline') tl = tl.parentElement;
+		
+		if (magicScroll && dy > 0) return false;
+		else if (tl.scrollTop == 0 && dy > 0)
+		{
+			magicScroll = true;
+			setTimeout(()=>{window.magicScroll = false;}, 250);
+			tl.style.paddingTop = dy + 'px';
+		}
+		else if (dy < 0 && tl.style.paddingTop != '0px')
+		{
+			tl.scrollTop += dy;
+			tl.style.paddingTop = 0;
+		}
+	}
+	
 	header.innerHTML += '<span class="navigator selected"><a href="javascript:void(0)" onclick="naviSelect(0)">' + App.symbol.home + '</a></div>';
 	header.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(1)">' + App.symbol.noti + '</a></div>';
 	header.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(2)">' + App.symbol.dm + '</a></div>';
@@ -1063,6 +1083,7 @@ function naviSelect(e)
 		{
 			case 0:
 			{
+				home_timeline.style.paddingTop = '0';
 				scrollTo(home_timeline, 0, 200);
 				document.activeElement.blur();
 			}
@@ -1093,7 +1114,7 @@ function naviSelect(e)
 		for (var i = 0; i < container.childElementCount; i++)
 			header.children[i].classList.remove('selected');
 		header.children[e].classList.add('selected');
-		
+
 		page_indicator.style.left = (e * 20) + '%';
 		container.style.left = (e * (-100)) + 'vw';
 	}	
