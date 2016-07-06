@@ -545,6 +545,25 @@ var App = {
 		container.style.height = 'calc(100% - ' + toolbox.getClientRects()[0].height + 'px)';
 	},
 
+	procOffscreen: function()
+	{
+		Array.from(home_timeline.firstElementChild.children).forEach(function(item) {
+			if(isOffscreen(item))
+			{
+				if(item.firstElementChild.style.display != 'none')
+				{
+					item.style.height = (item.firstElementChild.getClientRects()[0].height + 10) + 'px';
+					item.firstElementChild.style.display = 'none';
+				}
+			}
+			else
+			{
+				item.style = '';
+				item.firstElementChild.style = '';
+			}
+		});
+	},
+
 	execTweet: function()
 	{
 		writebox.hidden = true;
@@ -677,8 +696,8 @@ var App = {
 		var tl = t.firstElementChild;
 
 		// 100개가 넘어가면 90개만 남기고 나머지를 비운다
-		if(tl.childElementCount > 100)
-			App.removeItems(tl, 90);
+		//if(tl.childElementCount > 100)
+		//	App.removeItems(tl, 90);
 
 		// 유저가 스크롤바를 잡고 있을때는 추가되는 트윗을 감춤.
 		// onmouseup 이벤트 발생시 트윗들을 다시 꺼냄
@@ -698,6 +717,7 @@ var App = {
 			}
 		}
 
+		App.procOffscreen();
 	},
 	removeItem: function(t, target) {
 		if(typeof target == "number")
@@ -800,7 +820,8 @@ function Activity(event) {
 
 function Tweet(tweet, quoted) {
 	var a = document.createElement('article');
-	a.className = quoted ? 'tweet quoted' : 'tweet';
+	var className = quoted ? 'tweet quoted' : 'tweet';
+	a.className = 'tweet_wrapper';
 	a.setAttribute('data-tweet-id', tweet.id_str);
 	a.setAttribute('data-tweet-timestamp', tweet.timestamp_ms);
 
@@ -874,6 +895,8 @@ function Tweet(tweet, quoted) {
 		a.innerHTML += '<div aria-label="트윗 작업" role="group" class="tweet-task lpad">' + 
 					 '<div class="tweet-task-box"><button aria-label="답글" data-testid="reply" type="button" onclick="App.tryReply(\'' + id_str_org + '\')">' + 
 					 '<span>' + App.symbol.reply + '</span></button></div><div class="tweet-task-box ' + retweeted + '" data-retweet="' + id_str_org + '"><button aria-label="리트윗 1회. 리트윗" data-testid="retweet" type="button" onclick="App.execRetweet(\'' + id_str_org + '\')"><span class="tweet-task-count">' + App.symbol.retweet + '&nbsp;<span><span data-retweet-count="' + id_str_org + '">' + tweet.retweet_count + '</span></span></span></button></div><div class="tweet-task-box ' + favorited + '" data-favorite="' + id_str_org + '"><button aria-label="마음에 들어요" data-testid="like" type="button" onclick="App.execFavorite(\'' + id_str_org + '\')"><span>' + App.symbol.like + '&nbsp;<span class="tweet-task-count"><span data-favorite-count="' + id_str_org + '">' + tweet.favorite_count + '</span></span></span></button></div></div>';
+
+	a.innerHTML = '<div class="' + className + '">' + a.innerHTML + '</div>';
 	this.element = a;
 }
 
@@ -925,6 +948,14 @@ window.onload = function(e) {
 			}
 		}
 	};
+
+	// offscreen process
+	home_timeline.onscroll = function() {
+		App.procOffscreen();
+	}
+	window.onresize = function() {
+		App.procOffscreen();
+	}
 	
 	header.innerHTML += '<span class="navigator selected"><a href="javascript:void(0)" onclick="naviSelect(0)">' + App.symbol.home + '</a></div>';
 	header.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(1)">' + App.symbol.noti + '</a></div>';

@@ -249,8 +249,11 @@ body {
 	margin: 5px 5px 10px 5px;
 	background-color: rgba(255, 255, 255, 0.7);
 	color: #000;
-	opacity: 0;
+}
+
+.tweet_wrapper {
 	animation: new-item-animation .15s linear forwards;
+	opacity: 0;
 }
 
 .tweet .lpad { padding-left: 60px; }
