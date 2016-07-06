@@ -426,13 +426,30 @@ var App = {
 				if (error) {
 					// already retweeted
 					if(error[0].code == 327)
+					{
+						App.showMsgBox("이미 리트윗한 트윗입니다", "tomato", 1000);
 						return;
+					}
 
+					App.showMsgBox("오류가 발생했습니다<br />" + error[0].code + ": " + error[0].message, "tomato", 5000);
 					Element.classList.remove('retweeted');
 					if(countElement.innerText == "1")
 						countElement.innerText = "";
 					else
 						countElement.innerText--;
+				}
+				else
+				{
+					if(tweet.retweeted_status) tweet = tweet.retweeted_status;
+					if(tweet.retweet_count)
+						countElement.innerText = tweet.retweet_count;
+					else
+						countElement.innerText = '';
+
+					if(favorited)
+						Element.classList.add('retweeted');
+					else
+						Element.classList.remove('retweeted');
 				}
 			});
 		}
@@ -442,7 +459,7 @@ var App = {
 			Element.classList.remove('retweeted');
 			if(countElement.innerText == "1")
 				countElement.innerText = "";
-			else
+			else if (Number.parseInt(countElement.innerText))
 				countElement.innerText--;
 
 			Client.post('statuses/unretweet/' + e, function(error, tweet, response) {
@@ -450,10 +467,23 @@ var App = {
 					Element.classList.add('retweeted');
 					countElement.innerText++;
 				}
+				else
+				{
+					if(tweet.retweeted_status) tweet = tweet.retweeted_status;
+					tweet.retweet_count--;
+
+					if(tweet.retweet_count)
+						countElement.innerText = tweet.retweet_count;
+					else
+						countElement.innerText = '';
+
+					if(favorited)
+						Element.classList.add('retweeted');
+					else
+						Element.classList.remove('retweeted');
+				}
 			});
-			
 		}
-		console.log(e);	
 		document.activeElement.blur();
 	},
 
@@ -470,15 +500,32 @@ var App = {
 				if (error) {
 					// already favorited
 					if(error[0].code == 139)
+					{
+						App.showMsgBox("이미 마음에 드는 트윗으로 지정한 트윗입니다", "tomato", 1000);
 						return;
+					}
 
+					App.showMsgBox("오류가 발생했습니다<br />" + error[0].code + ": " + error[0].message, "tomato", 5000);
 					Element.classList.remove('favorited');
 					if(countElement.innerText == "1")
 						countElement.innerText = "";
 					else
 						countElement.innerText--;
 				}
-				});
+				else
+				{	
+					if(tweet.retweeted_status) tweet = tweet.retweeted_status;
+					if(tweet.favorite_count)
+						countElement.innerText = tweet.favorite_count;
+					else
+						countElement.innerText = '';
+
+					if(favorited)
+						Element.classList.add('favorited');
+					else
+						Element.classList.remove('favorited');
+				}
+			});
 			
 		}
 		else
@@ -487,7 +534,7 @@ var App = {
 			Element.classList.remove('favorited');
 			if(countElement.innerText == "1")
 				countElement.innerText = "";
-			else
+			else if (Number.parseInt(countElement.innerText))
 				countElement.innerText--;
 
 			Client.post('favorites/destroy', {id: e}, function(error, tweet, response) {
@@ -499,10 +546,22 @@ var App = {
 					Element.classList.add('favorited');
 					countElement.innerText++;
 				}
+				else
+				{	
+					if(tweet.retweeted_status) tweet = tweet.retweeted_status;
+					if(tweet.favorite_count)
+						countElement.innerText = tweet.favorite_count;
+					else
+						countElement.innerText = '';
+
+					if(favorited)
+						Element.classList.add('favorited');
+					else
+						Element.classList.remove('favorited');
+				}
 			});
 			
 		}
-		console.log(e);
 		document.activeElement.blur();
 	},
 
@@ -543,6 +602,7 @@ var App = {
 	resizeContainer: function()
 	{
 		container.style.height = 'calc(100% - ' + toolbox.getClientRects()[0].height + 'px)';
+		App.procOffscreen();
 	},
 
 	openSettings: function()
@@ -552,7 +612,7 @@ var App = {
 		var left = (screen.width/2)-(w/2);
 		var top = (screen.height/2)-(h/2);
 		if(window.setting) nw.Window.get(window.popup).focus();
-		nw.Window.open('app/setting.html', {x: left, y: top, width: w, height: h}, 
+		nw.Window.open('app/setting.html', {x: left, y: top, width: w, height: h, id: 'setting'}, 
 		function(win) {
 			window.setting = win.window;
 			win.id = 'setting';
@@ -657,7 +717,7 @@ var App = {
 		Client.get('https://api.twitter.com/1.1/statuses/home_timeline', {since_id: App.getTimeline.since_id|""}, function(error, event, response){
 			if(!error) {
 				Array.from(event).reverse().forEach(function(item) {
-					console.log(item);
+//					console.log(item);
 					App.addItem(home_timeline, new Tweet(item));
 					App.getTimeline.since_id = item.id_str;
 				});
@@ -674,7 +734,7 @@ var App = {
 			if(!error)
 			{
 				Array.from(event).reverse().forEach(function(item) {
-					console.log(item);
+//					console.log(item);
 					App.addItem(notification, new Tweet(item));
 					App.getMentionsTimeline.since_id = item.id_str;
 				});
