@@ -76,9 +76,15 @@ var App = {
 		ConsumerSecret: '',
 		AccessToken: '',
 		AccessSecret: '',
-
-		home_timeline_noti: true,
-		home_timeline_sound: true,
+		
+		enableHomeTLNoti: false,
+		enableHomeTLSound: false,
+		enableMentionTLNoti: true,
+		enableMentionTLSound: true,
+		hideMyRetweets: true,
+		magicScroll: false,
+		magicScrollSensitivity: 250,
+		/**/
 
 		debug: false
 	},
@@ -358,7 +364,7 @@ var App = {
 					App.execStream.sequence = (App.execStream.sequence + 1) % 3;
 					
 					// alert noti
-					if(App.config.home_timeline_noti)
+					if(App.config.enableHomeTLNoti)
 					{
 						// Notification 요청
 						if (window.Notification)
@@ -375,7 +381,7 @@ var App = {
 					}
 
 					// alert sound
-					if(App.config.home_timeline_sound)
+					if(App.config.enableHomeTLSound)
 						document.getElementById('update-sound').play();
 				}
 				else if (tweet.delete)
@@ -579,19 +585,19 @@ var App = {
 	},
 
 	openSettings: () => {
-		var w = 800;
-		var h = 500;
+		var w = 450;
+		var h = 365;
 		var left = (screen.width/2)-(w/2);
 		var top = (screen.height/2)-(h/2);
 		if(window.setting) nw.Window.get(window.popup).focus();
-		nw.Window.open('app/settings.html', {x: left, y: top, width: w, height: h, id: 'setting'}, 
+		nw.Window.open('app/settings.html', {id: 'setting'}, 
 		win => {
 			win.window.config = App.config;
 			win.id = 'setting';
-//			win.width = w;
-//			win.height = h;
-//			win.x = left;
-//			win.y = top;
+			// win.width = w;
+			// win.height = h;
+			// win.x = Math.round(left);
+			// win.y = Math.round(top);
 			win.focus();
 	  });
 	},

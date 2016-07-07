@@ -3,7 +3,48 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Settings</title>
-		<link href="css/settings.css" rel="stylesheet">
+		<script>
+		var win = nw.Window.get();
+		// nw.Window.get().setResizable(false);
+		// nw.Window.get().setMaximumSize(win.width, win.height);
+		// nw.Window.get().setMinimumSize(win.width, win.height);
+		// nw.Window.get().resizeTo(450, 450);
+		
+ 	 	window.onload = e =>
+ 	 	{
+			window.resizeTo(450, 365);
+			win.setResizable(false);
+			var arr = document.getElementsByTagName('input');
+			for (var i in arr)
+			{
+				var item = arr[i];
+				if(!config[item.id])
+					continue;
+				switch (item.type)
+				{
+					case 'checkbox':
+						item.checked = config[item.id];
+						break;
+					case 'number':
+						item.value = config[item.id];
+						break;
+				}
+			}
+ 	 	}
+ 	 	function chk_config(e)
+ 	 	{
+			switch (e.type)
+			{
+				case 'checkbox':
+					config[e.id] = e.checked;
+					break;
+				case 'number':
+					config[e.id] = e.value;
+					break;
+			}
+ 	 	}
+ 	 	</script>
+ 		<link href="css/settings.css" rel="stylesheet">
 	</head>
 	<body>
 		<div id="wrapper">
@@ -16,25 +57,25 @@
 					<div>
 						<div class="settings-item">
 							<label>
-								<input id="hideMyRetweets" type="checkbox"><label for="hideMyRetweets"><div></div></label>
+								<input id="hideMyRetweets" type="checkbox" onclick="chk_config(this)"><label for="hideMyRetweets"><div></div></label>
 								자신의 리트윗 숨기기
 							</label>
 						</div>
 						<div class="settings-item">
 							<label>
-								<input id="magicScroll" type="checkbox"><label for="magicScroll"><div></div></label>
+								<input id="magicScroll" type="checkbox" onclick="chk_config(this)"><label for="magicScroll"><div></div></label>
 								매직 스크롤 켜기
 							</label>
 						</div>
 						<div class="settings-item">
 							<label>
 								매직 스크롤 감도 (밀리초):
-								<input id="magicScrollSensitivity" type="number" min="250" max="1000" value="250">
+								<input id="magicScrollSensitivity" type="number" min="250" max="1000" value="250" onchange="chk_config(this)">
 							</label>
 						</div>
 					</div>
 				</section>
-				<section>
+				<!--<section>
 					<header><span>배경</span></header>
 					<div>
 						<div class="settings-item">
@@ -51,10 +92,55 @@
 							</label>
 						</div>
 					</div>
-				</section>
+				</section>-->
 				<section>
 					<header><span>데스크톱 알림</span></header>
+					<div style="-webkit-column-count: 2">
+						<div>
+							<div class="settings-item">
+								<b>홈 타임라인</b>
+							</div>
+							<div class="settings-item">
+								<label>
+									<input id="enableHomeTLNoti" type="checkbox" onclick="chk_config(this)"><label for="enableHomeTLNoti"><div></div></label>
+									알림 표시
+								</label>
+							</div>
+							<div class="settings-item">
+								<label>
+									<input id="enableHomeTLSound" type="checkbox" onclick="chk_config(this)"><label for="enableHomeTLSound"><div></div></label>
+									알림 소리 재생
+								</label>
+							</div>
+						</div>
+						<div>
+							<div class="settings-item">
+								<b>멘션</b>
+							</div>
+							<div class="settings-item">
+								<label>
+									<input id="enableMentionTLNoti" type="checkbox" onclick="chk_config(this)"><label for="enableMentionTLNoti"><div></div></label>
+									알림 표시
+								</label>
+							</div>
+							<div class="settings-item">
+								<label>
+									<input id="enableMentionTLSound" type="checkbox" onclick="chk_config(this)"><label for="enableMentionTLSound"><div></div></label>
+									알림 소리 재생
+								</label>
+							</div>
+						</div>
+					</div>
+				</section>
+				<section>
+					<header><span>개발자 옵션</span></header>
 					<div>
+						<div class="settings-item">
+							<label>
+								<input id="debug" type="checkbox" onclick="chk_config(this)"><label for="debug"><div></div></label>
+								콘솔에 디버그 정보 출력
+							</label>
+						</div>
 					</div>
 				</section>
 			</main>
