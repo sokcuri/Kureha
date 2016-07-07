@@ -335,7 +335,7 @@ var App = {
 				if(tweet.text)
 				{
 					// 자기 자신의 리트윗은 스트리밍에서 막음
-					if(tweet.retweeted_status && tweet.user.id_str == App.id_str)
+					if(hideMyRetweets && tweet.retweeted_status && tweet.user.id_str == App.id_str)
 						return;
 
 					App.addItem(home_timeline, new Tweet(tweet));
@@ -590,14 +590,15 @@ var App = {
 		var left = (screen.width/2)-(w/2);
 		var top = (screen.height/2)-(h/2);
 		if(window.setting) nw.Window.get(window.popup).focus();
-		nw.Window.open('app/settings.html', {id: 'setting'}, 
+		nw.Window.open('app/settings.html', {width: w, height: h, id: 'setting'}, 
 		win => {
 			win.window.config = App.config;
 			win.id = 'setting';
-			// win.width = w;
-			// win.height = h;
-			// win.x = Math.round(left);
-			// win.y = Math.round(top);
+			win.width = w;
+			win.height = h;
+			win.x = Math.round(left);
+			win.y = Math.round(top);
+			
 			win.focus();
 	  });
 	},
