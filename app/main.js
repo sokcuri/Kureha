@@ -136,10 +136,9 @@ var App = {
 	},
 
 	// Load Config
-	loadConfig: function(callback) {
+	loadConfig: callback => {
 		var jsonfile = require('jsonfile');
-		jsonfile.readFile('./config.json', function(err, obj)
-		{
+		jsonfile.readFile('./config.json', (err, obj) => {
 			if(!err)
 			{
 				console.info('loadConfig Successed.');
@@ -156,42 +155,31 @@ var App = {
 		});
 	},
 
-	saveConfig: function(callback) {
+	saveConfig: callback => {
 		var jsonfile = require('jsonfile');
 		jsonfile.spaces = 4;
-		jsonfile.writeFile('./config.json', App.config, function (err)
-		{
-			if(!err)
-			{
-				console.info('saveConfig Successed.');
-			}
-			else
-			{
-				console.warn('saveConfig Failed: \r\n' + Util.inspect(err));
-			}
+		jsonfile.writeFile('./config.json', App.config, (err) => {
+			if(!err) console.info('saveConfig Successed.');
+			else console.warn('saveConfig Failed: \r\n' + Util.inspect(err));
 
-			if(callback)
-			{
-				callback();
-			}
+			if(callback) callback();
 		});
 	},
 
-	confirmAuth: function(msg) {
+	confirmAuth: msg => {
 		if(!msg) var msg = 'oauth 토큰이 유효하지 않습니다. 지금 토큰을 요청할까요?\r\n' + 
 				  '토큰을 요청하지 않으면 기능이 작동하지 않습니다.';
 		var result = confirm(msg);
-		if(result)
-			App.getRequestToken(App.getConsumerKey(), App.getConsumerSecret());
+		if(result) App.getRequestToken(App.getConsumerKey(), App.getConsumerSecret());
 	},
 
-	confirmAuthFirst: function() {
+	confirmAuthFirst: () => {
 		var msg = '발급받은 oauth 토큰이 없습니다. 지금 토큰을 요청할까요?\r\n' + 
 				  '토큰을 요청하지 않으면 기능이 작동하지 않습니다.';
 		return App.confirmAuth(msg);
 	},
 
-	promptPin: function() {			
+	promptPin: () => {			
 		var pin;
 		pin = prompt('토큰 요청후 발급받은 핀번호를 입력하세요');
 
@@ -199,24 +187,24 @@ var App = {
 			App.getAccessToken(pin);
 	},
 
-	getConsumerKey: function() {
+	getConsumerKey: () => {
 		if(!App.config.ConsumerKey)
 			return App._DefaultConsumerKey;
 		else return App.config.ConsumerKey;
 	},
 
-	getConsumerSecret: function() {
+	getConsumerSecret: () => {
 		if(!App.config.ConsumerSecret)
 			return App._DefaultConsumerSecret;
 		else return App.config.ConsumerSecret;
 	},
 
-	getRequestToken: function(consumerKey, consumerSecret) {
+	getRequestToken: (consumerKey, consumerSecret) => {
 		if(!consumerKey) consumerKey = App.getConsumerKey();
 		if(!consumerSecret) consumerSecret = App.getConsumerSecret();
 		OAuth._consumerKey = consumerKey;
 		OAuth._consumerSecret = consumerSecret;
-		OAuth.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results){
+		OAuth.getOAuthRequestToken((error, oauth_token, oauth_token_secret, results) => {
 			if(error)
 				console.error(error);
 			else
@@ -236,15 +224,14 @@ var App = {
 		});
 	},
 
-	getAccessToken: function(pin) {
+	getAccessToken: pin => {
 		if (!pin)
 		{
 			alert('핀번호를 입력해 주십시오.');
 			return getAccessToken();
 		}
 		OAuth.getOAuthAccessToken(OAuth._requestToken, OAuth._consumerSecret, pin,
-			function(err, access_token, access_secret, results)
-		{
+			(err, access_token, access_secret, results) => {
 			if(err)
 			{	
 				switch(err.data)
@@ -285,7 +272,7 @@ var App = {
 	
 	},
 	
-	initializeClient: function(consumer_key, consumer_secret, access_token_key, access_token_secret) {
+	initializeClient: (consumer_key, consumer_secret, access_token_key, access_token_secret) => {
 		Client.options.consumer_key = consumer_key;
 		Client.options.consumer_secret = consumer_secret;
 		Client.options.access_token_key = access_token_key;
@@ -297,8 +284,8 @@ var App = {
 		Client.options.request_options.oauth.token_secret = access_token_secret;
 	},
 
-	vertifyCredentials: function(callback) {
-		Client.get('account/verify_credentials', function(error, event, response) {
+	vertifyCredentials: (callback) => {
+		Client.get('account/verify_credentials', (error, event, response) => {
 			if(error)
 			{
 				console.error(error);
@@ -306,7 +293,7 @@ var App = {
 				if(error[0].code == 88)
 				{
 					App.showMsgBox("API 리밋으로 연결이 지연되고 있습니다. 잠시만 기다려 주세요", "tomato", 12000);
-					return setTimeout(function(){ App.vertifyCredentials(callback) }, 10000);
+					return setTimeout(() => App.vertifyCredentials(callback), 10000);
 				}
 				// limit error?
 			}
@@ -323,8 +310,8 @@ var App = {
 		});
 	},
 
-	getLimitStatus: function() {
-		Client.get('application/rate_limit_status', function(error, event, response) {
+	getLimitStatus: () => {
+		Client.get('application/rate_limit_status', (error, event, response) => {
 			if(error)
 			{
 				console.error(error);
@@ -336,10 +323,9 @@ var App = {
 		});
 	},
 
-	execStream: function()
-	{
-		Client.stream('user', 'include_followings_activity: true', function(stream) {
-			stream.on('data', function(tweet) {
+	execStream: () => {
+		Client.stream('user', 'include_followings_activity: true', (stream) => {
+			stream.on('data', (tweet) => {
 				if(tweet.text)
 				{
 					// 자기 자신의 리트윗은 스트리밍에서 막음
@@ -356,7 +342,7 @@ var App = {
 					// 리트윗된 트윗이 아닐때 멘션되었으면 멘션창으로 이동시킴
 					var copy_mention = false;
 					if(!tweet.retweeted_status)
-					Array.from(Twitter_text.extractMentions(tweet.text)).forEach(function(name) {
+					Array.from(Twitter_text.extractMentions(tweet.text)).forEach((name) => {
 						if(App.screen_name == name)
 							copy_mention = true;
 					});
@@ -382,14 +368,10 @@ var App = {
 							{tag: App.execStream.sequence, body: tweet.text, icon: tweet.user.profile_image_url_https});
 
 						// 노티를 클릭하면 창 닫기
-						noti.onclick = function () {
-							noti.close();
-						};
+						noti.onclick = () => noti.close();
 						
 						// 노티 타임아웃 처리
-						noti.onshow = function() {
-							setTimeout(function() { noti.close() }, 3000);
-						};
+						noti.onshow = () => setTimeout(() => noti.close(), 3000);
 					}
 
 					// alert sound
@@ -407,14 +389,11 @@ var App = {
 					console.log(tweet);
 				}
 			});
-			stream.on('error', function(error) {
-				console.error(error);
-			});
+			stream.on('error', error => console.error(error));
 		});
 	},
 
-	execRetweet: function(e)
-	{
+	execRetweet: e => {
 		Element = document.querySelector('[data-retweet="' + e + '"]');
 		countElement = document.querySelector('[data-retweet-count="' + e + '"]');
 		if(!Element.classList.contains('retweeted'))
@@ -422,7 +401,7 @@ var App = {
 			App.showMsgBox("리트윗했습니다", "blue", 1000);
 			Element.classList.add('retweeted');
 			countElement.innerText++;
-			Client.post('statuses/retweet/' + e, function(error, tweet, response) {
+			Client.post('statuses/retweet/' + e, (error, tweet, response) => {
 				if (error) {
 					// already retweeted
 					if(error[0].code == 327)
@@ -462,7 +441,7 @@ var App = {
 			else if (Number.parseInt(countElement.innerText))
 				countElement.innerText--;
 
-			Client.post('statuses/unretweet/' + e, function(error, tweet, response) {
+			Client.post('statuses/unretweet/' + e, (error, tweet, response) => {
 				if (error) {
 					Element.classList.add('retweeted');
 					countElement.innerText++;
@@ -487,8 +466,7 @@ var App = {
 		document.activeElement.blur();
 	},
 
-	execFavorite: function(e)
-	{	
+	execFavorite: e => {	
 		App.showMsgBox("마음에 드는 트윗으로 지정했습니다", "blue", 1000);
 		Element = document.querySelector('[data-favorite="' + e + '"]');
 		countElement = document.querySelector('[data-favorite-count="' + e + '"]');
@@ -496,7 +474,7 @@ var App = {
 		{
 			Element.classList.add('favorited');
 			countElement.innerText++;
-			Client.post('favorites/create', {id: e}, function(error, tweet, response) {
+			Client.post('favorites/create', {id: e}, (error, tweet, response) => {
 				if (error) {
 					// already favorited
 					if(error[0].code == 139)
@@ -526,7 +504,6 @@ var App = {
 						Element.classList.remove('favorited');
 				}
 			});
-			
 		}
 		else
 		{	
@@ -537,7 +514,7 @@ var App = {
 			else if (Number.parseInt(countElement.innerText))
 				countElement.innerText--;
 
-			Client.post('favorites/destroy', {id: e}, function(error, tweet, response) {
+			Client.post('favorites/destroy', {id: e}, (error, tweet, response) => {
 				if (error) {
 					// no status found
 					if(error[0].code == 144)
@@ -565,8 +542,7 @@ var App = {
 		document.activeElement.blur();
 	},
 
-	showMsgBox: function(a, b, c)
-	{
+	showMsgBox: (a, b, c) => {
 		/* 2-argument: 
 		 *   a: message, b: duration (default color is blue)
 		 * 3-argument:
@@ -585,35 +561,31 @@ var App = {
 		if(c)
 		{
 			var timestamp = msgbox.getAttribute('timestamp');
-			setTimeout(function(id)
-			{
+			setTimeout(id => {
 				if(msgbox.getAttribute('timestamp') == timestamp)
 					App.clearMsgBox();
 			}, c);
 		}
 	},
 
-	clearMsgBox: function()
-	{
+	clearMsgBox: () => {
 		msgbox.classList.add('hidden');	
 		App.resizeContainer();
 	},
 
-	resizeContainer: function()
-	{
+	resizeContainer: () => {
 		container.style.height = 'calc(100% - ' + toolbox.getClientRects()[0].height + 'px)';
 		App.procOffscreen();
 	},
 
-	openSettings: function()
-	{
+	openSettings: () => {
 		var w = 800;
 		var h = 500;
 		var left = (screen.width/2)-(w/2);
 		var top = (screen.height/2)-(h/2);
 		if(window.setting) nw.Window.get(window.popup).focus();
 		nw.Window.open('app/setting.html', {x: left, y: top, width: w, height: h, id: 'setting'}, 
-		function(win) {
+		win => {
 			window.setting = win.window;
 			win.id = 'setting';
 //			win.width = w;
@@ -624,9 +596,8 @@ var App = {
 	  });
 	},
 
-	procOffscreen: function()
-	{
-		Array.from(home_timeline.firstElementChild.children).forEach(function(item) {
+	procOffscreen: () => {
+		Array.from(home_timeline.firstElementChild.children).forEach(item => {
 			if(isOffscreen(item))
 			{
 				if(item.firstElementChild.style.display != 'none')
@@ -643,8 +614,7 @@ var App = {
 		});
 	},
 
-	execTweet: function()
-	{
+	execTweet:() => {
 		writebox.hidden = true;
 		App.resizeContainer();
 
@@ -655,15 +625,15 @@ var App = {
 
 			App.showMsgBox("트윗을 올리는 중입니다", "orange", 30000);
 			for (var i = 0; i < path.length; i++)
-				(function (index) {
+				(index => {
 					var data = require('fs').readFileSync(path[index]);
-					Client.post('media/upload', {media: data}, function(error, media, response) {
+					Client.post('media/upload', {media: data}, (error, media, response) => {
 						if (!error) {
 							console.log(media);
 							files[index] = media;
 							// make sure all files are successfully uploaded.
-							if (files.filter((f)=>{return f !== undefined;}).length === path.length)
-								return ex(files.map((x)=>{return x.media_id_string}).join(','));
+							if (files.filter(f => f !== undefined).length === path.length)
+								return ex(files.map(x => x.media_id_string).join(','));
 						} else {
 							return App.showMsgBox("오류가 발생했습니다<br />" + error[0].code + ": " + error[0].message, "tomato", 5000);
 						}
@@ -679,7 +649,7 @@ var App = {
 
 			if(in_reply_to_status_id.value) param.in_reply_to_status_id = in_reply_to_status_id.value;
 
-			Client.post('statuses/update', param, function(error, event, response) {
+			Client.post('statuses/update', param, (error, event, response) => {
 				if (!error) {
 					App.showMsgBox("트윗했습니다", "blue", 3000);
 				}
@@ -690,19 +660,18 @@ var App = {
 		}
 	},
 
-	tryReply: function(id)
-	{	
+	tryReply: id => {	
 		App.openTweetBox();
 		var usernames = [];
 		var tweet_author = document.querySelector('[data-tweet-text="' + id + '"]').getAttribute('data-tweet-name');
 		usernames.push(tweet_author);
 		Array.from(Twitter_text.extractMentions(document.querySelector('[data-tweet-text="' + id + '"]').innerHTML)).
-			forEach(function(name) {
+			forEach(name => {
 				if(name != tweet_author)
 					usernames.push(name);
 		});
 
-		Array.from(usernames).forEach(function(name) {
+		Array.from(usernames).forEach(name => {
 			if(name != App.screen_name)
 				tweetbox.value += '@' + name + ' ';
 		});
@@ -712,11 +681,10 @@ var App = {
 		tweetbox.focus();
 	},
 
-	getTimeline: function()
-	{ 
-		Client.get('https://api.twitter.com/1.1/statuses/home_timeline', {since_id: App.getTimeline.since_id|""}, function(error, event, response){
+	getTimeline: () => { 
+		Client.get('https://api.twitter.com/1.1/statuses/home_timeline', {since_id: App.getTimeline.since_id|""}, (error, event, response) => {
 			if(!error) {
-				Array.from(event).reverse().forEach(function(item) {
+				Array.from(event).reverse().forEach(item => {
 //					console.log(item);
 					App.addItem(home_timeline, new Tweet(item));
 					App.getTimeline.since_id = item.id_str;
@@ -729,11 +697,11 @@ var App = {
 		});
 	},
 
-	getMentionsTimeline: function() {
-		Client.get('statuses/mentions_timeline', {since_id: App.getMentionsTimeline.since_id|""}, function(error, event, response) {
+	getMentionsTimeline: () => {
+		Client.get('statuses/mentions_timeline', {since_id: App.getMentionsTimeline.since_id|""}, (error, event, response) => {
 			if(!error)
 			{
-				Array.from(event).reverse().forEach(function(item) {
+				Array.from(event).reverse().forEach(item => {
 //					console.log(item);
 					App.addItem(notification, new Tweet(item));
 					App.getMentionsTimeline.since_id = item.id_str;
@@ -746,9 +714,8 @@ var App = {
 		});
 	},
 
-	getAboutme: function()
-	{ 
-		Client.get('https://api.twitter.com/i/activity/about_me', {cards_platform:'Web-12', include_cards:'1', model_version:'7', count: 600, since_id:App.getAboutme.max_position}, function(error, event, response){
+	getAboutme: () => { 
+		Client.get('https://api.twitter.com/i/activity/about_me', {cards_platform:'Web-12', include_cards:'1', model_version:'7', count: 600, since_id:App.getAboutme.max_position}, (error, event, response) => {
 			if (!error) {
 				if(event.length)
 				{
@@ -770,8 +737,7 @@ var App = {
 			//setTimeout(getAboutme, 3000);
 		});
 	},
-	addItem: function(t, e)
-	{
+	addItem: (t, e) => {
 		var tl = t.firstElementChild;
 
 		// 100개가 넘어가면 90개만 남기고 나머지를 비운다
@@ -798,14 +764,14 @@ var App = {
 
 		App.procOffscreen();
 	},
-	removeItem: function(t, target) {
+	removeItem: (t, target) => {
 		if(typeof target == "number")
 			target = document.querySelector('[data-item-id="' + target + '"]');
 		t.firstElementChild.removeChild(target);
 	},
-	removeItems: function(timeline, count) {
+	removeItems: (timeline, count) => {
 		var i = 0;
-		Array.from(timeline.firstElementChild.children).forEach(function(item) {
+		Array.from(timeline.firstElementChild.children).forEach(item => {
 			if(i >= count)
 			{
 				//console.log(i + ": deleted");
@@ -815,7 +781,7 @@ var App = {
 		});
 	},
 
-	openTweetBox: function() {
+	openTweetBox: () => {
 		writebox.hidden = false;
 		tweetbox.value = "";
 		in_reply_to_status_id.value = "";
@@ -829,7 +795,7 @@ var App = {
 		App.resizeContainer();
 	},
 
-	closeTweetBox: function() {
+	closeTweetBox: () => {
 		writebox.hidden = true;
 		tweetbox.value = "";
 		in_reply_to_status_id.value = "";
@@ -839,8 +805,8 @@ var App = {
 		App.resizeContainer();
 	},
 
-	run: function() {
-		App.loadConfig(function() {
+	run: () => {
+		App.loadConfig(() => {
 			App.initializeClient(App.config.ConsumerKey, App.config.ConsumerSecret, App.config.AccessToken, App.config.AccessSecret);
 				
 			if(!App.config.AccessToken || !App.config.AccessSecret)
@@ -850,7 +816,7 @@ var App = {
 				return App.confirmAuthFirst();
 			}
 
-			App.vertifyCredentials(function(error) {
+			App.vertifyCredentials(error => {
 				if(error)
 				{
 					oauth_req.style.display = '';
@@ -906,7 +872,7 @@ function Tweet(tweet, quoted) {
 
 	var mentioned_me = false;
 	if(!tweet.retweeted_status)
-	Array.from(Twitter_text.extractMentions(tweet.text)).forEach(function(name) {
+	Array.from(Twitter_text.extractMentions(tweet.text)).forEach(name => {
 		if(App.screen_name == name)
 			mentioned_me = true;
 	});
@@ -979,19 +945,18 @@ function Tweet(tweet, quoted) {
 	this.element = a;
 }
 
-window.onload = function(e) {
+window.onload = e => {
 	// tweetbox onchange event
-	tweetbox.addEventListener('input', function() {
+	tweetbox.addEventListener('input', () => {
 		tweetlen.innerHTML = 140 - tweetbox.value.length;
 	}, false);
 
-	tweetbox.addEventListener('onpropertychange', function() {
+	tweetbox.addEventListener('onpropertychange', () => {
 		tweetlen.innerHTML = 140 - tweetbox.value.length;
 	}, false);
 
 	// when a user selects a file
-	fileDialog.addEventListener('change', function(e)
-	{
+	fileDialog.addEventListener('change', e => {
 		App.mediaUploadManager.addFile(e.target.value);
 		
 		console.log(App.mediaUploadManager.selectedFiles);
@@ -1005,14 +970,14 @@ window.onload = function(e) {
 	}, false);
 
 	// scrollbar hack
-	home_timeline.onmousedown = function() {
+	home_timeline.onmousedown = () => {
 		window.scrolling = true;
 	};
-	home_timeline.firstElementChild.onmousedown = function(f) {
+	home_timeline.firstElementChild.onmousedown = f => {
 		window.scrolling = false;
 		f.stopPropagation();
 	};
-	home_timeline.onmouseup = function() {
+	home_timeline.onmouseup = () => {
 		window.scrolling = false;
 		for (var i = 1; i < this.firstElementChild.childNodes.length-1; i++)
 		{
@@ -1029,15 +994,11 @@ window.onload = function(e) {
 	};
 
 	// offscreen process
-	home_timeline.onscroll = function() {
-		App.procOffscreen();
-	}
-	window.onresize = function() {
-		App.procOffscreen();
-	}
+	home_timeline.onscroll = () => App.procOffscreen();
+	window.onresize = () => App.procOffscreen();
 	
 	window.magicScroll = false;
-	home_timeline.onwheel = function(e) {
+	home_timeline.onwheel = e => {
 		var tl = e.target,
 			dy = e.deltaY;
 		while (tl.id != 'home_timeline') tl = tl.parentElement;
@@ -1046,7 +1007,7 @@ window.onload = function(e) {
 		else if (tl.scrollTop == 0 && dy > 0)
 		{
 			magicScroll = true;
-			setTimeout(()=>{window.magicScroll = false;}, 250);
+			setTimeout(() => {window.magicScroll = false;}, 250);
 			tl.style.paddingTop = dy + 'px';
 			tl.scrollTop = dy;
 			return false;
@@ -1083,7 +1044,7 @@ var KEY = {
     WASD_DOWN:  83
 }
 
-document.onkeydown = function (e) {
+document.onkeydown = e => {
 	var isShift;
 	if(window.event) {
 		key = window.event.keyCode;
@@ -1150,7 +1111,7 @@ function scrollTo(element, to, duration) {
     var difference = to - element.scrollTop;
     var perTick = difference / duration * 10;
 
-    setTimeout(function() {
+    setTimeout(() => {
         element.scrollTop = element.scrollTop + perTick;
         if (element.scrollTop === to) return;
         scrollTo(element, to, duration - 10);
@@ -1202,9 +1163,7 @@ function naviSelect(e)
 }
 function chooseFile(name) {
     var chooser = document.querySelector(name);
-    chooser.addEventListener("change", function(evt) {
-      console.log(this.value);
-    }, false);
+    chooser.addEventListener("change", evt => console.log(this.value), false);
 
     chooser.click();  
  }
