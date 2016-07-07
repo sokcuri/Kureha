@@ -1048,6 +1048,8 @@ window.onload = function(e) {
 			magicScroll = true;
 			setTimeout(()=>{window.magicScroll = false;}, 250);
 			tl.style.paddingTop = dy + 'px';
+			tl.scrollTop = dy;
+			return false;
 		}
 		else if (dy < 0 && tl.style.paddingTop != '0px')
 		{

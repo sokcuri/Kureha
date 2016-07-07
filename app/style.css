@@ -215,6 +215,7 @@ body {
 	width: 60px;
 	height: 31px;
 	background-size: cover;
+	border: 1px solid #aaa;
 	border-radius: 3px;
 	cursor: pointer;
 	transition: opacity 0.2s;
