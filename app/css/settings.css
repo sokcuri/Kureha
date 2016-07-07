@@ -2,6 +2,8 @@ body {
 	margin: 0;
 	font-family: 'Segoe UI', 'Yu Gothic UI', 'Meiryo UI', 'Malgun Gothic', Tahoma, Gulim, sans-serif;
 	color: #333;
+	-webkit-user-select: none;
+	cursor: default;
 }
 
 #wrapper {
