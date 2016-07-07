@@ -1008,6 +1008,9 @@ window.onload = e => {
 	
 	window.magicScroll = false;
 	home_timeline.onwheel = e => {
+		if(!App.config.magicScroll)
+			return;
+
 		var tl = e.currentTarget,
 			dy = e.deltaY;
 		
