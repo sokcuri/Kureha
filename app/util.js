@@ -47,11 +47,12 @@ function openImageview(href, more) {
 	var h = 650;
 	var left = (screen.width/2)-(w/2);
 	var top = (screen.height/2)-(h/2);
-	window.popup = nw.Window.open('app/viewer.html?img=' + encodeURIComponent(href) + '&more=' + encodeURIComponent(more), 
+	nw.Window.open('app/viewer.html?img=' + encodeURIComponent(href) + '&more=' + encodeURIComponent(more), 
 	{x: left, y: top, width: w, height: h},
 	function(win) {
 		window.popup = win.window;
-		win.id = 'popup';
+		win.window.id = 'popup';
+		win.window.config = App.config;
 	    win.focus();
   });
 }

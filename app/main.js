@@ -586,7 +586,7 @@ var App = {
 		if(window.setting) nw.Window.get(window.popup).focus();
 		nw.Window.open('app/setting.html', {x: left, y: top, width: w, height: h, id: 'setting'}, 
 		win => {
-			window.setting = win.window;
+			win.window.config = App.config;
 			win.id = 'setting';
 //			win.width = w;
 //			win.height = h;
