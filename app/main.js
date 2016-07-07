@@ -584,7 +584,7 @@ var App = {
 		var left = (screen.width/2)-(w/2);
 		var top = (screen.height/2)-(h/2);
 		if(window.setting) nw.Window.get(window.popup).focus();
-		nw.Window.open('app/setting.html', {x: left, y: top, width: w, height: h, id: 'setting'}, 
+		nw.Window.open('app/settings.html', {x: left, y: top, width: w, height: h, id: 'setting'}, 
 		win => {
 			window.setting = win.window;
 			win.id = 'setting';
