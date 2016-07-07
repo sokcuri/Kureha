@@ -131,6 +131,10 @@ body {
 	transition: opacity 0.25s ease-out;
 }
 
+.msgbox input[type="button"] {
+	pointer-events: all;
+}
+
 	.msgbox.orange {
 		background: rgba(255, 153, 0, 0.7);
 	}
