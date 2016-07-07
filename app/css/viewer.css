@@ -5,6 +5,7 @@ body {
 	height:100%;
 	margin:0;
 	color: whitesmoke;
+  font-family: 'Segoe UI', 'Yu Gothic UI', 'Meiryo UI', 'Malgun Gothic', Tahoma, Gulim, sans-serif;
 }
 
 a.page:link
