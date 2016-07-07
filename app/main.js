@@ -593,6 +593,7 @@ var App = {
 		nw.Window.open('app/settings.html', {width: w, height: h, id: 'setting'}, 
 		win => {
 			win.window.config = App.config;
+			win.window.App = App;
 			win.id = 'setting';
 			win.width = w;
 			win.height = h;
