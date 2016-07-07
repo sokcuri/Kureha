@@ -977,17 +977,18 @@ window.onload = e => {
 		window.scrolling = false;
 		f.stopPropagation();
 	};
-	home_timeline.onmouseup = () => {
+	home_timeline.onmouseup = e => {
+		var that = e.currentTarget;
 		window.scrolling = false;
-		for (var i = 1; i < this.firstElementChild.childNodes.length-1; i++)
+		for (var i = 1; i < that.firstElementChild.childNodes.length-1; i++)
 		{
-			if(this.firstElementChild.childNodes[i].className != undefined &&
-			this.firstElementChild.childNodes[i].classList.contains('hidden'))
+			if(that.firstElementChild.childNodes[i].className != undefined &&
+			that.firstElementChild.childNodes[i].classList.contains('hidden'))
 			{
 				new_tweet_noti.hidden = true;
-				this.firstElementChild.childNodes[i].classList.remove('hidden');
-				if (this.scrollTop)
-					this.scrollTop += this.firstElementChild.childNodes[i].getClientRects()[0].height + 10;
+				that.firstElementChild.childNodes[i].classList.remove('hidden');
+				if (that.scrollTop)
+					that.scrollTop += that.firstElementChild.childNodes[i].getClientRects()[0].height + 10;
 				
 			}
 		}
@@ -999,9 +1000,8 @@ window.onload = e => {
 	
 	window.magicScroll = false;
 	home_timeline.onwheel = e => {
-		var tl = e.target,
+		var tl = e.currentTarget,
 			dy = e.deltaY;
-		while (tl.id != 'home_timeline') tl = tl.parentElement;
 		
 		if (magicScroll && dy > 0) return false;
 		else if (tl.scrollTop == 0 && dy > 0)
