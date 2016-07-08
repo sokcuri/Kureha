@@ -622,6 +622,13 @@ var App = {
 		});
 	},
 
+	procScrollEmphasize:e => {
+		if(!e.scrollTop)
+			e.classList.add('scrolltop');
+		else
+			e.classList.remove('scrolltop');
+	},
+
 	execTweet:() => {
 		writebox.hidden = true;
 		App.resizeContainer();
@@ -1002,8 +1009,20 @@ window.onload = e => {
 		}
 	};
 
-	// offscreen process
-	home_timeline.onscroll = () => App.procOffscreen();
+	home_timeline.onscroll = () =>
+	{
+		App.procScrollEmphasize(home_timeline);
+		
+		// offscreen process
+		App.procOffscreen();
+	}
+
+	notification.onscroll = () =>
+	{
+		App.procScrollEmphasize(notification);
+	}
+
+
 	window.onresize = () => App.procOffscreen();
 	
 	window.magicScroll = false;
