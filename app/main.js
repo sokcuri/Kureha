@@ -651,20 +651,18 @@ var App = {
 
 	tryReply: id => {	
 		App.tweetUploader.openPanel();
-		var usernames = [];
-		var tweet_author = document.querySelector('[data-tweet-text="' + id + '"]').getAttribute('data-tweet-name');
-		usernames.push(tweet_author);
-		Array.from(Twitter_text.extractMentions(document.querySelector('[data-tweet-text="' + id + '"]').innerHTML)).
-			forEach(name => {
-				if(name != tweet_author)
-					usernames.push(name);
+		var usernames = [],
+			target = document.querySelector('article[data-tweet-id="' + id + '"]'),
+			obj = JSON.parse(target.getAttribute('data-json'));
+			tweet_author = obj['user_screen_name'];
+		if (tweet_author != App.screen_name) usernames.push(tweet_author);
+		Array.from(Twitter_text.extractMentions(obj['text'])).forEach(name => {
+			if(name != tweet_author && name != App.screen_name)
+				usernames.push(name);
 		});
 
-		// exclude my id
-		usernames.pop(App.id_str);
-
 		App.tweetUploader.text = Array.from(usernames).map(x => '@' + x).join(' ') + ' ';
-		App.tweetUploader.inReplyTo = id;
+		App.tweetUploader.inReplyTo = {id: id, name: obj['user_name'], screen_name: tweet_author, text: obj['text']};
 		
 	},
 
@@ -863,6 +861,14 @@ function Tweet(tweet, quoted) {
 		tweet = tweet.retweeted_status;
 	}
 
+	var embed = {
+		id_str: tweet.id_str,
+		user_name: tweet.user.name,
+		user_screen_name: tweet.user.screen_name,
+		text: tweet.text
+	};
+
+	a.setAttribute('data-json', JSON.stringify(embed));
 	text = urlify(tweet.text);
 	text = text.replace(/(\r\n|\n|\r)/gm, '<br>');
 	text = twemoji.parse(text)
@@ -871,7 +877,7 @@ function Tweet(tweet, quoted) {
 					'<div class="tweet-name"><a href="javascript:void(0)" onclick="openPopup(\'https://twitter.com/{1}\')">\r\n' +
 					'<strong>{2}</strong>\r\n' +
 					'<span class="tweet-id">@{1}</span></a></div>\r\n' +
-					'<p data-tweet-text="{3}" data-tweet-name="{4}" class="tweet-text lpad">{5}</p>';
+					'<p class="tweet-text lpad">{5}</p>';
 
 	a.innerHTML += tweet_div.format(tweet.user.profile_image_url_https, tweet.user.screen_name, tweet.user.name, id_str_org, tweet.user.screen_name, text);
 					 //<!--<input type="button" value="-" onclick="removeRow(this.parentNode)">//-->
@@ -913,10 +919,11 @@ function Tweet(tweet, quoted) {
 
 function TweetUploader() {
 	this.mediaSelector = new MediaSelector();
-	this.inReplyTo = '';
 
 	var _isOpen = false;
+	var _inReplyTo = '';
 	var e = document.createElement('div'),
+		replyInfo = document.createElement('div');
 		txt = document.createElement('textarea'),
 		btnContainer = document.createElement('div'),
 		closeButton = document.createElement('div'),
@@ -926,6 +933,7 @@ function TweetUploader() {
 	/*initElement*/ { 
 		e.className = 'writebox';
 		e.hidden = true;
+		replyInfo.className = 'reply-info';
 		txt.rows = 4;
 		btnContainer.className = 'buttons';
 		postButton.className = 'bluebutton';
@@ -947,6 +955,7 @@ function TweetUploader() {
 			div.appendChild(postButton);
 			return div;
 		})());
+		e.appendChild(replyInfo);
 		e.appendChild(txt);
 		e.appendChild(btnContainer);
 
@@ -967,7 +976,6 @@ function TweetUploader() {
 	}
 
 	var execTweet = () => {
-		var that = this;
 		this.closePanel();
 
 		if (this.mediaSelector.selectedFiles.length != 0)
@@ -997,7 +1005,7 @@ function TweetUploader() {
 			var param = {status: txt.value};
 			if (media_ids) param.media_ids = media_ids;
 
-			if(that.inReplyTo != '') param.in_reply_to_status_id = that.inReplyTo;
+			if(_inReplyTo != '') param.in_reply_to_status_id = _inReplyTo;
 
 			Client.post('statuses/update', param, (error, event, response) => {
 				if (!error) {
@@ -1016,6 +1024,7 @@ function TweetUploader() {
 		_isOpen = true;
 		this.inReplyTo = '';
 		this.mediaSelector.reset();
+		replyInfo.hidden = true;
 		e.hidden = false;
 		lenIndicator.innerHTML = '140';
 		txt.value = '';
@@ -1040,6 +1049,14 @@ function TweetUploader() {
 			"set": (val) => {
 				txt.value = val;
 				lenIndicator.innerHTML = 140 - txt.value.length;
+			}
+		},
+		"inReplyTo": {
+			"get": () => _inReplyTo,
+			"set": (obj) => {
+				_inReplyTo = obj.id;
+				replyInfo.hidden = false;
+				replyInfo.innerHTML = '<div class="name">' + obj.name + ' 님에게 보내는 답글</div><div class="orig-text">@' + obj.screen_name + ': ' + obj.text + '</div>';
 			}
 		}
 	});
