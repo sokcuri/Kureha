@@ -15,6 +15,7 @@ if(!String.prototype.format)
 		}
 		return s;
 	};
+
 	String.prototype.zf = function(len) {
 		return "0".string(len - this.length) + this;
 	};
@@ -270,14 +271,22 @@ var App = {
 		Client.get('account/verify_credentials', (error, event, response) => {
 			if(error)
 			{
-				console.error(error);
 				// retry vertifyCredentials if limit
-				if(error[0].code == 88)
+				if (error.code == 'ENOTFOUND')
+				{
+					App.showMsgBox("인터넷 또는 서버가 불안정합니다. 자동으로 서버에 접속을 시도합니다", "tomato", 3000);
+					return setTimeout(() => App.vertifyCredentials(callback), 1000);
+				}
+				else if(error[0].code == 88)
 				{
 					App.showMsgBox("API 리밋으로 연결이 지연되고 있습니다. 잠시만 기다려 주세요", "tomato", 12000);
 					return setTimeout(() => App.vertifyCredentials(callback), 10000);
 				}
-				// limit error?
+				else
+				{
+					App.showMsgBox("알 수 없는 문제로 연결이 지연되고 있습니다. 잠시만 기다려 주세요", "tomato", 12000);
+					return setTimeout(() => App.vertifyCredentials(callback), 10000);
+				}
 			}
 			else
 			{
@@ -305,13 +314,57 @@ var App = {
 		});
 	},
 
+	chkConnect: () => {
+		var timestamp = new Date().getTime();
+		Client.get('https://api.twitter.com/1/', (error, event, response) => {
+			if(App.chkConnect.event_timestamp > timestamp) return;
+			App.chkConnect.event_timestamp = timestamp;
+
+			if(App.config.runStream && !Client.mainStreamRunning && !App.chkConnect.iserror)
+			{
+				App.chkConnect.iserror = true;
+				App.alertConnect(false);
+			}
+
+			else if(error.code)
+			{
+				if(!App.chkConnect.iserror)
+				{
+					App.chkConnect.iserror = true;
+					App.alertConnect(false);
+					
+					if(App.config.runStream)
+						App.stopMainStream();
+				}
+			}
+			else
+			{
+				if(App.chkConnect.iserror)
+				{
+					App.chkConnect.iserror = false;
+					App.alertConnect(true);
+
+					if(App.config.runStream)
+						App.runMainStream();
+				}
+			}
+		});
+
+		setTimeout(App.chkConnect, 5000);
+	},
+
 	runMainStream: () => {
 		if(Client.mainStream)
 			Client.mainStream.destroy();
 
+		App.alertConnect(true);
+
 		Client.stream('user', 'include_followings_activity: true', (stream) => {
 			Client.mainStream = stream;
-			stream_off.style = 'display: none';
+			Client.mainStreamRunning = true;
+			App.alertStream(true);
+			App.alertConnect(true);
+			App.chkConnect();
 			stream.on('data', (tweet) => {
 				if(tweet.text)
 				{
@@ -380,16 +433,23 @@ var App = {
 			stream.on('end', response => {
 				console.warn(response);
 				Client.mainStream = '';
+				Client.mainStreamRunning = false;
 			});
 		});
 	},
 
 	stopMainStream: () => {
+		Client.mainStreamRunning = false;
 		Client.mainStream.destroy();
 	},
 
 	alertStream: e => {
 		stream_off.style = (e ? 'display: none' : '');
+		App.resizeContainer();
+	},
+
+	alertConnect: e => {
+		conn_error.style = (e ? 'display: none' : '');
 		App.resizeContainer();
 	},
 
@@ -805,6 +865,8 @@ var App = {
 }
 
 // Static variable
+App.chkConnect.iserror = false;
+App.chkConnect.event_timestamp = 0;
 App.getTimeline.since_id = '1';
 App.getMentionsTimeline.since_id = '1';
 App.getAboutme.max_position = 0;
