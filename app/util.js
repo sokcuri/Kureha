@@ -62,3 +62,11 @@ function isOffscreen(el) {
 		(el.offsetLeft + el.getClientRects()[0].width < home_timeline.scrollLeft || el.offsetleft > home_timeline.scrollLeft + home_timeline.getClientRects()[0].width) ||
 		(el.offsetTop + el.getClientRects()[0].height < home_timeline.scrollTop || el.offsetTop > home_timeline.scrollTop + home_timeline.getClientRects()[0].height));
 }
+
+function getOffscreenHPos(el) {
+	if (el.offsetTop + el.getClientRects()[0].height < home_timeline.scrollTop)
+		return -1;
+	else if (el.offsetTop > home_timeline.scrollTop + home_timeline.getClientRects()[0].height)
+		return 1;
+	else return 0;
+}

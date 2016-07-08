@@ -378,8 +378,7 @@ var App = {
 		if(!Element.classList.contains('retweeted'))
 		{
 			App.showMsgBox("리트윗했습니다", "blue", 1000);
-			Element.classList.add('retweeted');
-			countElement.innerText++;
+			App.chkRetweet(e, true, 'auto');
 			Client.post('statuses/retweet/' + e, (error, tweet, response) => {
 				if (error) {
 					// already retweeted
@@ -390,55 +389,34 @@ var App = {
 					}
 
 					App.showMsgBox("오류가 발생했습니다<br />" + error[0].code + ": " + error[0].message, "tomato", 5000);
-					Element.classList.remove('retweeted');
-					if(countElement.innerText == "1")
-						countElement.innerText = "";
-					else
-						countElement.innerText--;
+					App.chkRetweet(e, false, 'auto');
 				}
 				else
 				{
-					if(tweet.retweeted_status) tweet = tweet.retweeted_status;
-					if(tweet.retweet_count)
-						countElement.innerText = tweet.retweet_count;
-					else
-						countElement.innerText = '';
-
-					if(favorited)
-						Element.classList.add('retweeted');
-					else
-						Element.classList.remove('retweeted');
+					if(tweet.retweeted_status)
+						tweet = tweet.retweeted_status;
+					
+					App.chkRetweet(e, tweet.retweeted, tweet.retweet_count);
+					App.chkFavorite(e, tweet.favorited, tweet.favorite_count);
 				}
 			});
 		}
 		else
 		{
 			App.showMsgBox("언리트윗했습니다", "blue", 1000);
-			Element.classList.remove('retweeted');
-			if(countElement.innerText == "1")
-				countElement.innerText = "";
-			else if (Number.parseInt(countElement.innerText))
-				countElement.innerText--;
+			App.chkRetweet(e, false, 'auto');
 
 			Client.post('statuses/unretweet/' + e, (error, tweet, response) => {
 				if (error) {
-					Element.classList.add('retweeted');
-					countElement.innerText++;
+					App.chkRetweet(e, true, 'auto');
 				}
 				else
 				{
-					if(tweet.retweeted_status) tweet = tweet.retweeted_status;
-					tweet.retweet_count--;
-
-					if(tweet.retweet_count)
-						countElement.innerText = tweet.retweet_count;
-					else
-						countElement.innerText = '';
-
-					if(favorited)
-						Element.classList.add('retweeted');
-					else
-						Element.classList.remove('retweeted');
+					if(tweet.retweeted_status)
+						tweet = tweet.retweeted_status;
+					
+					App.chkRetweet(e, tweet.retweeted, tweet.retweet_count);
+					App.chkFavorite(e, tweet.favorited, tweet.favorite_count);
 				}
 			});
 		}
@@ -451,8 +429,7 @@ var App = {
 		countElement = document.querySelector('[data-favorite-count="' + e + '"]');
 		if(!Element.classList.contains('favorited'))
 		{
-			Element.classList.add('favorited');
-			countElement.innerText++;
+			App.chkFavorite(e, true, 'auto');
 			Client.post('favorites/create', {id: e}, (error, tweet, response) => {
 				if (error) {
 					// already favorited
@@ -463,35 +440,22 @@ var App = {
 					}
 
 					App.showMsgBox("오류가 발생했습니다<br />" + error[0].code + ": " + error[0].message, "tomato", 5000);
-					Element.classList.remove('favorited');
-					if(countElement.innerText == "1")
-						countElement.innerText = "";
-					else
-						countElement.innerText--;
+					App.chkFavorite(e, false, 'auto');
 				}
 				else
 				{	
-					if(tweet.retweeted_status) tweet = tweet.retweeted_status;
-					if(tweet.favorite_count)
-						countElement.innerText = tweet.favorite_count;
-					else
-						countElement.innerText = '';
-
-					if(favorited)
-						Element.classList.add('favorited');
-					else
-						Element.classList.remove('favorited');
+					if(tweet.retweeted_status)
+						tweet = tweet.retweeted_status;
+					
+					App.chkRetweet(e, tweet.retweeted, tweet.retweet_count);
+					App.chkFavorite(e, tweet.favorited, tweet.favorite_count);
 				}
 			});
 		}
 		else
 		{	
 			App.showMsgBox("마음에 드는 트윗을 해제했습니다", "blue", 1000);
-			Element.classList.remove('favorited');
-			if(countElement.innerText == "1")
-				countElement.innerText = "";
-			else if (Number.parseInt(countElement.innerText))
-				countElement.innerText--;
+			App.chkFavorite(e, false, 'auto');
 
 			Client.post('favorites/destroy', {id: e}, (error, tweet, response) => {
 				if (error) {
@@ -499,26 +463,88 @@ var App = {
 					if(error[0].code == 144)
 						return;
 
-					Element.classList.add('favorited');
-					countElement.innerText++;
+					App.chkFavorite(e, true, 'auto');
 				}
 				else
 				{	
-					if(tweet.retweeted_status) tweet = tweet.retweeted_status;
-					if(tweet.favorite_count)
-						countElement.innerText = tweet.favorite_count;
-					else
-						countElement.innerText = '';
-
-					if(favorited)
-						Element.classList.add('favorited');
-					else
-						Element.classList.remove('favorited');
+					if(tweet.retweeted_status)
+						tweet = tweet.retweeted_status;
+					
+					App.chkRetweet(e, tweet.retweeted, tweet.retweet_count);
+					App.chkFavorite(e, tweet.favorited, tweet.favorite_count);
 				}
 			});
 			
 		}
 		document.activeElement.blur();
+	},
+
+	isRetweeted: e => {
+		arr = Array.from(document.querySelectorAll('[data-retweet="' + e + '"]'));
+		if(arr.length && arr[arr.length - 1])
+		{
+			if(arr[arr.length - 1].classList.contains('retweeted'))
+			{
+				return true;
+			}
+		}
+		return false;
+	},
+
+	chkRetweet: (e, check, count) => {
+		Array.from(document.querySelectorAll('[data-retweet="' + e + '"]')).forEach(item => {
+			countElement = document.querySelector('[data-retweet-count="' + e + '"]');
+			if(typeof(count) != 'undefined' && typeof(count) != 'string')
+				countElement.innerText = count;
+			
+			if (check)
+			{
+				item.classList.add('retweeted');
+				if(count == 'auto')
+					countElement.innerText++;
+			}
+			else
+			{
+				item.classList.remove('retweeted');
+				if(count == 'auto')
+					countElement.innerText = (countElement.innerText == "1" ?
+					"" : countElement.innerText--);
+			}
+		});
+	},
+
+	isFavorited: e => {
+		arr = Array.from(document.querySelectorAll('[data-favorite="' + e + '"]'));
+		if(arr.length && arr[arr.length - 1])
+		{
+			if(arr[arr.length - 1].classList.contains('favorited'))
+			{
+				return true;
+			}
+		}
+		return false;
+	},
+
+	chkFavorite: (e, check, count) => {
+		Array.from(document.querySelectorAll('[data-favorite="' + e + '"]')).forEach(item => {
+			countElement = document.querySelector('[data-favorite-count="' + e + '"]');
+			if(typeof(count) != 'undefined' && typeof(count) != 'string')
+				countElement.innerText = count;
+			
+			if (check)
+			{
+				item.classList.add('favorited');
+				if(count == 'auto')
+					countElement.innerText++;
+			}
+			else
+			{
+				item.classList.remove('favorited');
+				if(count == 'auto')
+					countElement.innerText = (countElement.innerText == "1" ?
+					"" : countElement.innerText--);
+			}
+		});
 	},
 
 	showMsgBox: (a, b, c) => {
