@@ -656,12 +656,9 @@ var App = {
 		usernames.push(tweet_author);
 		Array.from(Twitter_text.extractMentions(document.querySelector('[data-tweet-text="' + id + '"]').innerHTML)).
 			forEach(name => {
-				if(name != tweet_author)
+				if(name != tweet_author && name != App.screen_name)
 					usernames.push(name);
 		});
-
-		// exclude my id
-		usernames.pop(App.id_str);
 
 		App.tweetUploader.text = Array.from(usernames).map(x => '@' + x).join(' ') + ' ';
 		App.tweetUploader.inReplyTo = id;
