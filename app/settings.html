@@ -10,7 +10,7 @@
 		// nw.Window.get().setMinimumSize(win.width, win.height);
 		// nw.Window.get().resizeTo(450, 450);
 		
-		window.onclose()
+		window.onclose = e =>
 		{
 			// save configuration
 			App.saveConfig();
