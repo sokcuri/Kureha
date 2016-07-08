@@ -424,7 +424,7 @@ body {
 .new_tweet_noti {
 	position: absolute;
 	padding-left: 43%;
-	top: 80px;
+	top: 140px;
 	z-index: 1;
 }
 .new_tweet_noti svg {
