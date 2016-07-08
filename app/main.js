@@ -639,6 +639,9 @@ var App = {
 					usernames.push(name);
 		});
 
+		// exclude my id
+		usernames.pop(App.id_str);
+
 		App.tweetUploader.text = Array.from(usernames).map(x => '@' + x).join(' ') + ' ';
 		App.tweetUploader.inReplyTo = id;
 		
