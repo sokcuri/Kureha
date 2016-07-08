@@ -628,8 +628,10 @@ var App = {
 					item.firstElementChild.style.display = 'none';
 				}
 			} else {
+				var rect = item.firstElementChild.getClientRects()[0];
 				item.style.height = '';
 				item.firstElementChild.style.display = 'block';
+				item.firstElementChild.style.backgroundPosition = -rect.left + 'px ' + -rect.top + 'px';
 			}
 	},
 
@@ -700,6 +702,7 @@ var App = {
 	},
 	addItem: (t, e) => {
 		var tl = t.firstElementChild;
+		e.element.firstElementChild.style.backgroundImage = 'url("' + window.bgDataURL + '")';
 
 		// 100개가 넘어가면 90개만 남기고 나머지를 비운다
 		if(tl.childElementCount > 200)
@@ -863,8 +866,8 @@ function Tweet(tweet, quoted) {
 		var urlstr = urls.join(';');
 		container.setAttribute('data-media-count', entities.media.length);
 		container.className = 'tweet-media-container';
-		for (var i in urls)
-			container.innerHTML += '<div class="tweet-image"><a href="javascript:void(0)" onclick="openImageview(\'' + urls[i] + '\', \'' + urlstr + '\')"><img src="' + urls[i] + '"/></a></div>';
+		for (var url of urls)
+			container.innerHTML += '<div class="tweet-image"><a href="javascript:void(0)" onclick="openImageview(\'' + url + '\', \'' + urlstr + '\')"><img src="' + url + '"/></a></div>';
 		a.appendChild(container);
 	}
 
@@ -1183,6 +1186,26 @@ window.onload = e => {
 	//chooseFile('#fileDialog');
 	// run Application
 	App.run();
+
+	window.blurCanvas = document.createElement('canvas');
+	window.blurCanvas.width = window.innerWidth;
+	window.blurCanvas.height = window.innerHeight;
+	window.bgDataURL = '';
+	var ctx = window.blurCanvas.getContext('2d');
+	ctx.filter = "blur(10px)";
+	var img = new Image();
+	img.onload = function() {
+		ctx.drawImage(img, window.innerWidth/2 - img.width/2, window.innerHeight/2 - img.height/2);
+		stackBlurCanvasRGB(window.blurCanvas,0,0,window.blurCanvas.width,window.blurCanvas.height,100);
+		window.bgDataURL = window.blurCanvas.toDataURL();
+	};
+	img.src = 'arisaka_mashiro.png';
+	window.addEventListener('resize', e => {
+		window.blurCanvas.width = window.innerWidth;
+		window.blurCanvas.height = window.innerHeight;
+		ctx.drawImage(img, window.innerWidth/2 - img.width/2, window.innerHeight/2 - img.height/2);
+		stackBlurCanvasRGBA(window.blurCanvas,0,0,window.blurCanvas.width,window.blurCanvas.height,100);
+	});
 };
 
 var KEY = {
