@@ -60,6 +60,19 @@ var OAuth = new (require('oauth').OAuth)(
 	'HMAC-SHA1'
 	);
 
+var symbol = {
+	reply: '<svg viewBox="0 0 62 72"><path d="M41 31h-9V19c0-1.14-.647-2.183-1.668-2.688-1.022-.507-2.243-.39-3.15.302l-21 16C5.438 33.18 5 34.064 5 35s.437 1.82 1.182 2.387l21 16c.533.405 1.174.613 1.82.613.453 0 .908-.103 1.33-.312C31.354 53.183 32 52.14 32 51V39h9c5.514 0 10 4.486 10 10 0 2.21 1.79 4 4 4s4-1.79 4-4c0-9.925-8.075-18-18-18z"></path></svg>',
+	retweet: '<svg viewBox="0 0 74 72"><path d="M70.676 36.644C70.166 35.636 69.13 35 68 35h-7V19c0-2.21-1.79-4-4-4H34c-2.21 0-4 1.79-4 4s1.79 4 4 4h18c.552 0 .998.446 1 .998V35h-7c-1.13 0-2.165.636-2.676 1.644-.51 1.01-.412 2.22.257 3.13l11 15C55.148 55.545 56.046 56 57 56s1.855-.455 2.42-1.226l11-15c.668-.912.767-2.122.256-3.13zM40 48H22c-.54 0-.97-.427-.992-.96L21 36h7c1.13 0 2.166-.636 2.677-1.644.51-1.01.412-2.22-.257-3.13l-11-15C18.854 15.455 17.956 15 17 15s-1.854.455-2.42 1.226l-11 15c-.667.912-.767 2.122-.255 3.13C3.835 35.365 4.87 36 6 36h7l.012 16.003c.002 2.208 1.792 3.997 4 3.997h22.99c2.208 0 4-1.79 4-4s-1.792-4-4-4z"></path></svg>',
+	like: '<svg viewBox="0 0 54 72"><path d="M38.723 12c-7.187 0-11.16 7.306-11.723 8.13-.563-.824-4.496-8.13-11.723-8.13C8.79 12 3.533 18.163 3.533 24.647 3.533 39.964 21.89 55.907 27 56c5.11-.093 23.467-16.036 23.467-31.353C50.467 18.163 45.21 12 38.723 12z"></path></svg>',
+	home: '<svg viewBox="0 0 64 72"><path d="M60.034 33.795l-26-23.984c-1.15-1.06-2.92-1.06-4.068 0l-26 23.985c-1.218 1.123-1.294 3.02-.17 4.24 1.122 1.216 3.02 1.295 4.238.17l2.265-2.09 6.808 24.683C17.468 62.098 18.65 63 20 63h24c1.35 0 2.533-.9 2.892-2.202l6.81-24.683 2.264 2.09c.576.532 1.306.795 2.033.795.808 0 1.614-.325 2.205-.966 1.124-1.218 1.047-3.116-.17-4.24zM32 53c-1.657 0-3-1.342-3-3 0-1.656 1.343-3 3-3s3 1.344 3 3c0 1.658-1.343 3-3 3zm0-11c-3.866 0-7-3.133-7-6.998 0-3.867 3.134-7 7-7s7 3.133 7 7C39 38.867 35.866 42 32 42z"></path></svg>',
+	noti: '<svg viewBox="0 0 58 72"><path d="M47.594 21.745c-1.216-2.624-3.06-4.84-5.355-6.51l.052-.153c.863-2.373-.447-5.026-2.924-5.928-2.48-.902-5.188.288-6.05 2.66l-.058.153c-.387-.027-.775-.052-1.163-.052-7.805 0-14.575 5.36-17.667 13.99-3.212 8.963-9.247 13.91-9.3 13.953-.668.532-1.076 1.325-1.124 2.178-.048.853.27 1.688.875 2.29.31.31.685.55 1.096.7l35.917 13.07c.33.12.676.182 1.026.182h.023c1.657 0 3-1.343 3-3 0-.295-.042-.58-.122-.85-.22-1.422-1.07-8.41 1.89-16.41 2.123-5.75 2.082-11.53-.116-16.273zM26.355 64.206c3.4 1.235 7.1-.08 9.02-2.96L21.35 56.137c-.38 3.444 1.607 6.83 5.007 8.068z"></path></svg>',
+	dm: '<svg viewBox="0 0 58 72"><path d="M46 15H12l17 16"></path><path d="M53 16L31.07 37.17c-.578.554-1.324.83-2.07.83s-1.492-.276-2.07-.83c0 0-21.91-21.148-21.93-21.17-1.138.908-2 2-2 4v38c0 1.185.697 2.26 1.78 2.74.392.175.807.26 1.22.26.727 0 1.445-.265 2.007-.77L19 50h31c2.804 0 5-2.196 5-5V20c0-2-.862-3.09-2-4z"></path></svg>',
+	search: '<svg viewBox="0 0 56 72"><path d="M51.644 53.096l-7.41-7.41c-1.067-1.067-2.525-1.488-3.914-1.294l-2.328-2.328c2.51-3.343 3.89-7.375 3.894-11.628.005-5.2-2.016-10.084-5.69-13.757-3.667-3.67-8.547-5.69-13.74-5.69-5.2 0-10.09 2.028-13.77 5.71-7.58 7.582-7.582 19.916-.005 27.494 3.673 3.67 8.553 5.693 13.744 5.693 4.257 0 8.294-1.38 11.64-3.893l2.326 2.327c-.193 1.39.227 2.848 1.295 3.916l7.41 7.41C46 60.547 47.184 61 48.37 61s2.37-.452 3.274-1.357c1.81-1.807 1.81-4.74 0-6.547zM34.94 30.44c0 6.903-5.597 12.5-12.5 12.5s-12.5-5.597-12.5-12.5 5.595-12.5 12.5-12.5 12.5 5.595 12.5 12.5z"></path><path d="M51.644 53.096l-7.41-7.41c-1.067-1.067-2.525-1.488-3.914-1.294l-2.328-2.328c2.51-3.343 3.89-7.375 3.894-11.628.005-5.2-2.016-10.084-5.69-13.757-3.667-3.67-8.547-5.69-13.74-5.69-5.2 0-10.09 2.028-13.77 5.71-7.58 7.582-7.582 19.916-.005 27.494 3.673 3.67 8.553 5.693 13.744 5.693 4.257 0 8.294-1.38 11.64-3.893l2.326 2.327c-.193 1.39.227 2.848 1.295 3.916l7.41 7.41C46 60.547 47.184 61 48.37 61s2.37-.452 3.274-1.357c1.81-1.807 1.81-4.74 0-6.547zM34.94 30.44c0 6.903-5.597 12.5-12.5 12.5s-12.5-5.597-12.5-12.5 5.595-12.5 12.5-12.5 12.5 5.595 12.5 12.5z"></path></svg>',
+	write: '<svg viewBox="0 0 60 72"><path d="M54 41c-1.657 0-3 1.343-3 3v12.01h-.002c0 .536-.425.966-.957.99H31c-1.657 0-3 1.343-3 3s1.343 3 3 3h21.185C54.84 63 57 60.84 57 58.184V44c0-1.657-1.343-3-3-3zM23 12H7.817C5.16 12 3 14.16 3 16.815V41c0 1.657 1.343 3 3 3s3-1.343 3-3V19c0-.553.447-1 1-1h13c1.657 0 3-1.343 3-3s-1.343-3-3-3zM53.426 13.79C57.052 10.16 57 6.812 57 6.812c-16.24 4.542-27.973 19.82-35.81 33.266-6.047 10.34-9.532 19.844-10.257 22.096-1.315 4.043-1.316 6.577-.634 6.796.682.22 2.393-2.332 4.084-5.37 1.088-1.95 2.58-4.53 4.492-8.035 3.93-7.244 8.677-13.067 14.13-14.275.01-.002.05-.048.067-.066 4.025-.623 12.596-4.548 13.498-9.89-2.763 1.22-5.605 1.857-8.47 1.83 0 0 1.627-2.42 4.335-3.443 4.646-1.76 7.504-3.285 10.073-7.34.887-1.417 1.285-2.458 1.75-3.983-2.914 1.848-6.785 2.975-9.006 2.967 2.084-2.93 5.19-4.592 8.174-7.578z"></path></svg>',
+	activity: '<svg viewBox="0 0 72 72"><path transform="scale(0.04,-0.037) translate(0,-1900)" d="M1480 880h180q39 0 69.5 -31t30.5 -69t-30.5 -69t-69.5 -31h-141l-283 -462q-8 -23 -30 -40t-47 -17q-7 -1 -15 -1q-22 0 -40 9q-36 18 -48 55l-16 16q0 35 6 43l-128 984l-181 -512q-2 -7 -5 -13q-11 -28 -35 -45t-51 -17h-1h-391q-41 0 -67.5 27.5t-26.5 72.5 t27.5 72.5t72.5 27.5h323l289 818q7 19 33.5 40.5t54.5 21.5l31 -3q2 -1 0 -2q26 3 36 -9.5t12 -36.5q10 -14 15 -29l150 -1153l180 295l5 6q22 52 91 52z"></path></svg>',
+	close: '<svg width="20" height="20"><g style="stroke-width:3px;stroke:#777"><line x1="3" y1="3" x2="17" y2="17"/><line x1="3" y1="17" x2="17" y2="3"/></g></svg>'
+}
+
 Client = new Twitter({
 	consumer_key: '',
 	consumer_secret: '',
@@ -98,48 +111,8 @@ var App = {
 	screen_name: '',
 	tweet_count: 0,
 
-	mediaUploadManager: new (function() {
-		this.selectedFiles = [];
-		this.addFile = (path) => {
-			if (this.selectedFiles.indexOf(path) != -1)
-			{
-				App.showMsgBox('같은 파일을 중복으로 선택할 수 없습니다.', 'tomato', 3000);
-				return;
-			}
-			if (this.selectedFiles.length == 0)
-				App.showMsgBox('썸네일을 클릭하면 이미지를 삭제할 수 있습니다.', 'blue', 3000);
-			thumbnails.appendChild((() => {
-				var e = document.createElement('div');
-				e.className = 'thumbnail';
-				e.setAttribute('data-media', path);
-				e.style.backgroundImage = "url('" + path.replace(/\\/g, '/') + "')";
-				e.addEventListener('click', (e) => {
-					var path = e.target.getAttribute('data-media'),
-						idx = this.selectedFiles.indexOf(path);
-					this.selectedFiles.splice(idx, 1);
-					e.target.outerHTML = '';
-					fileDialog.disabled = false;
-					fileDialogContainer.classList.remove('disabled');
-
-					console.log(this.selectedFiles);
-				})
-				return e;
-			})());
-			this.selectedFiles.push(path);
-		};
-	})(),
-
-	symbol: {
-		reply: '<svg viewBox="0 0 62 72"><path d="M41 31h-9V19c0-1.14-.647-2.183-1.668-2.688-1.022-.507-2.243-.39-3.15.302l-21 16C5.438 33.18 5 34.064 5 35s.437 1.82 1.182 2.387l21 16c.533.405 1.174.613 1.82.613.453 0 .908-.103 1.33-.312C31.354 53.183 32 52.14 32 51V39h9c5.514 0 10 4.486 10 10 0 2.21 1.79 4 4 4s4-1.79 4-4c0-9.925-8.075-18-18-18z"></path></svg>',
-		retweet: '<svg viewBox="0 0 74 72"><path d="M70.676 36.644C70.166 35.636 69.13 35 68 35h-7V19c0-2.21-1.79-4-4-4H34c-2.21 0-4 1.79-4 4s1.79 4 4 4h18c.552 0 .998.446 1 .998V35h-7c-1.13 0-2.165.636-2.676 1.644-.51 1.01-.412 2.22.257 3.13l11 15C55.148 55.545 56.046 56 57 56s1.855-.455 2.42-1.226l11-15c.668-.912.767-2.122.256-3.13zM40 48H22c-.54 0-.97-.427-.992-.96L21 36h7c1.13 0 2.166-.636 2.677-1.644.51-1.01.412-2.22-.257-3.13l-11-15C18.854 15.455 17.956 15 17 15s-1.854.455-2.42 1.226l-11 15c-.667.912-.767 2.122-.255 3.13C3.835 35.365 4.87 36 6 36h7l.012 16.003c.002 2.208 1.792 3.997 4 3.997h22.99c2.208 0 4-1.79 4-4s-1.792-4-4-4z"></path></svg>',
-		like: '<svg viewBox="0 0 54 72"><path d="M38.723 12c-7.187 0-11.16 7.306-11.723 8.13-.563-.824-4.496-8.13-11.723-8.13C8.79 12 3.533 18.163 3.533 24.647 3.533 39.964 21.89 55.907 27 56c5.11-.093 23.467-16.036 23.467-31.353C50.467 18.163 45.21 12 38.723 12z"></path></svg>',
-		home: '<svg viewBox="0 0 64 72"><path d="M60.034 33.795l-26-23.984c-1.15-1.06-2.92-1.06-4.068 0l-26 23.985c-1.218 1.123-1.294 3.02-.17 4.24 1.122 1.216 3.02 1.295 4.238.17l2.265-2.09 6.808 24.683C17.468 62.098 18.65 63 20 63h24c1.35 0 2.533-.9 2.892-2.202l6.81-24.683 2.264 2.09c.576.532 1.306.795 2.033.795.808 0 1.614-.325 2.205-.966 1.124-1.218 1.047-3.116-.17-4.24zM32 53c-1.657 0-3-1.342-3-3 0-1.656 1.343-3 3-3s3 1.344 3 3c0 1.658-1.343 3-3 3zm0-11c-3.866 0-7-3.133-7-6.998 0-3.867 3.134-7 7-7s7 3.133 7 7C39 38.867 35.866 42 32 42z"></path></svg>',
-		noti: '<svg viewBox="0 0 58 72"><path d="M47.594 21.745c-1.216-2.624-3.06-4.84-5.355-6.51l.052-.153c.863-2.373-.447-5.026-2.924-5.928-2.48-.902-5.188.288-6.05 2.66l-.058.153c-.387-.027-.775-.052-1.163-.052-7.805 0-14.575 5.36-17.667 13.99-3.212 8.963-9.247 13.91-9.3 13.953-.668.532-1.076 1.325-1.124 2.178-.048.853.27 1.688.875 2.29.31.31.685.55 1.096.7l35.917 13.07c.33.12.676.182 1.026.182h.023c1.657 0 3-1.343 3-3 0-.295-.042-.58-.122-.85-.22-1.422-1.07-8.41 1.89-16.41 2.123-5.75 2.082-11.53-.116-16.273zM26.355 64.206c3.4 1.235 7.1-.08 9.02-2.96L21.35 56.137c-.38 3.444 1.607 6.83 5.007 8.068z"></path></svg>',
-		dm: '<svg viewBox="0 0 58 72"><path d="M46 15H12l17 16"></path><path d="M53 16L31.07 37.17c-.578.554-1.324.83-2.07.83s-1.492-.276-2.07-.83c0 0-21.91-21.148-21.93-21.17-1.138.908-2 2-2 4v38c0 1.185.697 2.26 1.78 2.74.392.175.807.26 1.22.26.727 0 1.445-.265 2.007-.77L19 50h31c2.804 0 5-2.196 5-5V20c0-2-.862-3.09-2-4z"></path></svg>',
-		search: '<svg viewBox="0 0 56 72"><path d="M51.644 53.096l-7.41-7.41c-1.067-1.067-2.525-1.488-3.914-1.294l-2.328-2.328c2.51-3.343 3.89-7.375 3.894-11.628.005-5.2-2.016-10.084-5.69-13.757-3.667-3.67-8.547-5.69-13.74-5.69-5.2 0-10.09 2.028-13.77 5.71-7.58 7.582-7.582 19.916-.005 27.494 3.673 3.67 8.553 5.693 13.744 5.693 4.257 0 8.294-1.38 11.64-3.893l2.326 2.327c-.193 1.39.227 2.848 1.295 3.916l7.41 7.41C46 60.547 47.184 61 48.37 61s2.37-.452 3.274-1.357c1.81-1.807 1.81-4.74 0-6.547zM34.94 30.44c0 6.903-5.597 12.5-12.5 12.5s-12.5-5.597-12.5-12.5 5.595-12.5 12.5-12.5 12.5 5.595 12.5 12.5z"></path><path d="M51.644 53.096l-7.41-7.41c-1.067-1.067-2.525-1.488-3.914-1.294l-2.328-2.328c2.51-3.343 3.89-7.375 3.894-11.628.005-5.2-2.016-10.084-5.69-13.757-3.667-3.67-8.547-5.69-13.74-5.69-5.2 0-10.09 2.028-13.77 5.71-7.58 7.582-7.582 19.916-.005 27.494 3.673 3.67 8.553 5.693 13.744 5.693 4.257 0 8.294-1.38 11.64-3.893l2.326 2.327c-.193 1.39.227 2.848 1.295 3.916l7.41 7.41C46 60.547 47.184 61 48.37 61s2.37-.452 3.274-1.357c1.81-1.807 1.81-4.74 0-6.547zM34.94 30.44c0 6.903-5.597 12.5-12.5 12.5s-12.5-5.597-12.5-12.5 5.595-12.5 12.5-12.5 12.5 5.595 12.5 12.5z"></path></svg>',
-		write: '<svg viewBox="0 0 60 72"><path d="M54 41c-1.657 0-3 1.343-3 3v12.01h-.002c0 .536-.425.966-.957.99H31c-1.657 0-3 1.343-3 3s1.343 3 3 3h21.185C54.84 63 57 60.84 57 58.184V44c0-1.657-1.343-3-3-3zM23 12H7.817C5.16 12 3 14.16 3 16.815V41c0 1.657 1.343 3 3 3s3-1.343 3-3V19c0-.553.447-1 1-1h13c1.657 0 3-1.343 3-3s-1.343-3-3-3zM53.426 13.79C57.052 10.16 57 6.812 57 6.812c-16.24 4.542-27.973 19.82-35.81 33.266-6.047 10.34-9.532 19.844-10.257 22.096-1.315 4.043-1.316 6.577-.634 6.796.682.22 2.393-2.332 4.084-5.37 1.088-1.95 2.58-4.53 4.492-8.035 3.93-7.244 8.677-13.067 14.13-14.275.01-.002.05-.048.067-.066 4.025-.623 12.596-4.548 13.498-9.89-2.763 1.22-5.605 1.857-8.47 1.83 0 0 1.627-2.42 4.335-3.443 4.646-1.76 7.504-3.285 10.073-7.34.887-1.417 1.285-2.458 1.75-3.983-2.914 1.848-6.785 2.975-9.006 2.967 2.084-2.93 5.19-4.592 8.174-7.578z"></path></svg>',
-		activity: '<svg viewBox="0 0 72 72"><path transform="scale(0.04,-0.037) translate(0,-1900)" d="M1480 880h180q39 0 69.5 -31t30.5 -69t-30.5 -69t-69.5 -31h-141l-283 -462q-8 -23 -30 -40t-47 -17q-7 -1 -15 -1q-22 0 -40 9q-36 18 -48 55l-16 16q0 35 6 43l-128 984l-181 -512q-2 -7 -5 -13q-11 -28 -35 -45t-51 -17h-1h-391q-41 0 -67.5 27.5t-26.5 72.5 t27.5 72.5t72.5 27.5h323l289 818q7 19 33.5 40.5t54.5 21.5l31 -3q2 -1 0 -2q26 3 36 -9.5t12 -36.5q10 -14 15 -29l150 -1153l180 295l5 6q22 52 91 52z"></path></svg>',
-	},
+	tweetUploader: new TweetUploader(),
+	mediaUploader: new MediaSelector(),
 
 	// Load Config
 	loadConfig: callback => {
@@ -622,54 +595,8 @@ var App = {
 		});
 	},
 
-	execTweet:() => {
-		writebox.hidden = true;
-		App.resizeContainer();
-
-		if(App.mediaUploadManager.selectedFiles.length != 0)
-		{
-			var path = App.mediaUploadManager.selectedFiles;
-			var files = [];
-
-			App.showMsgBox("트윗을 올리는 중입니다", "orange", 30000);
-			for (var i = 0; i < path.length; i++)
-				(index => {
-					var data = require('fs').readFileSync(path[index]);
-					Client.post('media/upload', {media: data}, (error, media, response) => {
-						if (!error) {
-							console.log(media);
-							files[index] = media;
-							// make sure all files are successfully uploaded.
-							if (files.filter(f => f !== undefined).length === path.length)
-								return ex(files.map(x => x.media_id_string).join(','));
-						} else {
-							return App.showMsgBox("오류가 발생했습니다<br />" + error[0].code + ": " + error[0].message, "tomato", 5000);
-						}
-					});
-				})(i);
-		}
-		else return ex();
-
-		function ex(media_ids)
-		{
-			var param = {status: tweetbox.value};
-			if (media_ids) param.media_ids = media_ids;
-
-			if(in_reply_to_status_id.value) param.in_reply_to_status_id = in_reply_to_status_id.value;
-
-			Client.post('statuses/update', param, (error, event, response) => {
-				if (!error) {
-					App.showMsgBox("트윗했습니다", "blue", 3000);
-				}
-				else {
-					App.showMsgBox("오류가 발생했습니다<br />" + error[0].code + ": " + error[0].message, "tomato", 5000);
-				}
-			});
-		}
-	},
-
 	tryReply: id => {	
-		App.openTweetBox();
+		App.tweetUploader.openPanel();
 		var usernames = [];
 		var tweet_author = document.querySelector('[data-tweet-text="' + id + '"]').getAttribute('data-tweet-name');
 		usernames.push(tweet_author);
@@ -679,14 +606,9 @@ var App = {
 					usernames.push(name);
 		});
 
-		Array.from(usernames).forEach(name => {
-			if(name != App.screen_name)
-				tweetbox.value += '@' + name + ' ';
-		});
-
-		in_reply_to_status_id.value = id;
-		tweetlen.innerHTML = 140 - tweetbox.value.length;
-		tweetbox.focus();
+		App.tweetUploader.text = Array.from(usernames).map(x => '@' + x).join(' ') + ' ';
+		App.tweetUploader.inReplyTo = id;
+		
 	},
 
 	getTimeline: () => { 
@@ -789,30 +711,6 @@ var App = {
 		});
 	},
 
-	openTweetBox: () => {
-		writebox.hidden = false;
-		tweetbox.value = "";
-		in_reply_to_status_id.value = "";
-		tweetlen.innerText = '140';
-		tweetbox.focus();
-		fileDialog.value = "";
-		fileDialog.disabled = false;
-		fileDialogContainer.classList.remove('disabled');
-		thumbnails.innerHTML = '';
-		App.mediaUploadManager.selectedFiles = [];
-		App.resizeContainer();
-	},
-
-	closeTweetBox: () => {
-		writebox.hidden = true;
-		tweetbox.value = "";
-		in_reply_to_status_id.value = "";
-		tweetlen.innerText = '140';
-		tweetbox.focus();
-		fileDialog.value = "";
-		App.resizeContainer();
-	},
-
 	run: () => {
 		App.loadConfig(() => {
 			App.initializeClient(App.config.ConsumerKey, App.config.ConsumerSecret, App.config.AccessToken, App.config.AccessSecret);
@@ -901,7 +799,7 @@ function Tweet(tweet, quoted) {
 
 	if(tweet.retweeted_status)
 	{
-		a.innerHTML += '<div class="retweeted_tweet">' + App.symbol.retweet + '<span class="retweeted_tweet_text">&nbsp;' + App.msg.someone_retweeted.format(tweet.user.screen_name, tweet.user.name) + '</span></div>\r\n';
+		a.innerHTML += '<div class="retweeted_tweet">' + symbol.retweet + '<span class="retweeted_tweet_text">&nbsp;' + App.msg.someone_retweeted.format(tweet.user.screen_name, tweet.user.name) + '</span></div>\r\n';
 		tweet = tweet.retweeted_status;
 	}
 
@@ -947,36 +845,217 @@ function Tweet(tweet, quoted) {
 	if (!quoted)
 		a.innerHTML += '<div aria-label="트윗 작업" role="group" class="tweet-task lpad">' + 
 					 '<div class="tweet-task-box"><button aria-label="답글" data-testid="reply" type="button" onclick="App.tryReply(\'' + id_str_org + '\')">' + 
-					 '<span>' + App.symbol.reply + '</span></button></div><div class="tweet-task-box ' + retweeted + '" data-retweet="' + id_str_org + '"><button aria-label="리트윗 1회. 리트윗" data-testid="retweet" type="button" onclick="App.execRetweet(\'' + id_str_org + '\')"><span class="tweet-task-count">' + App.symbol.retweet + '&nbsp;<span><span data-retweet-count="' + id_str_org + '">' + tweet.retweet_count + '</span></span></span></button></div><div class="tweet-task-box ' + favorited + '" data-favorite="' + id_str_org + '"><button aria-label="마음에 들어요" data-testid="like" type="button" onclick="App.execFavorite(\'' + id_str_org + '\')"><span>' + App.symbol.like + '&nbsp;<span class="tweet-task-count"><span data-favorite-count="' + id_str_org + '">' + tweet.favorite_count + '</span></span></span></button></div></div>';
+					 '<span>' + symbol.reply + '</span></button></div><div class="tweet-task-box ' + retweeted + '" data-retweet="' + id_str_org + '"><button aria-label="리트윗 1회. 리트윗" data-testid="retweet" type="button" onclick="App.execRetweet(\'' + id_str_org + '\')"><span class="tweet-task-count">' + symbol.retweet + '&nbsp;<span><span data-retweet-count="' + id_str_org + '">' + tweet.retweet_count + '</span></span></span></button></div><div class="tweet-task-box ' + favorited + '" data-favorite="' + id_str_org + '"><button aria-label="마음에 들어요" data-testid="like" type="button" onclick="App.execFavorite(\'' + id_str_org + '\')"><span>' + symbol.like + '&nbsp;<span class="tweet-task-count"><span data-favorite-count="' + id_str_org + '">' + tweet.favorite_count + '</span></span></span></button></div></div>';
 
 	a.innerHTML = '<div class="' + className + '">' + a.innerHTML + '</div>';
 	this.element = a;
 }
 
-window.onload = e => {
-	// tweetbox onchange event
-	tweetbox.addEventListener('input', () => {
-		tweetlen.innerHTML = 140 - tweetbox.value.length;
-	}, false);
+function TweetUploader() {
+	this.mediaSelector = new MediaSelector();
+	this.inReplyTo = '';
 
-	tweetbox.addEventListener('onpropertychange', () => {
-		tweetlen.innerHTML = 140 - tweetbox.value.length;
-	}, false);
+	var _isOpen = false;
+	var e = document.createElement('div'),
+		txt = document.createElement('textarea'),
+		btnContainer = document.createElement('div'),
+		closeButton = document.createElement('div'),
+		lenIndicator = document.createElement('span'),
+		postButton = document.createElement('input');
+	
+	/*initElement*/ { 
+		e.className = 'writebox';
+		e.hidden = true;
+		txt.rows = 4;
+		btnContainer.className = 'buttons';
+		postButton.className = 'bluebutton';
+		postButton.type = 'button';
+		postButton.value = '트윗하기';
 
-	// when a user selects a file
-	fileDialog.addEventListener('change', e => {
-		App.mediaUploadManager.addFile(e.target.value);
-		
-		console.log(App.mediaUploadManager.selectedFiles);
-		e.target.value = '';
-		
-		if (App.mediaUploadManager.selectedFiles.length == 4)
+		closeButton.appendChild((() => {
+			var a = document.createElement('a');
+			a.href = 'javascript:void(0)';
+			a.innerHTML = symbol.close;
+			a.addEventListener('click', e => this.closePanel());
+			return a;
+		})());
+		btnContainer.appendChild(closeButton);
+		btnContainer.appendChild(this.mediaSelector.element);
+		btnContainer.appendChild((() => {
+			var div = document.createElement('div');
+			div.appendChild(lenIndicator);
+			div.appendChild(postButton);
+			return div;
+		})());
+		e.appendChild(txt);
+		e.appendChild(btnContainer);
+
+		var txtChanged = e => (lenIndicator.innerHTML = 140 - txt.value.length);
+		txt.addEventListener('input', txtChanged);
+		txt.addEventListener('keydown', e => {
+			switch (e.keyCode) {
+				case 16: break;
+				case KEY.ENTER:
+					if (!e.shiftKey) execTweet();
+					break;
+				case KEY.ESC:
+					this.closePanel();
+					return false;
+			}
+		}, false);
+		postButton.addEventListener('click', e => execTweet());
+	}
+
+	var execTweet = () => {
+		var that = this;
+		this.closePanel();
+
+		if (this.mediaSelector.selectedFiles.length != 0)
 		{
-			e.target.disabled = true;
-			fileDialogContainer.classList.add('disabled');
+			var path = this.mediaSelector.selectedFiles;
+			var files = [];
+			App.showMsgBox('트윗을 올리는 중입니다', 'orange', 30000);
+			for (var i in path)
+				(index => {
+					var data = require('fs').readFileSync(path[index]);
+					Client.post('media/upload', {media: data}, (error, media, response) => {
+						if (!error) {
+							console.log(media);
+							files[index] = media;
+							// make sure all fies are successfully uploaded.
+							if (files.filter(f => f !== undefined).length === path.length)
+								return _ex(files.map(x => x.media_id_string).join(','));
+						}
+						else return App.showMsgBox("오류가 발생했습니다<br />" + error[0].code + ": " + error[0].message, "tomato", 5000);
+					});
+				})(i);
 		}
-	}, false);
+		else return _ex();
 
+		function _ex(media_ids)
+		{
+			var param = {status: txt.value};
+			if (media_ids) param.media_ids = media_ids;
+
+			if(that.inReplyTo != '') param.in_reply_to_status_id = that.inReplyTo;
+
+			Client.post('statuses/update', param, (error, event, response) => {
+				if (!error) {
+					App.showMsgBox("트윗했습니다", "blue", 3000);
+				}
+				else {
+					App.showMsgBox("오류가 발생했습니다<br />" + error[0].code + ": " + error[0].message, "tomato", 5000);
+				}
+			});
+		}
+	}
+
+	this.element = e;
+
+	this.openPanel = () => {
+		_isOpen = true;
+		this.inReplyTo = '';
+		this.mediaSelector.reset();
+		e.hidden = false;
+		lenIndicator.innerHTML = '140';
+		txt.value = '';
+		txt.focus();
+		App.resizeContainer();
+	};
+
+	this.closePanel = () => {
+		_isOpen = false;
+		e.hidden = true;
+		App.resizeContainer();
+	}
+
+	this.focus = () => txt.focus();
+	
+	Object.defineProperties(this, {
+		"isOpen": {
+			"get": () => _isOpen
+		},
+		"text": {
+			"get": () => txt.value,
+			"set": (val) => {
+				txt.value = val;
+				lenIndicator.innerHTML = 140 - txt.value.length;
+			}
+		}
+	});
+}
+
+function MediaSelector() {
+	var e = document.createElement('div'),
+		thumbContainer = document.createElement('div'),
+		fileInputContainer = document.createElement('div'),
+		fileInput = document.createElement('input');
+	
+	e.className = 'media-uploader';
+	thumbContainer.className = 'thumbnails';
+	thumbContainer.style.fontSize = '0';
+	fileInputContainer.className = 'bluebutton';
+	fileInputContainer.setAttribute('style', 'position:relative;overflow:hidden;');
+	fileInput.type = 'file';
+	fileInput.accept = '.png,.jpg,.gif,.mp4';
+	fileInput.setAttribute('style', 'position:absolute;top:0;left:0;font-size:999px;opacity:0;');
+
+	fileInputContainer.innerHTML += '<span>파일 추가</span>';
+	fileInputContainer.appendChild(fileInput);
+	e.appendChild(thumbContainer);
+	e.appendChild(fileInputContainer);
+
+	fileInput.onchange = e => {
+		this.addFile(fileInput.value);
+		fileInput.value = '';
+		if (this.selectedFiles.length == 4)
+		{
+			fileInput.disabled = true;
+			fileInputContainer.classList.add('disabled');
+		}
+	};
+
+	this.element = e;
+	this.selectedFiles = [];
+
+	this.addFile = path => {
+		if (this.selectedFiles.indexOf(path) != -1)
+		{
+			App.showMsgBox('같은 파일을 중복으로 선택할 수 없습니다.', 'tomato', 3000);
+			return;
+		}
+		if (this.selectedFiles.length == 0)
+			App.showMsgBox('썸네일을 클릭하면 이미지를 삭제할 수 있습니다.', 'blue', 3000);
+		thumbContainer.appendChild((() => {
+			var e = document.createElement('div');
+			e.className = 'thumbnail';
+			e.setAttribute('data-media', path);
+			e.style.backgroundImage = "url('" + path.replace(/\\/g, '/') + "')";
+			e.addEventListener('click', (e) => {
+				var path = e.target.getAttribute('data-media'),
+					idx = this.selectedFiles.indexOf(path);
+				this.selectedFiles.splice(idx, 1);
+				e.target.outerHTML = '';
+				fileInput.disabled = false;
+				fileInputContainer.classList.remove('disabled');
+
+				console.log(this.selectedFiles);
+			})
+			return e;
+		})());
+		this.selectedFiles.push(path);
+	};
+
+	this.reset = () => {
+		fileInput.value = '';
+		fileInput.disabled = false;
+		fileInputContainer.classList.remove('disabled');
+		thumbContainer.innerHTML = '';
+		this.selectedFiles = [];
+	};
+}
+
+window.onload = e => {
 	// scrollbar hack
 	home_timeline.onmousedown = () => {
 		window.scrolling = true;
@@ -1030,12 +1109,14 @@ window.onload = e => {
 		}
 	}
 	
-	header_navi.innerHTML += '<span class="navigator selected"><a href="javascript:void(0)" onclick="naviSelect(0)">' + App.symbol.home + '</a></div>';
-	header_navi.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(1)">' + App.symbol.noti + '</a></div>';
-	header_navi.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(2)">' + App.symbol.dm + '</a></div>';
-	header_navi.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(3)">' + App.symbol.search + '</a></div>';
-	header_navi.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(4)">' + App.symbol.write + '</a></div>';
+	header_navi.innerHTML += '<span class="navigator selected"><a href="javascript:void(0)" onclick="naviSelect(0)">' + symbol.home + '</a></div>';
+	header_navi.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(1)">' + symbol.noti + '</a></div>';
+	header_navi.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(2)">' + symbol.dm + '</a></div>';
+	header_navi.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(3)">' + symbol.search + '</a></div>';
+	header_navi.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(4)">' + symbol.write + '</a></div>';
 	header_navi.innerHTML += '<div id="page_indicator"></div>'
+
+	toolbox.appendChild(App.tweetUploader.element);
 
 	//chooseFile('#fileDialog');
 	// run Application
@@ -1065,22 +1146,7 @@ document.onkeydown = e => {
 		isShift = !!e.shiftKey;
 	}
 
-	if(document.activeElement == tweetbox)
-	{
-		switch (key) {
-			case 16:
-			break;
-			case KEY.ENTER:
-				// shift+enter: line feed
-				if(!isShift)
-					App.execTweet();
-			break;
-			case KEY.ESC:
-				naviSelect(4);
-			return false;
-		}
-	}
-	else
+	if (document.activeElement.type != 'textarea')
 	{
 		switch (e.keyCode) {
 			case KEY.NUMBER_1:
@@ -1093,9 +1159,9 @@ document.onkeydown = e => {
 				naviSelect(2);
 				break;
 			case KEY.N:	
-				if(writebox.hidden)
+				if(!App.tweetUploader.isOpen)
 					naviSelect(4);
-				else tweetbox.focus();
+				else App.tweetUploader.focus();
 				return false;
 			
 			/*
@@ -1155,10 +1221,11 @@ function naviSelect(e)
 			break;
 			case 4:
 			{
-				if(writebox.hidden)
-					App.openTweetBox();
+				var uploader = App.tweetUploader;
+				if (uploader.isOpen)
+					uploader.closePanel();
 				else
-					App.closeTweetBox();
+					uploader.openPanel();
 			}
 		}
 	}
