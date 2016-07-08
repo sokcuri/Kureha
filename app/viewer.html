@@ -38,26 +38,43 @@
 				next_image.className = (index == more.length - 1) ? "page disabled" : "page";
 			}
 
+			updateArrow = function()
+			{
+				arr_prev.className = (index == 0) ? "hidden" : "";
+				arr_next.className = (index == more.length - 1) ? "hidden" : "";
+			}
+
 			updateHeader();
+			updateArrow();
 
 			image.addEventListener("click", function() {
 				window.close();
 			});
 
-			prev_image.addEventListener("click", function() {
+			prevClick = function()
+			{
 				if (index == 0) return false;
 				loader.hidden = false;
 				image.classList.add('hidden');
 				image.src = more[--index] + ":orig";
 				updateHeader();
-			});
-			next_image.addEventListener("click", function() {
+				updateArrow();
+			}
+
+			nextClick = function()
+			{
 				if (index == more.length - 1) return false;
 				loader.hidden = false;
 				image.classList.add('hidden');
 				image.src = more[++index] + ":orig";
 				updateHeader();
-			});
+				updateArrow();
+			}
+
+			prev_image.addEventListener("click", prevClick);
+			next_image.addEventListener("click", nextClick);
+			arr_prev.addEventListener("click", prevClick);
+			arr_next.addEventListener("click", nextClick);
 		};
 		</script>
 	</head>
@@ -77,6 +94,8 @@
 			  </div>
 			</div>
 			<div id="image-container"><img id="image" class="hidden"></div>
+			<a href="javascript:void(0)" id="arr_prev"></a>
+			<a href="javascript:void(0)" id="arr_next"></a>
 		</div>
 	</body>
 </html>

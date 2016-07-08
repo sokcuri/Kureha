@@ -59,7 +59,30 @@ a.page.disabled:link
 	visibility: hidden;
 }
 
+#arr_prev, #arr_next {
+  position: absolute;
+  /*display: none;*/
+  text-shadow: none;
+  text-align: center;
+  background: #333;
+  color: #fff;
+  top: 50%;
+  margin-top: -2.5em;
+  height: 5em;
+  width: 5em;
+  z-index: 60;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+}
 
+#arr_prev {
+  left: 10px;
+}
+
+#arr_next {
+  right: 10px;
+}
 /* Modern Google Loader in Pure CSS */
 /* https://gist.github.com/CodeMyUI/3c3a57a17cb56828356a */
 .centered {
