@@ -10,6 +10,12 @@
 		// nw.Window.get().setMinimumSize(win.width, win.height);
 		// nw.Window.get().resizeTo(450, 450);
 		
+		window.onclose()
+		{
+			// save configuration
+			App.saveConfig();
+		}
+
  	 	window.onload = e =>
  	 	{
 			var arr = document.getElementsByTagName('input');
