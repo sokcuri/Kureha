@@ -80,6 +80,8 @@ Client = new Twitter({
 	access_token_secret: ''
 });
 
+var Stream;
+
 var App = {
 	// Kuritsu Consumer Key
 	_DefaultConsumerKey: 'hFFszQ5tet93VbnD9m153Tudc',
@@ -90,6 +92,7 @@ var App = {
 		AccessToken: '',
 		AccessSecret: '',
 		
+		runStream: true,
 		enableHomeTLNoti: false,
 		enableHomeTLSound: false,
 		enableMentionTLNoti: true,
@@ -302,8 +305,13 @@ var App = {
 		});
 	},
 
-	execStream: () => {
+	runMainStream: () => {
+		if(Client.mainStream)
+			Client.mainStream.destroy();
+
 		Client.stream('user', 'include_followings_activity: true', (stream) => {
+			Client.mainStream = stream;
+			stream_off.style = 'display: none';
 			stream.on('data', (tweet) => {
 				if(tweet.text)
 				{
@@ -334,7 +342,7 @@ var App = {
 					if(tweet.retweeted_status)
 						tweet = tweet.retweeted_status;
 
-					App.execStream.sequence = (App.execStream.sequence + 1) % 3;
+					App.runMainStream.sequence = (App.runMainStream.sequence + 1) % 3;
 					
 					// alert noti
 					if(App.config.enableHomeTLNoti)
@@ -344,7 +352,7 @@ var App = {
 						Notification.requestPermission();
 
 						var noti = new Notification(tweet.user.name,
-							{tag: App.execStream.sequence, body: tweet.text, icon: tweet.user.profile_image_url_https});
+							{tag: App.runMainStream.sequence, body: tweet.text, icon: tweet.user.profile_image_url_https});
 
 						// 노티를 클릭하면 창 닫기
 						noti.onclick = () => noti.close();
@@ -369,7 +377,20 @@ var App = {
 				}
 			});
 			stream.on('error', error => console.error(error));
+			stream.on('end', response => {
+				console.warn(response);
+				Client.mainStream = '';
+			});
 		});
+	},
+
+	stopMainStream: () => {
+		Client.mainStream.destroy();
+	},
+
+	alertStream: e => {
+		stream_off.style = (e ? 'display: none' : '');
+		App.resizeContainer();
 	},
 
 	execRetweet: e => {
@@ -772,7 +793,12 @@ var App = {
 					App.resizeContainer();
 					App.getTimeline();
 					App.getMentionsTimeline();
-					App.execStream();
+					if(App.config.runStream)
+						App.runMainStream();
+					else
+					{
+						App.alertStream(false);
+					}
 					//getAboutme();
 				}
 			});
@@ -784,7 +810,7 @@ var App = {
 App.getTimeline.since_id = '1';
 App.getMentionsTimeline.since_id = '1';
 App.getAboutme.max_position = 0;
-App.execStream.sequence = 0;
+App.runMainStream.sequence = 0;
 
 function Test(event) {
 	a = document.createElement('article');

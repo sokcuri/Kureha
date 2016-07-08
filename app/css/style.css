@@ -134,6 +134,10 @@ body {
 	transition: opacity 0.25s ease-out;
 }
 
+.occupy {
+	position: relative;
+}
+
 .msgbox input[type="button"] {
 	pointer-events: all;
 }

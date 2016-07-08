@@ -46,6 +46,20 @@
 					config[e.id] = e.value;
 					break;
 			}
+
+			// main stream
+			if(e.id == 'runStream')
+				if(e.checked)
+				{
+					App.runMainStream();
+					App.alertStream(true);
+				}
+				else
+				{
+					App.stopMainStream();
+					App.alertStream(false);
+				}
+
 			// save configuration
 			App.saveConfig();
  	 	}
@@ -61,24 +75,52 @@
 				<section>
 					<header><span>타임라인</span></header>
 					<div>
+						<div style="-webkit-column-count: 2;">
+							<div style="display: inline-block;">
+								<div class="settings-item">
+									<b>일반</b>
+								</div>
+								<div class="settings-item">
+									<label>
+										<input id="runStream" type="checkbox" onclick="chk_config(this)"><label for="runStream"><div></div></label>
+										타임라인 스트리밍
+									</label>
+								</div>
+								<div class="settings-item">
+									<label>
+										<input id="hideMyRetweets" type="checkbox" onclick="chk_config(this)"><label for="hideMyRetweets"><div></div></label>
+										자신의 리트윗 숨기기
+									</label>
+								</div>
+							</div>
+							<div style="display: inline-block;">
+								<div class="settings-item">
+									<b>매직 스크롤</b>
+								</div>
+								<div class="settings-item">
+									<label>
+										<input id="magicScroll" type="checkbox" onclick="chk_config(this)"><label for="magicScroll"><div></div></label>
+										매직 스크롤 켜기
+									</label>
+								</div>
+								<div class="settings-item">
+									<label>
+										감도 (밀리초):
+										<input id="magicScrollSensitivity" type="number" min="250" max="1000" value="250" onchange="chk_config(this)">
+									</label>
+								</div>
+							</div>
+						</div>	
+					<!--<div class="settings-item">
+							<b>기타</b>
+						</div>
+										
 						<div class="settings-item">
 							<label>
-								<input id="hideMyRetweets" type="checkbox" onclick="chk_config(this)"><label for="hideMyRetweets"><div></div></label>
-								자신의 리트윗 숨기기
+								<input id="placeHolder" type="checkbox" onclick="chk_config(this)"><label for="placeHolder"><div></div></label>
+								PLACEHOLDER
 							</label>
-						</div>
-						<div class="settings-item">
-							<label>
-								<input id="magicScroll" type="checkbox" onclick="chk_config(this)"><label for="magicScroll"><div></div></label>
-								매직 스크롤 켜기
-							</label>
-						</div>
-						<div class="settings-item">
-							<label>
-								매직 스크롤 감도 (밀리초):
-								<input id="magicScrollSensitivity" type="number" min="250" max="1000" value="250" onchange="chk_config(this)">
-							</label>
-						</div>
+						</div>-->
 					</div>
 				</section>
 				<!--<section>

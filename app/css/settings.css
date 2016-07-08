@@ -39,6 +39,8 @@ section > div {
 section > div .settings-item { margin-bottom: 5px; }
 
 /* Custom input appearance */
+.settings-item input[type='input'] { display: flex; }
+
 .settings-item input[type='checkbox'] { display: none; }
 
 .settings-item input[type='checkbox'] + label {
