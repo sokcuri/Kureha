@@ -279,8 +279,7 @@ body {
 
 .tweet_emp
 {
-	border-left: 10px;
-	border-style: inset;
+	border-left: 10px solid transparent;
 }
 .tweet_emp.blue { border-left-color: rgba(29, 161, 242, 0.8); }
 

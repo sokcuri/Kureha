@@ -789,10 +789,8 @@ function Tweet(tweet, quoted) {
 		if(App.screen_name == name)
 			mentioned_me = true;
 	});
-	if(mentioned_me)
-	{
-		a.classList.add(['tweet_emp', 'blue']);
-	}
+	
+	if(mentioned_me)className += ' tweet_emp blue';
 
 	// retweeted / favorited
 	var retweeted = "";
