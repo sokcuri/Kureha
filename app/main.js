@@ -105,10 +105,6 @@ var App = {
 
 		debug: false
 	},
-	msg:
-	{
-		someone_retweeted: `<a href="javascript:void(0)" onclick="openPopup('https://twitter.com/{0}')">{1}</a> 님이 리트윗했습니다`,
-	},
 
 	id_str: '',
 	name: '',
@@ -456,8 +452,9 @@ var App = {
 		{
 			App.showMsgBox("리트윗했습니다", "blue", 1000);
 			App.chkRetweet(e, true, 'auto');
-			Client.post('statuses/retweet/' + e, (error, tweet, response) => {
+			Client.post(`statuses/retweet/${e}`, (error, tweet, response) => {
 				if (error) {
+					console.warn(error);
 					// already retweeted
 					if(error[0].code == 327)
 					{
@@ -470,11 +467,11 @@ var App = {
 				}
 				else
 				{
-					if(tweet.retweeted_status)
+					/*if(tweet.retweeted_status)
 						tweet = tweet.retweeted_status;
 					
-					App.chkRetweet(e, tweet.retweeted, tweet.retweet_count);
-					App.chkFavorite(e, tweet.favorited, tweet.favorite_count);
+					App.chkRetweet(e, true, tweet.retweet_count);
+					App.chkFavorite(e, true, tweet.favorite_count);*/
 				}
 			});
 		}
@@ -485,15 +482,16 @@ var App = {
 
 			Client.post('statuses/unretweet/' + e, (error, tweet, response) => {
 				if (error) {
+					console.warn(error);
 					App.chkRetweet(e, true, 'auto');
 				}
 				else
 				{
-					if(tweet.retweeted_status)
+					/*if(tweet.retweeted_status)
 						tweet = tweet.retweeted_status;
 					
-					App.chkRetweet(e, tweet.retweeted, tweet.retweet_count);
-					App.chkFavorite(e, tweet.favorited, tweet.favorite_count);
+					App.chkRetweet(e, false, tweet.retweet_count);
+					App.chkFavorite(e, false, tweet.favorite_count);*/
 				}
 			});
 		}
@@ -509,6 +507,7 @@ var App = {
 			App.chkFavorite(e, true, 'auto');
 			Client.post('favorites/create', {id: e}, (error, tweet, response) => {
 				if (error) {
+					console.warn(error);
 					// already favorited
 					if(error[0].code == 139)
 					{
@@ -521,11 +520,11 @@ var App = {
 				}
 				else
 				{	
-					if(tweet.retweeted_status)
+					/*if(tweet.retweeted_status)
 						tweet = tweet.retweeted_status;
 					
-					App.chkRetweet(e, tweet.retweeted, tweet.retweet_count);
-					App.chkFavorite(e, tweet.favorited, tweet.favorite_count);
+					App.chkRetweet(e, true, tweet.retweet_count);
+					App.chkFavorite(e, true, tweet.favorite_count);*/
 				}
 			});
 		}
@@ -536,6 +535,7 @@ var App = {
 
 			Client.post('favorites/destroy', {id: e}, (error, tweet, response) => {
 				if (error) {
+					console.warn(error);
 					// no status found
 					if(error[0].code == 144)
 						return;
@@ -544,11 +544,11 @@ var App = {
 				}
 				else
 				{	
-					if(tweet.retweeted_status)
+					/*if(tweet.retweeted_status)
 						tweet = tweet.retweeted_status;
 					
-					App.chkRetweet(e, tweet.retweeted, tweet.retweet_count);
-					App.chkFavorite(e, tweet.favorited, tweet.favorite_count);
+					App.chkRetweet(e, false, tweet.retweet_count);
+					App.chkFavorite(e, false, tweet.favorite_count);*/
 				}
 			});
 			
@@ -569,10 +569,13 @@ var App = {
 	},
 
 	chkRetweet: (e, check, count) => {
-		Array.from(document.querySelectorAll('[data-retweet="' + e + '"]')).forEach(item => {
-			countElement = document.querySelector('[data-retweet-count="' + e + '"]');
+		Array.from(document.querySelectorAll(`[data-retweet="${e}"]`)).forEach(item => {
+			countElement = document.querySelector(`[data-retweet-count="${e}"]`);
 			if(typeof(count) != 'undefined' && typeof(count) != 'string')
-				countElement.innerText = count;
+				if(count)
+					countElement.innerText = count;
+				else
+					countElement.innerText = "";
 			
 			if (check)
 			{
@@ -606,7 +609,10 @@ var App = {
 		Array.from(document.querySelectorAll(`[data-favorite="${e}"]`)).forEach(item => {
 			countElement = document.querySelector(`[data-favorite-count="${e}"]`);
 			if(typeof(count) != 'undefined' && typeof(count) != 'string')
-				countElement.innerText = count;
+				if(count)
+					countElement.innerText = count;
+				else
+					countElement.innerText = "";
 			
 			if (check)
 			{
@@ -900,7 +906,7 @@ function Tweet(tweet, quoted) {
 	if(tweet.retweeted_status)
 	{
 		a.innerHTML += `<div class="retweeted_tweet">${symbol.retweet}<span class="retweeted_tweet_text">&nbsp;
-						${App.msg.someone.retweeted.format(tweet.user.screen_name, tweet.user_name)}</span></div>`
+						<a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}')">${tweet.user.name}</a> 님이 리트윗했습니다</span></div>`
 		tweet = tweet.retweeted_status;
 	}
 
@@ -910,12 +916,10 @@ function Tweet(tweet, quoted) {
 		user_screen_name: tweet.user.screen_name,
 		text: tweet.text
 	};
-
 	a.setAttribute('data-json', JSON.stringify(embed));
 	text = urlify(tweet.text);
 	text = text.replace(/(\r\n|\n|\r)/gm, '<br>');
 	text = twemoji.parse(text)
-
 	
 	a.innerHTML += `<img class="profile-image" src=${tweet.user.profile_image_url_https}></img>
 					<div class="tweet-name"><a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}')">
@@ -952,7 +956,7 @@ function Tweet(tweet, quoted) {
 		tweet.retweet_count = "";
 	if (!tweet.favorite_count)
 		tweet.favorite_count = "";
-	
+
 	if (!quoted)
 		a.innerHTML += `<div aria-label="트윗 작업" role="group" class="tweet-task lpad">
 					 <div class="tweet-task-box"><button aria-label="답글" data-testid="reply" type="button" onclick="App.tryReply('${id_str_org}')">
