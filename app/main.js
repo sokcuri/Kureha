@@ -382,14 +382,10 @@ var App = {
 					// 리트윗된 트윗이 아닐때 멘션되었으면 멘션창으로 이동시킴
 					var copy_mention = false;
 					if(!tweet.retweeted_status)
-					Array.from(Twitter_text.extractMentions(tweet.text)).forEach((name) => {
-						if(App.screen_name == name)
-							copy_mention = true;
-					});
+						for (var name of Twitter_text.extractMentions(tweet.text))
+							if (name == App.screen_name) copy_mention = true;
 					if(copy_mention)
-					{
 						App.addItem(notification, new Tweet(tweet));
-					}
 					
 					// 리트윗시 원문이 노티로 가게
 					if(tweet.retweeted_status)
@@ -685,21 +681,16 @@ var App = {
 	},
 
 	procOffscreen: () => {
-		Array.from(home_timeline.firstElementChild.children).forEach(item => {
-			if(isOffscreen(item))
-			{
-				if(item.firstElementChild.style.display != 'none')
-				{
+		for (var item of home_timeline.firstElementChild.children)
+			if (isOffscreen(item)) {
+				if (item.firstElementChild.style.display != 'none') {
 					item.style.height = (item.firstElementChild.getClientRects()[0].height + 10) + 'px';
 					item.firstElementChild.style.display = 'none';
 				}
+			} else {
+				item.style.height = '';
+				item.firstElementChild.style.display = 'block';
 			}
-			else
-			{
-				item.style = '';
-				item.firstElementChild.style = '';
-			}
-		});
 	},
 
 	procScrollEmphasize:e => {
@@ -716,46 +707,31 @@ var App = {
 			obj = JSON.parse(target.getAttribute('data-json'));
 			tweet_author = obj['user_screen_name'];
 		if (tweet_author != App.screen_name) usernames.push(tweet_author);
-		Array.from(Twitter_text.extractMentions(obj['text'])).forEach(name => {
-			if(name != tweet_author && name != App.screen_name)
+		for (var name of Twitter_text.extractMentions(obj.text))
+			if (name != tweet_author && name != App.screen_name)
 				usernames.push(name);
-		});
 
-		App.tweetUploader.text = Array.from(usernames).map(x => '@' + x).join(' ') + ' ';
+		App.tweetUploader.text = usernames.map(x => '@' + x).join(' ') + ' ';
 		App.tweetUploader.inReplyTo = {id: id, name: obj['user_name'], screen_name: tweet_author, text: obj['text']};
-		
 	},
 
 	getTimeline: () => { 
 		Client.get('https://api.twitter.com/1.1/statuses/home_timeline', {since_id: App.getTimeline.since_id|""}, (error, event, response) => {
-			if(!error) {
-				Array.from(event).reverse().forEach(item => {
-//					console.log(item);
-					App.addItem(home_timeline, new Tweet(item));
-					App.getTimeline.since_id = item.id_str;
-				});
+			if (!error) for (var item of event.reverse()) {
+				App.addItem(home_timeline, new Tweet(item));
+				App.getTimeline.since_id = item.id_str;
 			}
-			else
-			{
-				console.log(error);
-			}
+			else console.log(error);
 		});
 	},
 
 	getMentionsTimeline: () => {
 		Client.get('statuses/mentions_timeline', {since_id: App.getMentionsTimeline.since_id|""}, (error, event, response) => {
-			if(!error)
-			{
-				Array.from(event).reverse().forEach(item => {
-//					console.log(item);
-					App.addItem(notification, new Tweet(item));
-					App.getMentionsTimeline.since_id = item.id_str;
-				});
+			if(!error) for (var item of event.reverse()) {
+				App.addItem(notification, new Tweet(item));
+				App.getMentionsTimeline.since_id = item.id_str;
 			}
-			else
-			{
-				console.log(event);
-			}
+			else console.log(event);
 		});
 	},
 
@@ -900,12 +876,9 @@ function Tweet(tweet, quoted) {
 
 	var mentioned_me = false;
 	if(!tweet.retweeted_status)
-	Array.from(Twitter_text.extractMentions(tweet.text)).forEach(name => {
-		if(App.screen_name == name)
-			mentioned_me = true;
-	});
-	
-	if(mentioned_me)className += ' tweet_emp blue';
+		for (var name of Twitter_text.extractMentions(tweet.text))
+			if (name == App.screen_name) mentioned_me = true;
+	if (mentioned_me) className += ' tweet_emp blue';
 
 	// retweeted / favorited
 	var retweeted = "";
