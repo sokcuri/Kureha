@@ -749,8 +749,8 @@ var App = {
 		var tl = t.firstElementChild;
 
 		// 100개가 넘어가면 90개만 남기고 나머지를 비운다
-		if(tl.childElementCount > 100)
-			App.removeItems(tl, 90);
+		if(tl.childElementCount > 200)
+			App.removeItems(t, 190);
 
 		// 유저가 스크롤바를 잡고 있을때는 추가되는 트윗을 감춤.
 		// onmouseup 이벤트 발생시 트윗들을 다시 꺼냄
