@@ -107,7 +107,7 @@ var App = {
 	},
 	msg:
 	{
-		someone_retweeted: '<a href="javascript:void(0)" onclick="openPopup(\'https://twitter.com/{0}\')">{1}</a> 님이 리트윗했습니다',
+		someone_retweeted: `<a href="javascript:void(0)" onclick="openPopup('https://twitter.com/{0}')">{1}</a> 님이 리트윗했습니다`,
 	},
 
 	id_str: '',
@@ -131,7 +131,7 @@ var App = {
 			}
 			else
 			{
-				console.warn('loadConfig Failed: \r\n' + Util.inspect(err));
+				console.warn(`loadConfig Failed: \r\n${Util.inspect(err)}`);
 				App.saveConfig(callback);
 				return;
 			}
@@ -143,7 +143,7 @@ var App = {
 		jsonfile.spaces = 4;
 		jsonfile.writeFile('./config.json', App.config, (err) => {
 			if(!err) console.info('saveConfig Successed.');
-			else console.warn('saveConfig Failed: \r\n' + Util.inspect(err));
+			else console.warn(`saveConfig Failed: \r\n${Util.inspect(err)}`);
 
 			if(callback) callback();
 		});
@@ -416,7 +416,7 @@ var App = {
 				}
 				else if (tweet.delete)
 				{
-					var target = document.querySelector('[data-tweet-id="' + tweet.delete.status.id_str + '"]');
+					var target = document.querySelector(`[data-tweet-id="${tweet.delete.status.id_str}"]`);
 					if(target)
 						target.classList.add('deleted');
 				}
@@ -450,8 +450,8 @@ var App = {
 	},
 
 	execRetweet: e => {
-		Element = document.querySelector('[data-retweet="' + e + '"]');
-		countElement = document.querySelector('[data-retweet-count="' + e + '"]');
+		Element = document.querySelector(`[data-retweet="${e}"]`);
+		countElement = document.querySelector(`[data-retweet-count="${e}"]`);
 		if(!Element.classList.contains('retweeted'))
 		{
 			App.showMsgBox("리트윗했습니다", "blue", 1000);
@@ -465,7 +465,7 @@ var App = {
 						return;
 					}
 
-					App.showMsgBox("오류가 발생했습니다<br />" + error[0].code + ": " + error[0].message, "tomato", 5000);
+					App.showMsgBox(`오류가 발생했습니다<br />${error[0].code}: ${error[0].message}`, "tomato", 5000);
 					App.chkRetweet(e, false, 'auto');
 				}
 				else
@@ -502,8 +502,8 @@ var App = {
 
 	execFavorite: e => {	
 		App.showMsgBox("마음에 드는 트윗으로 지정했습니다", "blue", 1000);
-		Element = document.querySelector('[data-favorite="' + e + '"]');
-		countElement = document.querySelector('[data-favorite-count="' + e + '"]');
+		Element = document.querySelector(`[data-favorite="${e}"]`);
+		countElement = document.querySelector(`[data-favorite-count="${e}"]`);
 		if(!Element.classList.contains('favorited'))
 		{
 			App.chkFavorite(e, true, 'auto');
@@ -516,7 +516,7 @@ var App = {
 						return;
 					}
 
-					App.showMsgBox("오류가 발생했습니다<br />" + error[0].code + ": " + error[0].message, "tomato", 5000);
+					App.showMsgBox(`오류가 발생했습니다<br />${error[0].code}: ${error[0].message}`, "tomato", 5000);
 					App.chkFavorite(e, false, 'auto');
 				}
 				else
@@ -591,7 +591,7 @@ var App = {
 	},
 
 	isFavorited: e => {
-		arr = Array.from(document.querySelectorAll('[data-favorite="' + e + '"]'));
+		arr = Array.from(document.querySelectorAll(`[data-favorite="${e}"]`));
 		if(arr.length && arr[arr.length - 1])
 		{
 			if(arr[arr.length - 1].classList.contains('favorited'))
@@ -603,8 +603,8 @@ var App = {
 	},
 
 	chkFavorite: (e, check, count) => {
-		Array.from(document.querySelectorAll('[data-favorite="' + e + '"]')).forEach(item => {
-			countElement = document.querySelector('[data-favorite-count="' + e + '"]');
+		Array.from(document.querySelectorAll(`[data-favorite="${e}"]`)).forEach(item => {
+			countElement = document.querySelector(`[data-favorite-count="${e}"]`);
 			if(typeof(count) != 'undefined' && typeof(count) != 'string')
 				countElement.innerText = count;
 			
@@ -703,7 +703,7 @@ var App = {
 	tryReply: id => {	
 		App.tweetUploader.openPanel();
 		var usernames = [],
-			target = document.querySelector('article[data-tweet-id="' + id + '"]'),
+			target = document.querySelector(`article[data-tweet-id="${id}"]`),
 			obj = JSON.parse(target.getAttribute('data-json'));
 			tweet_author = obj['user_screen_name'];
 		if (tweet_author != App.screen_name) usernames.push(tweet_author);
@@ -787,7 +787,7 @@ var App = {
 	},
 	removeItem: (t, target) => {
 		if(typeof target == "number")
-			target = document.querySelector('[data-item-id="' + target + '"]');
+			target = document.querySelector(`[data-item-id="${target}"]`);
 		t.firstElementChild.removeChild(target);
 	},
 	removeItems: (timeline, count) => {
@@ -867,6 +867,13 @@ function Activity(event) {
 	this.element = a;
 }
 
+function tag(strings, ...values)
+{
+	for(s in strings)
+	{
+		console.log(s);
+	}
+}
 function Tweet(tweet, quoted) {
 	var a = document.createElement('article');
 	var className = quoted ? 'tweet quoted' : 'tweet';
@@ -892,7 +899,8 @@ function Tweet(tweet, quoted) {
 
 	if(tweet.retweeted_status)
 	{
-		a.innerHTML += '<div class="retweeted_tweet">' + symbol.retweet + '<span class="retweeted_tweet_text">&nbsp;' + App.msg.someone_retweeted.format(tweet.user.screen_name, tweet.user.name) + '</span></div>\r\n';
+		a.innerHTML += `<div class="retweeted_tweet">${symbol.retweet}<span class="retweeted_tweet_text">&nbsp;
+						${App.msg.someone.retweeted.format(tweet.user.screen_name, tweet.user_name)}</span></div>`
 		tweet = tweet.retweeted_status;
 	}
 
@@ -908,14 +916,12 @@ function Tweet(tweet, quoted) {
 	text = text.replace(/(\r\n|\n|\r)/gm, '<br>');
 	text = twemoji.parse(text)
 
-	var tweet_div = '<img class="profile-image" src={0}></img>\r\n' +
-					'<div class="tweet-name"><a href="javascript:void(0)" onclick="openPopup(\'https://twitter.com/{1}\')">\r\n' +
-					'<strong>{2}</strong>\r\n' +
-					'<span class="tweet-id">@{1}</span></a></div>\r\n' +
-					'<p class="tweet-text lpad">{5}</p>';
-
-	a.innerHTML += tweet_div.format(tweet.user.profile_image_url_https, tweet.user.screen_name, tweet.user.name, id_str_org, tweet.user.screen_name, text);
-					 //<!--<input type="button" value="-" onclick="removeRow(this.parentNode)">//-->
+	
+	a.innerHTML += `<img class="profile-image" src=${tweet.user.profile_image_url_https}></img>
+					<div class="tweet-name"><a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}')">
+					<strong>${tweet.user.name}</strong>
+					<span class="tweet-id">@${tweet.user.screen_name}</span></a></div>
+					<p class="tweet-text lpad">${text}</p>`;
 	
 	var entities = tweet.extended_entities || tweet.entities || null;
 	if(entities.media)
@@ -926,7 +932,7 @@ function Tweet(tweet, quoted) {
 		container.setAttribute('data-media-count', entities.media.length);
 		container.className = 'tweet-media-container';
 		for (var i in urls)
-			container.innerHTML += '<div class="tweet-image"><a href="javascript:void(0)" onclick="openImageview(\'' + urls[i] + '\', \'' + urlstr + '\')"><img src="' + urls[i] + '"/></a></div>';
+			container.innerHTML += `<div class="tweet-image"><a href="javascript:void(0)" onclick="openImageview('${urls[i]}', '${urlstr}')"><img src="${urls[i]}"/></a></div>`;
 		a.appendChild(container);
 	}
 
@@ -937,18 +943,25 @@ function Tweet(tweet, quoted) {
 		a.appendChild(twt.element);
 	}
 
-	a.innerHTML += '<div class="tweet-date lpad"><a href="javascript:void(0)" onclick="openPopup(\'https://twitter.com/' + tweet.user.screen_name + '/status/' + tweet.id_str + '\')">' + new Date(Date.parse(tweet.created_at)).format("a/p hh:mm - yyyy년 MM월 dd일") + '</a> · ' + tagRemove(tweet.source) + '</div>';
+	a.innerHTML += `
+		<div class="tweet-date lpad">
+		<a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}')">
+		${new Date(Date.parse(tweet.created_at)).format("a/p hh:mm - yyyy년 MM월 dd일")}
+		</a> · ${tagRemove(tweet.source)}</div>`;
 	if (!tweet.retweet_count)
 		tweet.retweet_count = "";
 	if (!tweet.favorite_count)
 		tweet.favorite_count = "";
 	
 	if (!quoted)
-		a.innerHTML += '<div aria-label="트윗 작업" role="group" class="tweet-task lpad">' + 
-					 '<div class="tweet-task-box"><button aria-label="답글" data-testid="reply" type="button" onclick="App.tryReply(\'' + id_str_org + '\')">' + 
-					 '<span>' + symbol.reply + '</span></button></div><div class="tweet-task-box ' + retweeted + '" data-retweet="' + id_str_org + '"><button aria-label="리트윗 1회. 리트윗" data-testid="retweet" type="button" onclick="App.execRetweet(\'' + id_str_org + '\')"><span class="tweet-task-count">' + symbol.retweet + '&nbsp;<span><span data-retweet-count="' + id_str_org + '">' + tweet.retweet_count + '</span></span></span></button></div><div class="tweet-task-box ' + favorited + '" data-favorite="' + id_str_org + '"><button aria-label="마음에 들어요" data-testid="like" type="button" onclick="App.execFavorite(\'' + id_str_org + '\')"><span>' + symbol.like + '&nbsp;<span class="tweet-task-count"><span data-favorite-count="' + id_str_org + '">' + tweet.favorite_count + '</span></span></span></button></div></div>';
+		a.innerHTML += `<div aria-label="트윗 작업" role="group" class="tweet-task lpad">
+					 <div class="tweet-task-box"><button aria-label="답글" data-testid="reply" type="button" onclick="App.tryReply('${id_str_org}')">
+					 <span>${symbol.reply}</span></button></div><div class="tweet-task-box ${retweeted}" data-retweet="${id_str_org}"><button aria-label="리트윗" data-testid="retweet" type="button" onclick="App.execRetweet('${id_str_org}')">
+					 <span class="tweet-task-count">${symbol.retweet}&nbsp;<span><span data-retweet-count="${id_str_org}">${tweet.retweet_count}</span></span></span></button></div>
+					 <div class="tweet-task-box ${favorited}" data-favorite="${id_str_org}"><button aria-label="마음에 들어요" data-testid="like" type="button" onclick="App.execFavorite('${id_str_org}')"><span>${symbol.like}&nbsp;
+					 <span class="tweet-task-count"><span data-favorite-count="${id_str_org}">${tweet.favorite_count}</span></span></span></button></div></div>`;
 
-	a.innerHTML = '<div class="' + className + '">' + a.innerHTML + '</div>';
+	a.innerHTML = `<div class="${className}">${a.innerHTML}</div>`;
 	this.element = a;
 }
 
@@ -1029,7 +1042,7 @@ function TweetUploader() {
 							if (files.filter(f => f !== undefined).length === path.length)
 								return _ex(files.map(x => x.media_id_string).join(','));
 						}
-						else return App.showMsgBox("오류가 발생했습니다<br />" + error[0].code + ": " + error[0].message, "tomato", 5000);
+						else return App.showMsgBox(`오류가 발생했습니다<br />${error[0].code}: ${error[0].message}`, "tomato", 5000);
 					});
 				})(i);
 		}
@@ -1047,7 +1060,7 @@ function TweetUploader() {
 					App.showMsgBox("트윗했습니다", "blue", 3000);
 				}
 				else {
-					App.showMsgBox("오류가 발생했습니다<br />" + error[0].code + ": " + error[0].message, "tomato", 5000);
+					App.showMsgBox(`오류가 발생했습니다<br />${error[0].code}: ${error[0].message}`, "tomato", 5000);
 				}
 			});
 		}
@@ -1091,7 +1104,7 @@ function TweetUploader() {
 			"set": (obj) => {
 				_inReplyTo = obj.id;
 				replyInfo.hidden = false;
-				replyInfo.innerHTML = '<div class="name">' + obj.name + ' 님에게 보내는 답글</div><div class="orig-text">@' + obj.screen_name + ': ' + obj.text + '</div>';
+				replyInfo.innerHTML = `<div class="name">${obj.name} 님에게 보내는 답글</div><div class="orig-text">@${obj.screen_name}: ${obj.text}</div>`;
 			}
 		}
 	});
@@ -1233,12 +1246,12 @@ window.onload = e => {
 		}
 	}
 	
-	header_navi.innerHTML += '<span class="navigator selected"><a href="javascript:void(0)" onclick="naviSelect(0)">' + symbol.home + '</a></div>';
-	header_navi.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(1)">' + symbol.noti + '</a></div>';
-	header_navi.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(2)">' + symbol.dm + '</a></div>';
-	header_navi.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(3)">' + symbol.search + '</a></div>';
-	header_navi.innerHTML += '<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(4)">' + symbol.write + '</a></div>';
-	header_navi.innerHTML += '<div id="page_indicator"></div>'
+	header_navi.innerHTML += `<span class="navigator selected"><a href="javascript:void(0)" onclick="naviSelect(0)">${symbol.home}</a></div>`;
+	header_navi.innerHTML += `<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(1)">${symbol.noti}</a></div>`;
+	header_navi.innerHTML += `<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(2)">${symbol.dm}</a></div>`;
+	header_navi.innerHTML += `<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(3)">${symbol.search}</a></div>`;
+	header_navi.innerHTML += `<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(4)">${symbol.write}</a></div>`;
+	header_navi.innerHTML += `<div id="page_indicator"></div>`;
 
 	toolbox.appendChild(App.tweetUploader.element);
 
