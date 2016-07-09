@@ -962,8 +962,8 @@ function Tweet(tweet, quoted) {
 		a.innerHTML += `<div aria-label="트윗 작업" role="group" class="tweet-task lpad">
 					 <div class="tweet-task-box"><button aria-label="답글" data-testid="reply" type="button" onclick="App.tryReply('${id_str_org}')">
 					 <span>${symbol.reply}</span></button></div><div class="tweet-task-box ${retweeted}" data-retweet="${id_str_org}"><button aria-label="리트윗" data-testid="retweet" type="button" onclick="App.execRetweet('${id_str_org}')">
-					 <span class="tweet-task-count">${symbol.retweet}&nbsp;<span><span data-retweet-count="${id_str_org}">${tweet.retweet_count}</span></span></span></button></div>
-					 <div class="tweet-task-box ${favorited}" data-favorite="${id_str_org}"><button aria-label="마음에 들어요" data-testid="like" type="button" onclick="App.execFavorite('${id_str_org}')"><span>${symbol.like}&nbsp;
+					 <span class="tweet-task-count">${symbol.retweet}&nbsp;<span><span data-retweet-count="${id_str_org}">${tweet.retweet_count}</span></span></span></button>
+					 </div><div class="tweet-task-box ${favorited}" data-favorite="${id_str_org}"><button aria-label="마음에 들어요" data-testid="like" type="button" onclick="App.execFavorite('${id_str_org}')"><span>${symbol.like}&nbsp;
 					 <span class="tweet-task-count"><span data-favorite-count="${id_str_org}">${tweet.favorite_count}</span></span></span></button></div></div>`;
 
 	a.innerHTML = `<div class="${className}">${a.innerHTML}</div>`;
@@ -1192,6 +1192,7 @@ window.onload = e => {
 	};
 	home_timeline.firstElementChild.onmousedown = f => {
 		window.scrolling = false;
+		home_timeline.style = '';
 		f.stopPropagation();
 	};
 	home_timeline.onmouseup = e => {
