@@ -48,6 +48,10 @@ Date.prototype.format = function(f) {
     });
 };
 
+var htl_scr01, htl_scr02;
+var ntl_scr01, ntl_scr02;
+var dtl_scr01, dtl_scr02;
+
 var Twitter = require('twitter');
 var Twitter_text = require('twitter-text');
 var Util = require('util');
@@ -1227,6 +1231,19 @@ function MediaSelector() {
 	};
 }
 
+// enter full screen, scrollTop reset to zero issue
+// https://bugs.chromium.org/p/chromium/issues/detail?id=142427
+document.addEventListener('webkitfullscreenchange', () => {
+	if (document.webkitIsFullScreen !== null)
+	{
+		// reset to original scroll pos
+		if (!htl_scr01 && !home_timeline.scrollTop)
+			home_timeline.scrollTop = htl_scr02;
+		if (!ntl_scr01 && !notification.scrollTop)
+			notification.scrollTop = ntl_scr02;
+	}
+}, false);
+
 window.onload = e => {
 	// scrollbar hack
 	home_timeline.onmousedown = () => {
@@ -1253,8 +1270,13 @@ window.onload = e => {
 		}
 	};
 
+	// full screen scroll init issue fix
 	home_timeline.onscroll = () =>
 	{
+		htl_scr02 = htl_scr01;
+		htl_scr01 = home_timeline.scrollTop;
+		
+		console.log(home_timeline.scrollTop);
 		App.procScrollEmphasize(home_timeline);
 		
 		// offscreen process
@@ -1275,6 +1297,10 @@ window.onload = e => {
 
 	notification.onscroll = () =>
 	{
+		// full screen scroll init issue fix
+		ntl_scr02 = ntl_scr01;
+		ntl_scr01 = notification.scrollTop;
+
 		App.procScrollEmphasize(notification);
 	}
 

@@ -306,6 +306,11 @@ body {
 	opacity: 0;
 }
 
+/* fullscreen animation bug */
+.tweet_wrapper:-webkit-full-screen-ancestor:not(iframe) {
+    animation: none;
+}
+
 .tweet .lpad { padding-left: 60px; }
 
 .tweet_emp
