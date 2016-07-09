@@ -61,7 +61,7 @@ a.page.disabled:link
 
 #arr_prev, #arr_next {
   position: absolute;
-  /*display: none;*/
+  display: none;
   text-shadow: none;
   text-align: center;
   background: #333;
