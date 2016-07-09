@@ -502,11 +502,16 @@ body {
 }
 
 .tweet-task {
+	color: #444;
 }
 
 .tweet-task-box {
 	display: inline-block;
 	width: 100px;
+}
+
+.tweet-task-box:hover {
+	color: #111;
 }
 
 .tweet-task button {
