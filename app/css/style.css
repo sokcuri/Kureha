@@ -441,7 +441,6 @@ body {
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
-	user-select: none;
 	vertical-align: text-bottom;
 }
 .new_tweet_noti a {
@@ -485,7 +484,6 @@ body {
 	max-width: 100%;
 	position: relative;
 	-webkit-user-select: none;
-	user-select: none;
 	vertical-align: text-bottom;
 }
 

@@ -728,7 +728,17 @@ var App = {
 				App.addItem(home_timeline, new Tweet(item));
 				App.getTimeline.since_id = item.id_str;
 			}
-			else console.log(error);
+			else console.error(error);
+		});
+	},
+
+	getTweetItem: e => {
+		Client.get(`https://api.twitter.com/1.1/statuses/show/${e}`, {}, (error, event, response) => {
+			if(!error)
+			{
+				App.addItem(home_timeline, new Tweet(event));
+			}
+			else console.error(error);
 		});
 	},
 
@@ -833,6 +843,7 @@ var App = {
 					oauth_req.style.display = 'none';
 					App.resizeContainer();
 					App.getTimeline();
+					App.getTweetItem('751494319601754112');
 					App.getMentionsTimeline();
 					if(App.config.runStream)
 						App.runMainStream();
