@@ -1276,7 +1276,6 @@ window.onload = e => {
 		htl_scr02 = htl_scr01;
 		htl_scr01 = home_timeline.scrollTop;
 		
-		console.log(home_timeline.scrollTop);
 		App.procScrollEmphasize(home_timeline);
 		
 		// offscreen process
