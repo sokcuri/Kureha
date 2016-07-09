@@ -75,8 +75,8 @@
 				<section>
 					<header><span>타임라인</span></header>
 					<div>
-						<div style="-webkit-column-count: 2;">
-							<div style="display: inline-block;">
+						<div class="multicolumn">
+							<div>
 								<div class="settings-item">
 									<b>일반</b>
 								</div>
@@ -93,7 +93,7 @@
 									</label>
 								</div>
 							</div>
-							<div style="display: inline-block;">
+							<div>
 								<div class="settings-item">
 									<b>매직 스크롤</b>
 								</div>
@@ -130,20 +130,86 @@
 							<b>배경 유형</b>
 						</div>
 						<div class="settings-item">
-							<label>
-								<input id="bgTypeSolid" type="radio" name="bgType" value="solid"><label></label>
-								단색
-							</label>
-							<label>
-								<input id="bgTypeImage" type="radio" name="bgType" value="image"><label></label>
-								이미지
-							</label>
+							<input id="bgTypeSolid" class="expander" type="radio" name="bgType" value="solid" checked><label for="bgTypeSolid"></label>
+							<label for="bgTypeSolid">단색</label>
+							<div class="expander-item">
+								<table cellspacing="0">
+									<tr>
+										<th>색상</th>
+										<td><input id="bgColor" type="color"></td>
+									</tr>
+								</table>
+							</div>
+						</div>
+						<div class="settings-item">
+							<input id="bgTypeImage" class="expander" type="radio" name="bgType" value="image"><label for="bgTypeImage"></label>
+							<label for="bgTypeImage">이미지</label>
+							<div class="expander-item">
+								<table cellspacing="0">
+									<tr>
+										<th>이미지 선택</th>
+										<td>
+										</td>
+									</tr>
+									<tr>
+										<th>위치</th>
+										<td class="flex">
+											<label>
+												<input type="radio" name="bgLocation" value="default">
+												기본값
+											</label>
+											<label>
+												<input type="radio" name="bgLocation" value="center">
+												가운데
+											</label>
+										</td>
+									</tr>
+									<tr>
+										<th>크기</th>
+										<td class="flex">
+											<label>
+												<input type="radio" name="bgSize" value="default">
+												기본값
+											</label>
+											<label>
+												<input type="radio" name="bgSize" value="contain">
+												창 크기에 맞춤
+											</label>
+											<label>
+												<input type="radio" name="bgSize" value="cover">
+												채우기
+											</label>
+										</td>
+									</tr>
+									<tr>
+										<th>반복</th>
+										<td class="flex">
+											<label>
+												<input type="radio" name="bgRepeat" value="no-repeat">
+												없음
+											</label>
+											<label>
+												<input type="radio" name="bgRepeat" value="repeat-x">
+												가로 반복
+											</label>
+											<label>
+												<input type="radio" name="bgRepeat" value="repeat-y">
+												세로 반복
+											</label>
+											<label>
+												<input type="radio" name="bgRepeat" value="repeat">
+												반복
+											</label>
+										</td>
+									</tr>
+								</table>
+							</div>
 						</div>
 					</div>
 				</section>-->
 				<section>
 					<header><span>데스크톱 알림</span></header>
-					<div style="-webkit-column-count: 2">
+					<div class="multicolumn">
 						<div>
 							<div class="settings-item">
 								<b>홈 타임라인</b>

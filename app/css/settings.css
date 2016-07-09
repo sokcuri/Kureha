@@ -6,20 +6,49 @@ body {
 	cursor: default;
 }
 
+::-webkit-scrollbar {
+	width: 14px;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	background: rgba(0,0,0,0.2);
+	border: 3px solid transparent;
+	border-radius: 99990px;
+	background-clip: padding-box;
+}
+
 #wrapper {
-	width: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
 }
 
 header.top {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
 	padding: 10px;
+	background: white;
 	box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+	z-index: 4294967295;
 }
 
 header.top span { font-weight: bold; }
 
 main {
+	margin-top: 41px;
+	box-sizing: border-box;
+	height: calc(100% - 41px);
 	padding: 10px;
 	font-size: 11pt;
+	overflow-y: auto;
 }
 
 section header {
@@ -37,6 +66,37 @@ section > div {
 }
 
 section > div .settings-item { margin-bottom: 5px; }
+
+section .multicolumn {
+	-webkit-column-count: 2;
+	column-count: 2;
+}
+
+section .multicolumn > div {
+	-webkit-break-inside: avoid-column;
+	break-inside: avoid-column;
+}
+
+.expander-item {
+	display: none;
+	margin: 5px 0 0 25px;
+	padding: 5px 10px;
+	border: 1px solid #ccd6dd;
+	border-radius: 5px;
+	background: #e1e8ed;
+	color: #66757f;
+}
+
+.expander:checked + label + label + .expander-item { display: block; }
+
+.settings-item table { width: 100%; }
+.settings-item table th { width: 100px; text-align: left; }
+.settings-item table td { text-align: right; }
+.settings-item table .flex { display: flex; text-align: left; flex-wrap: wrap; }
+.settings-item table .flex > * { width: 50%; }
+.settings-item table tr > * { padding: 10px 0; border-bottom: 1px solid #ccd6dd; }
+.settings-item table tr:first-of-type > * { padding-top: 5px; }
+.settings-item table tr:last-of-type > * { padding-bottom: 5px; border-bottom: none; }
 
 /* Custom input appearance */
 .settings-item input[type='input'] { display: flex; }
@@ -73,3 +133,5 @@ section > div .settings-item { margin-bottom: 5px; }
 	left: 17px;
 	background-color: #55acee;
 }
+
+.settings-item input[type='color'] { width: 75px; }
