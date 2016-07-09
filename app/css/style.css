@@ -495,8 +495,16 @@ body {
 	color: #1f67b5;
 }
 
+.retweeted:hover {
+	color: #065bb7;
+}
+
 .favorited {
 	color: #e81c4f;
+}
+
+.favorited:hover {
+	color: #e8023c;
 }
 
 .tweet-task {
