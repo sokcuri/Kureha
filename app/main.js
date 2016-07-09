@@ -693,10 +693,14 @@ var App = {
 				if (item.firstElementChild.style.display != 'none') {
 					item.style.height = (item.firstElementChild.getClientRects()[0].height + 10) + 'px';
 					item.firstElementChild.style.display = 'none';
+					Array.from(item.getElementsByTagName('video')).forEach(i => { i.pause() });
 				}
 			} else {
-				item.style.height = '';
-				item.firstElementChild.style.display = 'block';
+				if( item.firstElementChild.style.display == 'none') {
+					item.style.height = '';
+					item.firstElementChild.style.display = 'block';
+					Array.from(item.getElementsByTagName('video')).forEach(i => { i.play() });
+				}
 			}
 	},
 
@@ -736,6 +740,7 @@ var App = {
 		Client.get(`https://api.twitter.com/1.1/statuses/show/${e}`, {}, (error, event, response) => {
 			if(!error)
 			{
+				if(App.config.debug) console.log(event);
 				App.addItem(home_timeline, new Tweet(event));
 			}
 			else console.error(error);
@@ -943,13 +948,41 @@ function Tweet(tweet, quoted) {
 	if(entities.media)
 	{
 		var container = document.createElement('div');
-		var urls = entities.media.map(function(x){return x.media_url_https;});
-		var urlstr = urls.join(';');
-		container.setAttribute('data-media-count', entities.media.length);
-		container.className = 'tweet-media-container';
-		for (var i in urls)
-			container.innerHTML += `<div class="tweet-image"><a href="javascript:void(0)" onclick="openImageview('${urls[i]}', '${urlstr}')"><img src="${urls[i]}"/></a></div>`;
-		a.appendChild(container);
+	
+		if(entities.media[0].type == 'animated_gif')
+		{
+			container.className = 'tweet-media-container';
+			container.innerHTML += `<div class="tweet-gif">
+<video id="my-video" class="video-js" autoplay controls preload="auto" 
+  poster="${entities.media[0].media_url_https}" data-setup="{}" muted>
+    <source src="${entities.media[0].video_info.variants[0].url}" type='${entities.media[0].video_info.variants[0].content_type}'>
+  </video>
+  </div>`
+  a.appendChild(container);
+  console.log(a);
+		}
+		else if(entities.media[0].type == 'video')
+		{
+			container.className = 'tweet-media-container';
+			container.innerHTML += `<div class="tweet-video">
+<video id="my-video" class="video-js" loop autoplay controls preload="auto" 
+  poster="${entities.media[0].media_url_https}" data-setup="{}">
+    <source src="${entities.media[0].video_info.variants[0].url}" type='${entities.media[0].video_info.variants[0].content_type}'>
+  </video>
+  </div>`
+  a.appendChild(container);
+  console.log(a);
+		}
+		else
+		{
+			var urls = entities.media.map(function(x){return x.media_url_https;});
+			var urlstr = urls.join(';');
+			container.setAttribute('data-media-count', entities.media.length);
+			container.className = 'tweet-media-container';
+			for (var i in urls)
+				container.innerHTML += `<div class="tweet-image"><a href="javascript:void(0)" onclick="openImageview('${urls[i]}', '${urlstr}')"><img src="${urls[i]}"/></a></div>`;
+			a.appendChild(container);
+		}
 	}
 
 	var quoted_status = tweet.quoted_status || null;

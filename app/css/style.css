@@ -406,6 +406,20 @@ body {
 	border-radius: 5px;
 }
 
+.tweet-gif video {
+	object-fit: cover;
+    width: 100%;
+    height: 250px;
+    border-radius: 5px;
+}
+
+.tweet-video video {
+	object-fit: cover;
+    width: 100%;
+    height: 250px;
+    border-radius: 5px;
+}
+
 	.tweet.quoted
 	{
 		margin-left: 60px;
