@@ -1192,7 +1192,6 @@ window.onload = e => {
 	};
 	home_timeline.firstElementChild.onmousedown = f => {
 		window.scrolling = false;
-		home_timeline.style = '';
 		f.stopPropagation();
 	};
 	home_timeline.onmouseup = e => {
@@ -1218,6 +1217,18 @@ window.onload = e => {
 		
 		// offscreen process
 		App.procOffscreen();
+
+		// magic scroll 100px padding
+		if(App.config.magicScroll)
+		{
+			if(home_timeline.scrollTop < 100)
+			home_timeline.style.paddingTop = home_timeline.scrollTop + 'px';
+		}
+		else
+		{
+			home_timeline.style.paddingTop = '0px';
+		}
+		
 	}
 
 	notification.onscroll = () =>
