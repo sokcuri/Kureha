@@ -986,12 +986,13 @@ function Tweet(tweet, quoted) {
 		a.innerHTML += `<div class="retweeted_tweet">${symbol.retweet}<span class="retweeted_tweet_text">&nbsp;
 						<a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}')">${tweet.user.name}</a> 님이 리트윗했습니다</span></div>`
 		
-		tweet.text = tweet.retweeted_status.text;
+		/*tweet.text = tweet.retweeted_status.text;
 		tweet.created_at = tweet.retweeted_status.created_at;
 		tweet.favorited = tweet.retweeted_status.favorited;
 		tweet.retweeted = tweet.retweeted_status.retweeted;
 		tweet.favorite_count = tweet.retweeted_status.favorite_count;
-		tweet.retweet_count = tweet.retweeted_status.retweet_count;
+		tweet.retweet_count = tweet.retweeted_status.retweet_count;*/
+		tweet = tweet.retweet_status;
 	}
 
 	var embed = {
