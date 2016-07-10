@@ -395,7 +395,7 @@ var App = {
 						return;
 
 					App.addItem(home_timeline, new Tweet(tweet));
-//					addTweet(home_timeline, tweet);
+					//console.log(App.calcItemHeight(new Tweet(tweet)));
 
 					// debug flag
 					if(App.config.debug)
@@ -718,13 +718,13 @@ var App = {
 				if (item.firstElementChild.style.display != 'none') {
 					item.style.height = (item.firstElementChild.getClientRects()[0].height + 10) + 'px';
 					item.firstElementChild.style.display = 'none';
-					Array.from(item.getElementsByTagName('video')).forEach(i => { i.pause() });
+					Array.from(item.getElementsByTagName('video')).forEach(i => { if(!i.paused) i.pause() });
 				}
 			} else {
 				if( item.firstElementChild.style.display == 'none') {
 					item.style.height = '';
 					item.firstElementChild.style.display = 'block';
-					Array.from(item.getElementsByTagName('video')).forEach(i => { i.play() });
+					Array.from(item.getElementsByTagName('video')).forEach(i => { if(i.paused) i.play() });
 				}
 			}
 	},
@@ -848,6 +848,21 @@ var App = {
 			i++;
 		});
 	},
+	calcItemHeight: e => {
+		if(!document.getElementById('calcItem'))
+		{
+			var elemDiv = document.createElement('div');
+			elemDiv.style.cssText = "position: absolute; visibility: hidden";
+			elemDiv.innerHTML = '';
+			elemDiv.id = 'calcItem';
+			document.body.insertBefore(elemDiv, document.body.firstChild);
+		}
+		//document.createElement("div")
+		calcItem.innerHTML = e.element.outerHTML;
+		var result = calcItem.getClientRects()[0].height;
+		calcItem.innerHTML = "";
+		return result;
+	},
 
 	run: () => {
 		App.loadConfig(() => {
@@ -928,6 +943,25 @@ function Tweet(tweet, quoted) {
 	var a = document.createElement('article');
 	var className = quoted ? 'tweet quoted' : 'tweet';
 	a.className = 'tweet_wrapper';
+	a.setAttribute('data-t-id', tweet.id_str);
+	a.setAttribute('data-t-timestamp', new Date(Date.parse(tweet.created_at)).getTime());
+	if(tweet.retweeted_status)
+	{
+		a.setAttribute('data-t-rt-id', tweet.retweeted_status.id_str)
+		a.setAttribute('data-t-rt-timestamp', new Date(Date.parse(tweet.retweeted_status.created_at)).getTime());
+		a.setAttribute('data-t-retweeted', tweet.retweeted_status.retweeted)
+		a.setAttribute('data-t-retweet-count', tweet.retweeted_status.retweet_count)
+		a.setAttribute('data-t-favorited', tweet.retweeted_status.favorited)
+		a.setAttribute('data-t-favorite-count', tweet.retweeted_status.favorite_count)
+	}
+	else
+	{
+		a.setAttribute('data-t-retweeted', tweet.retweeted)
+		a.setAttribute('data-t-retweet-count', tweet.retweet_count)
+		a.setAttribute('data-t-favorited', tweet.favorited)
+		a.setAttribute('data-t-favorite-count', tweet.favorite_count)
+	}
+	
 	a.setAttribute('data-tweet-id', tweet.id_str);
 	a.setAttribute('data-tweet-timestamp', tweet.timestamp_ms);
 
