@@ -940,6 +940,8 @@ function tag(strings, ...values)
 	}
 }
 function Tweet(tweet, quoted) {
+	var tweet = tweet;
+	var quoted = quoted;
 	var a = document.createElement('article');
 	var className = quoted ? 'tweet quoted' : 'tweet';
 	a.className = 'tweet_wrapper';
@@ -979,7 +981,7 @@ function Tweet(tweet, quoted) {
 	if (tweet.retweeted || tweet.retweeted_status && tweet.user.id_str == App.id_str)
 		retweeted = "retweeted";
 
-	id_str_org = tweet.id_str;
+	var id_str_org = tweet.id_str;
 
 	if(tweet.retweeted_status)
 	{
@@ -1045,8 +1047,10 @@ function Tweet(tweet, quoted) {
 	var quoted_status = tweet.quoted_status || null;
 	if (!quoted && quoted_status)
 	{
+		console.warn(tweet);
 		var twt = new Tweet(quoted_status, true)
 		a.appendChild(twt.element);
+		console.warn(tweet);
 	}
 
 	a.innerHTML += `<div class="tweet-date lpad">
