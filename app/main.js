@@ -958,7 +958,7 @@ function Tweet(tweet, quoted) {
 			container.className = 'tweet-media-container';
 			container.innerHTML += `<div class="tweet-gif">
 <video id="my-video" class="video-js" loop autoplay controls preload="auto" 
-  poster="${entities.media[0].media_url_https}" data-setup="{}" muted>
+  poster="${entities.media[0].media_url_https}" data-setup="{}">
     <source src="${entities.media[0].video_info.variants[0].url}" type='${entities.media[0].video_info.variants[0].content_type}'>
   </video>
   </div>`
@@ -969,7 +969,7 @@ function Tweet(tweet, quoted) {
 			container.className = 'tweet-media-container';
 			container.innerHTML += `<div class="tweet-video">
 <video id="my-video" class="video-js" autoplay controls preload="auto" 
-  poster="${entities.media[0].media_url_https}" data-setup="{}">
+  poster="${entities.media[0].media_url_https}" data-setup="{}" muted>
     <source src="${entities.media[0].video_info.variants[0].url}" type='${entities.media[0].video_info.variants[0].content_type}'>
   </video>
   </div>`
