@@ -48,15 +48,18 @@
 				else { App.stopMainStream(); App.alertStream(false); }
 			}, false);
 
-			form['bgType'].addEventListener('click', e => App.setBackground(), false);
-			bgColor.addEventListener('change', e => App.setBackground(), false);
-			bgImage.addEventListener('change', e => App.setBackground(), false);
+			form['defaultBackground'].addEventListener('click',
+				e => App.setBackground(), false);
+			bgColor.addEventListener('change',
+				e => appHTML.style.backgroundColor = App.config.bgColor, false);
+			bgImage.addEventListener('change',
+				e => appHTML.style.backgroundImage = `url('${App.config.bgImage.replace(/\\/g, '\\\\')}')`, false);
 			form['bgPosition'].addEventListener('click',
-				e => appHTML.style.backgroundPosition = form['bgPosition'].value, false);
+				e => appHTML.style.backgroundPosition = App.config.bgPosition, false);
 			form['bgSize'].addEventListener('click',
-				e => appHTML.style.backgroundSize = form['bgSize'].value, false);
+				e => appHTML.style.backgroundSize = App.config.bgSize, false);
 			form['bgRepeat'].addEventListener('click',
-				e => appHTML.style.backgroundRepeat = form['bgRepeat'].value, false);
+				e => appHTML.style.backgroundRepeat = App.config.bgRepeat, false);
  	 	}
 
  	 	function chk_config(e)
@@ -89,7 +92,7 @@
 				<form>
 					<section>
 						<header><span>타임라인</span></header>
-						<div>
+						<div class="contents" style="margin-bottom:-1.2em"><!-- hotfix for stupid bottom margin -->
 							<div class="multicolumn">
 								<div>
 									<div class="settings-item"><b>일반</b></div>
@@ -122,41 +125,26 @@
 									</div>
 								</div>
 							</div>	
-						<!--<div class="settings-item">
-								<b>기타</b>
-							</div>
-											
-							<div class="settings-item">
-								<label>
-									<input id="placeHolder" type="checkbox"><label for="placeHolder"><div></div></label>
-									PLACEHOLDER
-								</label>
-							</div>-->
 						</div>
 					</section>
 					<section>
 						<header><span>배경</span></header>
-						<div>
-							<div class="settings-item"><b>배경 유형</b></div>
+						<div class="contents">
 							<div class="settings-item">
-								<input id="bgTypeSolid" class="expander" type="radio" name="bgType" value="solid"><label for="bgTypeSolid"></label>
-								<label for="bgTypeSolid">단색</label>
-								<div class="expander-item">
-									<table cellspacing="0">
-										<tr>
-											<th>색상</th>
-											<td><input id="bgColor" type="color"></td>
-										</tr>
-									</table>
-								</div>
+								<input id="defaultBackground" type="radio" name="defaultBackground" class="expander" value="true"><label></label>
+								<label for="defaultBackground">기본 배경 사용</label>
 							</div>
 							<div class="settings-item">
-								<input id="bgTypeImage" class="expander" type="radio" name="bgType" value="image"><label for="bgTypeImage"></label>
-								<label for="bgTypeImage">이미지</label>
+								<input id="customBackground" type="radio" name="defaultBackground" class="expander" value="false"><label></label>
+								<label for="customBackground">배경 사용자 설정</label>
 								<div class="expander-item">
 									<table cellspacing="0">
 										<tr>
-											<th>이미지 선택</th>
+											<th>배경색</th>
+											<td><input id="bgColor" type="color"></td>
+										</tr>
+										<tr>
+											<th>배경 이미지</th>
 											<td>
 												<input id="bgImage" type="file" accept=".jpg,.png" style="width:100%">
 											</td>
@@ -219,42 +207,44 @@
 					</section>
 					<section>
 						<header><span>데스크톱 알림</span></header>
-						<div class="multicolumn">
-							<div>
-								<div class="settings-item"><b>홈 타임라인</b></div>
-								<div class="settings-item">
-									<label>
-										<input id="enableHomeTLNoti" type="checkbox"><label for="enableHomeTLNoti"><div></div></label>
-										알림 표시
-									</label>
+						<div class="contents">
+							<div class="multicolumn">
+								<div>
+									<div class="settings-item"><b>홈 타임라인</b></div>
+									<div class="settings-item">
+										<label>
+											<input id="enableHomeTLNoti" type="checkbox"><label for="enableHomeTLNoti"><div></div></label>
+											알림 표시
+										</label>
+									</div>
+									<div class="settings-item">
+										<label>
+											<input id="enableHomeTLSound" type="checkbox"><label for="enableHomeTLSound"><div></div></label>
+											알림 소리 재생
+										</label>
+									</div>
 								</div>
-								<div class="settings-item">
-									<label>
-										<input id="enableHomeTLSound" type="checkbox"><label for="enableHomeTLSound"><div></div></label>
-										알림 소리 재생
-									</label>
-								</div>
-							</div>
-							<div>
-								<div class="settings-item"><b>멘션</b></div>
-								<div class="settings-item">
-									<label>
-										<input id="enableMentionTLNoti" type="checkbox"><label for="enableMentionTLNoti"><div></div></label>
-										알림 표시
-									</label>
-								</div>
-								<div class="settings-item">
-									<label>
-										<input id="enableMentionTLSound" type="checkbox"><label for="enableMentionTLSound"><div></div></label>
-										알림 소리 재생
-									</label>
+								<div>
+									<div class="settings-item"><b>멘션</b></div>
+									<div class="settings-item">
+										<label>
+											<input id="enableMentionTLNoti" type="checkbox"><label for="enableMentionTLNoti"><div></div></label>
+											알림 표시
+										</label>
+									</div>
+									<div class="settings-item">
+										<label>
+											<input id="enableMentionTLSound" type="checkbox"><label for="enableMentionTLSound"><div></div></label>
+											알림 소리 재생
+										</label>
+									</div>
 								</div>
 							</div>
 						</div>
 					</section>
 					<section>
 						<header><span>개발자 옵션</span></header>
-						<div>
+						<div class="contents">
 							<div class="settings-item">
 								<label>
 									<input id="debug" type="checkbox"><label for="debug"><div></div></label>

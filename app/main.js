@@ -106,7 +106,13 @@ var App = {
 		hideMyRetweets: true,
 		magicScroll: false,
 		magicScrollSensitivity: 250,
-		/**/
+		
+		defaultBackground: true,
+		bgColor: '#FFFFFF',
+		bgImage: '',
+		bgPosition: 'initial',
+		bgSize: 'initial',
+		bgRepeat: 'no-repeat',
 
 		debug: false
 	},
@@ -141,14 +147,17 @@ var App = {
 
 	setBackground: () => {
 		var html = document.documentElement;
-		if (App.config.bgType == 'solid')
-			html.style.background = App.config.bgColor;
-		else {
-			html.style.background = 'url("' + App.config.bgImage.replace(/\\/g, '\\\\') + '")';
-			html.style.backgroundPosition = App.config.bgPosition;
-			html.style.backgroundSize = App.config.bgSize;
-			html.style.backgroundRepeat = App.config.bgRepeat;
+		if (App.config.defaultBackground == 'true')
+		{
+			console.log('using defualt bg');
+			html.style.background = `url('arisaka_mashiro.png') center no-repeat fixed`;
+			return;
 		}
+		html.style.backgroundImage = `url('${App.config.bgImage.replace(/\\/g, '\\\\')}')`;
+		html.style.backgroundColor = App.config.bgColor;
+		html.style.backgroundPosition = App.config.bgPosition;
+		html.style.backgroundSize = App.config.bgSize;
+		html.style.backgroundRepeat = App.config.bgRepeat;
 	},
 
 	saveConfig: callback => {
@@ -875,6 +884,8 @@ var App = {
 					//getAboutme();
 				}
 			});
+
+			App.setBackground();
 		});
 	},
 }

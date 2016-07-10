@@ -61,11 +61,11 @@ section header span {
 	font-weight: bold;
 }
 
-section > div {
+section > .contents {
 	padding: 5px;
 }
 
-section > div .settings-item { margin-bottom: 5px; }
+section > .contents .settings-item { margin-bottom: 5px; }
 
 section .multicolumn {
 	-webkit-column-count: 2;
