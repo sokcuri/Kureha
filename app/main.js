@@ -125,8 +125,8 @@ var App = {
 		jsonfile.readFile('./config.json', (err, obj) => {
 			if(!err)
 			{
-				console.info('loadConfig Successed.');
-				for (var attr in obj) { App.config[attr] = obj[attr]; }
+				console.info('loadConfig Succeeded.');
+				App.config = obj;
 				if(callback)
 					callback();
 			}
@@ -139,11 +139,23 @@ var App = {
 		});
 	},
 
+	setBackground: () => {
+		var html = document.documentElement;
+		if (App.config.bgType == 'solid')
+			html.style.background = App.config.bgColor;
+		else {
+			html.style.background = 'url("' + App.config.bgImage.replace(/\\/g, '\\\\') + '")';
+			html.style.backgroundPosition = App.config.bgPosition;
+			html.style.backgroundSize = App.config.bgSize;
+			html.style.backgroundRepeat = App.config.bgRepeat;
+		}
+	},
+
 	saveConfig: callback => {
 		var jsonfile = require('jsonfile');
 		jsonfile.spaces = 4;
 		jsonfile.writeFile('./config.json', App.config, (err) => {
-			if(!err) console.info('saveConfig Successed.');
+			if(!err) console.info('saveConfig Succeeded.');
 			else console.warn(`saveConfig Failed: \r\n${Util.inspect(err)}`);
 
 			if(callback) callback();
@@ -1245,6 +1257,8 @@ document.addEventListener('webkitfullscreenchange', () => {
 }, false);
 
 window.onload = e => {
+	App.document = document;
+
 	// scrollbar hack
 	home_timeline.onmousedown = () => {
 		window.scrolling = true;
@@ -1318,7 +1332,7 @@ window.onload = e => {
 		else if (tl.scrollTop == 0 && dy > 0)
 		{
 			magicScroll = true;
-			setTimeout(() => {window.magicScroll = false;}, 250);
+			setTimeout(() => {window.magicScroll = false;}, App.config.magicScrollSensitivity);
 			tl.style.paddingTop = `${dy}px`;
 			tl.scrollTop = dy;
 			return false;
