@@ -718,13 +718,13 @@ var App = {
 				if (item.firstElementChild.style.display != 'none') {
 					item.style.height = (item.firstElementChild.getClientRects()[0].height + 10) + 'px';
 					item.firstElementChild.style.display = 'none';
-					Array.from(item.getElementsByTagName('video')).forEach(i => { if(!i.paused) i.pause() });
+					Array.from(item.getElementsByTagName('video')).forEach(i => {i.pause(); setTimeout(function() { i.currentTime = 0; i.play(); }, 150) });
 				}
 			} else {
 				if( item.firstElementChild.style.display == 'none') {
 					item.style.height = '';
 					item.firstElementChild.style.display = 'block';
-					Array.from(item.getElementsByTagName('video')).forEach(i => { if(i.paused) i.play() });
+					Array.from(item.getElementsByTagName('video')).forEach(i => {i.pause(); setTimeout(function() { i.currentTime = 0; i.play(); }, 150) });
 				}
 			}
 	},
@@ -1016,9 +1016,11 @@ function Tweet(tweet, quoted) {
 			container.innerHTML += `<div class="tweet-gif">
 <video id="my-video" class="video-js" loop autoplay controls preload="auto" 
   poster="${entities.media[0].media_url_https}" data-setup="{}">
-    <source src="${entities.media[0].video_info.variants[0].url}" type='${entities.media[0].video_info.variants[0].content_type}'>
   </video>
-  </div>`
+  </div>`;
+
+  for(i in entities.media[0].video_info.variants)
+  	container.getElementsByTagName('video')[0].innerHTML += `<source src="${entities.media[0].video_info.variants[i].url}" type='${entities.media[0].video_info.variants[i].content_type}'>`;
   a.appendChild(container);
 		}
 		else if(entities.media[0].type == 'video')
@@ -1027,9 +1029,12 @@ function Tweet(tweet, quoted) {
 			container.innerHTML += `<div class="tweet-video">
 <video id="my-video" class="video-js" autoplay controls preload="auto" 
   poster="${entities.media[0].media_url_https}" data-setup="{}" muted>
-    <source src="${entities.media[0].video_info.variants[0].url}" type='${entities.media[0].video_info.variants[0].content_type}'>
   </video>
-  </div>`
+  </div>`;
+
+  for(i in entities.media[0].video_info.variants)
+  	container.getElementsByTagName('video')[0].innerHTML += `<source src="${entities.media[0].video_info.variants[i].url}" type='${entities.media[0].video_info.variants[i].content_type}'>`;
+
   a.appendChild(container);
 		}
 		else
