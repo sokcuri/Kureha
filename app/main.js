@@ -992,7 +992,7 @@ function Tweet(tweet, quoted) {
 		tweet.retweeted = tweet.retweeted_status.retweeted;
 		tweet.favorite_count = tweet.retweeted_status.favorite_count;
 		tweet.retweet_count = tweet.retweeted_status.retweet_count;*/
-		tweet = tweet.retweet_status;
+		tweet = tweet.retweeted_status;
 	}
 
 	var embed = {
@@ -1019,9 +1019,11 @@ function Tweet(tweet, quoted) {
 	
 		if(entities.media[0].type == 'animated_gif' || entities.media[0].type == 'video')
 		{
+			var muted = (entities.media[0].type == 'video') ? 'muted' : ''; 
 			var loop = (entities.media[0].type == 'animated_gif') ? 'loop' : '';
+			var type = (entities.media[0].type == 'animated_gif') ? 'tweet-gif' : 'tweet-video';
 			container.className = 'tweet-media-container';
-			container.innerHTML += `<div class="tweet-gif"><video id="my-video" class="video-js" ${loop} autoplay controls preload="auto" poster="${entities.media[0].media_url_https}" data-setup="{}"></video></div>`;
+			container.innerHTML += `<div class="${type}"><video id="my-video" class="video-js" ${loop} ${muted} autoplay controls preload="auto" poster="${entities.media[0].media_url_https}" data-setup="{}"></video></div>`;
 
 			for(i in entities.media[0].video_info.variants)
 				container.getElementsByTagName('video')[0].innerHTML += `<source src="${entities.media[0].video_info.variants[i].url}" type='${entities.media[0].video_info.variants[i].content_type}'>`;
