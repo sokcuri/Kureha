@@ -1472,6 +1472,7 @@ function scrollTo(element, to, duration) {
 
     setTimeout(() => {
         element.scrollTop = element.scrollTop + perTick;
+		App.procOffscreen(); 
         if (element.scrollTop === to) return;
         scrollTo(element, to, duration - 10);
     }, 10);
