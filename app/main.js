@@ -107,6 +107,7 @@ var App = {
 		magicScroll: false,
 		magicScrollSensitivity: 250,
 		
+		tweetOpacity: 70,
 		defaultBackground: true,
 		bgColor: '#FFFFFF',
 		bgImage: '',
@@ -124,6 +125,7 @@ var App = {
 
 	tweetUploader: new TweetUploader(),
 	mediaUploader: new MediaSelector(),
+	styleSheet: document.createElement('style'),
 
 	// Load Config
 	loadConfig: callback => {
@@ -149,7 +151,6 @@ var App = {
 		var html = document.documentElement;
 		if (App.config.defaultBackground == 'true')
 		{
-			console.log('using defualt bg');
 			html.style.background = `url('arisaka_mashiro.png') center no-repeat fixed`;
 			return;
 		}
@@ -809,7 +810,7 @@ var App = {
 	addItem: (t, e) => {
 		var tl = t.firstElementChild;
 
-		// 100개가 넘어가면 90개만 남기고 나머지를 비운다
+		// 200개가 넘어가면 190개만 남기고 나머지를 비운다
 		if(tl.childElementCount > 200)
 			App.removeItems(t, 190);
 
@@ -868,6 +869,9 @@ var App = {
 	run: () => {
 		App.loadConfig(() => {
 			App.initializeClient(App.config.ConsumerKey, App.config.ConsumerSecret, App.config.AccessToken, App.config.AccessSecret);
+			App.setBackground();
+			App.styleSheet.innerHTML = `.tweet{background-color:rgba(255,255,255,${App.config.tweetOpacity/100.0})}`;
+			document.body.appendChild(App.styleSheet);
 				
 			if(!App.config.AccessToken || !App.config.AccessSecret)
 			{
@@ -900,8 +904,6 @@ var App = {
 					//getAboutme();
 				}
 			});
-
-			App.setBackground();
 		});
 	},
 }

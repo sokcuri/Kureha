@@ -35,6 +35,8 @@
 					form[key].value = config[key];
 			}
 
+			tweetOpacity.nextElementSibling.innerHTML = App.config.tweetOpacity + '%';
+
 			var inputs = document.getElementsByTagName('input');
 			for (input of inputs) {
 				if (input.type == 'checkbox' || input.type == 'radio')
@@ -47,6 +49,11 @@
 				if (runStream.checked) { App.runMainStream(); App.alertStream(true); }
 				else { App.stopMainStream(); App.alertStream(false); }
 			}, false);
+
+			tweetOpacity.addEventListener('input', e => {
+				App.styleSheet.innerHTML = `.tweet{background-color:rgba(255,255,255,${tweetOpacity.value/100.0})}`;
+				tweetOpacity.nextElementSibling.innerHTML = tweetOpacity.value + '%';
+			})
 
 			form['defaultBackground'].addEventListener('click',
 				e => App.setBackground(), false);
@@ -92,7 +99,7 @@
 				<form>
 					<section>
 						<header><span>타임라인</span></header>
-						<div class="contents" style="margin-bottom:-1.2em"><!-- hotfix for stupid bottom margin -->
+						<div class="contents"><!-- hotfix for stupid bottom margin -->
 							<div class="multicolumn">
 								<div>
 									<div class="settings-item"><b>일반</b></div>
@@ -107,6 +114,13 @@
 											<input id="hideMyRetweets" type="checkbox"><label for="hideMyRetweets"><div></div></label>
 											자신의 리트윗 숨기기
 										</label>
+									</div>
+								</div>
+								<div>
+									<div class="settings-item"><b>트윗 배경 불투명도</b></div>
+									<div class="settings-item" style="display:flex">
+										<input id="tweetOpacity" type="range" min="0" max="100" value="70" style="flex:1">
+										<label for="tweetOpacity" style="margin-left:10px;width:40px;text-align:right">000%</label>
 									</div>
 								</div>
 								<div>
