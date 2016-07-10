@@ -516,7 +516,7 @@ body {
 }
 
 .retweeted:hover {
-	color: #065bb7;
+	color: #065bb7 !important;
 }
 
 .favorited {
@@ -524,7 +524,7 @@ body {
 }
 
 .favorited:hover {
-	color: #e8023c;
+	color: #e8023c !important;
 }
 
 .tweet-task {
