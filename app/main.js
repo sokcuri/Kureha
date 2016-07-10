@@ -747,7 +747,8 @@ var App = {
 			if (name != tweet_author && name != App.screen_name)
 				usernames.push(name);
 
-		App.tweetUploader.text = usernames.map(x => '@' + x).join(' ') + ' ';
+		App.tweetUploader.text = usernames.map(x => '@' + x).join(' ');
+		if(App.tweetUploader.text) App.tweetUploader.text += ' ';
 		App.tweetUploader.inReplyTo = {id: id, name: obj['user_name'], screen_name: tweet_author, text: obj['text']};
 	},
 
@@ -1047,10 +1048,8 @@ function Tweet(tweet, quoted) {
 	var quoted_status = tweet.quoted_status || null;
 	if (!quoted && quoted_status)
 	{
-		console.warn(tweet);
 		var twt = new Tweet(quoted_status, true)
 		a.appendChild(twt.element);
-		console.warn(tweet);
 	}
 
 	a.innerHTML += `<div class="tweet-date lpad">
