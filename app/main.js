@@ -718,13 +718,13 @@ var App = {
 				if (item.firstElementChild.style.display != 'none') {
 					item.style.height = (item.firstElementChild.getClientRects()[0].height + 10) + 'px';
 					item.firstElementChild.style.display = 'none';
-					Array.from(item.getElementsByTagName('video')).forEach(i => {i.pause(); setTimeout(function() { i.currentTime = 0; i.play(); }, 150) });
+					Array.from(item.getElementsByTagName('video')).forEach(i => {i.pause();i.currentTime = 0;});
 				}
 			} else {
 				if( item.firstElementChild.style.display == 'none') {
 					item.style.height = '';
 					item.firstElementChild.style.display = 'block';
-					Array.from(item.getElementsByTagName('video')).forEach(i => {i.pause(); setTimeout(function() { i.currentTime = 0; i.play(); }, 150) });
+					Array.from(item.getElementsByTagName('video')).forEach(i => {i.play();});
 				}
 			}
 	},
@@ -985,7 +985,13 @@ function Tweet(tweet, quoted) {
 	{
 		a.innerHTML += `<div class="retweeted_tweet">${symbol.retweet}<span class="retweeted_tweet_text">&nbsp;
 						<a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}')">${tweet.user.name}</a> 님이 리트윗했습니다</span></div>`
-		tweet = tweet.retweeted_status;
+		
+		tweet.text = tweet.retweeted_status.text;
+		tweet.created_at = tweet.retweeted_status.created_at;
+		tweet.favorited = tweet.retweeted_status.favorited;
+		tweet.retweeted = tweet.retweeted_status.retweeted;
+		tweet.favorite_count = tweet.retweeted_status.favorite_count;
+		tweet.retweet_count = tweet.retweeted_status.retweet_count;
 	}
 
 	var embed = {
@@ -1010,32 +1016,16 @@ function Tweet(tweet, quoted) {
 	{
 		var container = document.createElement('div');
 	
-		if(entities.media[0].type == 'animated_gif')
+		if(entities.media[0].type == 'animated_gif' || entities.media[0].type == 'video')
 		{
+			var loop = (entities.media[0].type == 'animated_gif') ? 'loop' : '';
 			container.className = 'tweet-media-container';
-			container.innerHTML += `<div class="tweet-gif">
-<video id="my-video" class="video-js" loop autoplay controls preload="auto" 
-  poster="${entities.media[0].media_url_https}" data-setup="{}">
-  </video>
-  </div>`;
+			container.innerHTML += `<div class="tweet-gif"><video id="my-video" class="video-js" ${loop} autoplay controls preload="auto" poster="${entities.media[0].media_url_https}" data-setup="{}"></video></div>`;
 
-  for(i in entities.media[0].video_info.variants)
-  	container.getElementsByTagName('video')[0].innerHTML += `<source src="${entities.media[0].video_info.variants[i].url}" type='${entities.media[0].video_info.variants[i].content_type}'>`;
-  a.appendChild(container);
-		}
-		else if(entities.media[0].type == 'video')
-		{
-			container.className = 'tweet-media-container';
-			container.innerHTML += `<div class="tweet-video">
-<video id="my-video" class="video-js" autoplay controls preload="auto" 
-  poster="${entities.media[0].media_url_https}" data-setup="{}" muted>
-  </video>
-  </div>`;
+			for(i in entities.media[0].video_info.variants)
+				container.getElementsByTagName('video')[0].innerHTML += `<source src="${entities.media[0].video_info.variants[i].url}" type='${entities.media[0].video_info.variants[i].content_type}'>`;
 
-  for(i in entities.media[0].video_info.variants)
-  	container.getElementsByTagName('video')[0].innerHTML += `<source src="${entities.media[0].video_info.variants[i].url}" type='${entities.media[0].video_info.variants[i].content_type}'>`;
-
-  a.appendChild(container);
+			a.appendChild(container);
 		}
 		else
 		{
@@ -1056,11 +1046,10 @@ function Tweet(tweet, quoted) {
 		a.appendChild(twt.element);
 	}
 
-	a.innerHTML += `
-		<div class="tweet-date lpad">
-		<a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}')">
-		${new Date(Date.parse(tweet.created_at)).format("a/p hh:mm - yyyy년 MM월 dd일")}
-		</a> · ${tagRemove(tweet.source)}</div>`;
+	a.innerHTML += `<div class="tweet-date lpad">
+					<a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}')">
+					${new Date(Date.parse(tweet.created_at)).format("a/p hh:mm - yyyy년 MM월 dd일")}
+					</a> · ${tagRemove(tweet.source)}</div>`;
 	if (!tweet.retweet_count)
 		tweet.retweet_count = "";
 	if (!tweet.favorite_count)
@@ -1068,11 +1057,11 @@ function Tweet(tweet, quoted) {
 
 	if (!quoted)
 		a.innerHTML += `<div aria-label="트윗 작업" role="group" class="tweet-task lpad">
-					 <div class="tweet-task-box"><button aria-label="답글" data-testid="reply" type="button" onclick="App.tryReply('${id_str_org}')">
-					 <span>${symbol.reply}</span></button></div><div class="tweet-task-box ${retweeted}" data-retweet="${id_str_org}"><button aria-label="리트윗" data-testid="retweet" type="button" onclick="App.execRetweet('${id_str_org}')">
-					 <span class="tweet-task-count">${symbol.retweet}&nbsp;<span><span data-retweet-count="${id_str_org}">${tweet.retweet_count}</span></span></span></button>
-					 </div><div class="tweet-task-box ${favorited}" data-favorite="${id_str_org}"><button aria-label="마음에 들어요" data-testid="like" type="button" onclick="App.execFavorite('${id_str_org}')"><span>${symbol.like}&nbsp;
-					 <span class="tweet-task-count"><span data-favorite-count="${id_str_org}">${tweet.favorite_count}</span></span></span></button></div></div>`;
+						<div class="tweet-task-box"><button aria-label="답글" data-testid="reply" type="button" onclick="App.tryReply('${id_str_org}')">
+					 	<span>${symbol.reply}</span></button></div><div class="tweet-task-box ${retweeted}" data-retweet="${id_str_org}"><button aria-label="리트윗" data-testid="retweet" type="button" onclick="App.execRetweet('${id_str_org}')">
+					 	<span class="tweet-task-count">${symbol.retweet}&nbsp;<span><span data-retweet-count="${id_str_org}">${tweet.retweet_count}</span></span></span></button>
+					 	</div><div class="tweet-task-box ${favorited}" data-favorite="${id_str_org}"><button aria-label="마음에 들어요" data-testid="like" type="button" onclick="App.execFavorite('${id_str_org}')"><span>${symbol.like}&nbsp;
+					 	<span class="tweet-task-count"><span data-favorite-count="${id_str_org}">${tweet.favorite_count}</span></span></span></button></div></div>`;
 
 	a.innerHTML = `<div class="${className}">${a.innerHTML}</div>`;
 	this.element = a;
