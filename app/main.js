@@ -1217,18 +1217,17 @@ function MediaSelector() {
 
 	fileInput.onchange = e => {
 		this.addFile(fileInput.value);
-		fileInput.value = '';
-		if (this.selectedFiles.length == 4)
-		{
-			fileInput.disabled = true;
-			fileInputContainer.classList.add('disabled');
-		}
 	};
 
 	this.element = e;
 	this.selectedFiles = [];
 
 	this.addFile = path => {
+		if (this.selectedFiles.length == 4)
+		{
+			App.showMsgBox('이미지는 4개까지 첨부할 수 있습니다.', 'tomato', 3000);
+			return;
+		}
 		if (this.selectedFiles.indexOf(path) != -1)
 		{
 			App.showMsgBox('같은 파일을 중복으로 선택할 수 없습니다.', 'tomato', 3000);
@@ -1254,6 +1253,13 @@ function MediaSelector() {
 			return e;
 		})());
 		this.selectedFiles.push(path);
+		
+		fileInput.value = '';
+		if (this.selectedFiles.length == 4)
+		{
+			fileInput.disabled = true;
+			fileInputContainer.classList.add('disabled');
+		}
 	};
 
 	this.reset = () => {
