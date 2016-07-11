@@ -509,20 +509,20 @@ body {
 .retweeted_tweet_text {
 }
 
-.retweeted {
+article.retweeted button.retweet {
 /*	color: #19cf86;*/
 	color: #1f67b5;
 }
 
-.retweeted:hover {
+article.retweeted button.retweet:hover {
 	color: #065bb7 !important;
 }
 
-.favorited {
+article.favorited button.like {
 	color: #e81c4f;
 }
 
-.favorited:hover {
+article.favorited button.like:hover {
 	color: #e8023c !important;
 }
 
