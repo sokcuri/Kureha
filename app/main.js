@@ -874,8 +874,25 @@ function Tweet(tweet, quoted) {
 		text: tweet.text
 	};
 	a.setAttribute('data-json', JSON.stringify(embed));
-	text = urlify(tweet.text);
+
+	// 텍스트에 링크걸기
+	var text_obj = [];
+	var entity = [tweet.entities.hashtags, tweet.entities.urls, tweet.entities.user_mentions, (tweet.entities.media ? tweet.entities.media : '')];
+	for (ent of entity)
+		for (item of ent)
+			text_obj.push(item);
+	text = Twitter_text.autoLink(tweet.text, {urlEntities: text_obj});
+
+	// 팝업 창에서 링크가 열리게끔 수정
+	text = text.replace(/(<a[^>]*) href="([^"]*)"/g, '$1 href="javascript:void(0)" onclick="openPopup(\'$2\')"');
+
+	// @(아이디) 꼴 골뱅이에도 링크가 붙도록 변경
+	text = text.replace(/@(<a[^>]* class="tweet-url username" [^>]*>)/, '$1@');
+
+	// 공백을 <br>로 치환
 	text = text.replace(/(\r\n|\n|\r)/gm, '<br>');
+
+	// 이모지 파싱
 	text = twemoji.parse(text)
 	
 	div.innerHTML += `<img class="profile-image" src="${tweet.user.profile_image_url_https}"></img>
