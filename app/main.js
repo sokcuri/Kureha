@@ -1,3 +1,5 @@
+var os = require('os');
+
 // string formatting
 if(!String.prototype.format) 
 {
@@ -1116,9 +1118,14 @@ function TweetUploader() {
 						if (!error) {
 							console.log(media);
 							files[index] = media;
+							// 임시폴더에 있는 파일은 지운다.
+							if (path[index].indexOf(os.tmpdir()) === 0) {
+								fs.unlink(path[index], () => {});
+							}
 							// make sure all fies are successfully uploaded.
-							if (files.filter(f => f !== undefined).length === path.length)
+							if (files.filter(f => f !== undefined).length === path.length) {
 								return _ex(files.map(x => x.media_id_string).join(','));
+							}
 						}
 						else return App.showMsgBox(`오류가 발생했습니다<br />${error[0].code}: ${error[0].message}`, "tomato", 5000);
 					});
@@ -1358,6 +1365,50 @@ window.onload = e => {
 			tl.style.paddingTop = 0;
 		}
 	}
+
+	App.document.body.addEventListener('paste', function(event) {
+		/* 작동설명:
+		 * 트윗덱 붙여넣기 스크립트와 달리, 파일을 직접 입력받지 않는 대신
+		 * 파일의 경로를 받고 이를 읽어서 업로드를 한다.
+		 * 따라서, 쿠레하는
+		 * 1. 클립보드에서 이미지를 읽음
+		 * 2. 이미지를 임시파일에 씀 (util.js createTempFile 함수)
+		 * 3. 2번과정에서 쓴 파일을 갖고 mediaSelector.addFile 메서드 호출
+		 * 4. 업로드하고 나면 임시파일 삭제
+		 */
+		var fileToUpload;
+		try {
+			let clipdata = event.clipboardData;
+			let items = clipdata.items;
+			let item = items[0];
+			if (item.kind === 'file') {
+				fileToUpload = item.getAsFile();
+			}
+		} catch (e) {
+			return;
+		}
+		if (!fileToUpload) return;
+		let upload = (path) => {
+			let uploader = App.tweetUploader;
+			if (!uploader.isOpen) {
+				uploader.openPanel();
+			}
+			let mediaSelector = uploader.mediaSelector;
+			mediaSelector.addFile(path);
+		};
+		let reader = new FileReader();
+		reader.onload = () => {
+			let rawdata = reader.result;
+			createTempFile(rawdata, (err, path) => {
+				if (err) {
+					alert('업로드에 실패했습니다!');
+					return;
+				}
+				upload(path);
+			});
+		};
+		reader.readAsBinaryString(fileToUpload);
+	});
 	
 	header_navi.innerHTML += `<span class="navigator selected" onclick="naviSelect(0)"><a href="javascript:void(0)">${symbol.home}</a></div>`;
 	header_navi.innerHTML += `<span class="navigator" onclick="naviSelect(1)"><a href="javascript:void(0)">${symbol.noti}</a></div>`;
