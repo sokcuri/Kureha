@@ -1,3 +1,6 @@
+var os = require('os');
+var fs = require('fs');
+var path = require('path');
 
 function urlify(text) {
 var urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -69,4 +72,13 @@ function getOffscreenHPos(el) {
 	else if (el.offsetTop > home_timeline.scrollTop + home_timeline.getClientRects()[0].height)
 		return 1;
 	else return 0;
+}
+
+function createTempFile(content, callback) {
+	let tmpdir = os.tmpdir();
+	let filename = 'krhTemp-' + Date.now();
+	let filepath = path.join(tmpdir, filename);
+	fs.writeFile(filepath, content, 'binary', (error) => {
+		callback(error, filepath);
+	});
 }
