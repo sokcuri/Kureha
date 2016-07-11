@@ -127,6 +127,11 @@ var App = {
 	mediaUploader: new MediaSelector(),
 	styleSheet: document.createElement('style'),
 
+	timelines: {
+		home_timeline: [],
+		notification: []
+	},
+
 	// Load Config
 	loadConfig: callback => {
 		var jsonfile = require('jsonfile');
@@ -942,11 +947,30 @@ function tag(strings, ...values)
 		console.log(s);
 	}
 }
+
 function Tweet(tweet, quoted) {
 	var tweet = tweet;
 	var quoted = quoted;
 	var a = document.createElement('article');
 	var className = quoted ? 'tweet quoted' : 'tweet';
+
+	this.id = tweet.id_str;
+	this.timestamp = new Date(Date.parse(tweet.created_at)).getTime();
+	this.isFavorited = tweet.favorited;
+	this.favoriteCount = tweet.favorite_count;
+	this.isRetweeted = tweet.retweeted;
+	this.retweetCount = tweet.retweet_count;
+	this.hasRetweet = tweet.retweeted_status ? true : false;
+	if (this.hasRetweet)
+		this.retweet = {
+			id: tweet.retweeted_status.id_str,
+			timestamp: new Date(Date.parse(tweet.retweeted_status.created_at)).getTime(),
+			isFavorited: tweet.retweeted_status.favorited,
+			favoriteCount: tweet.retweeted_status.favorite_count,
+			isRetweeted: tweet.retweeted_status.retweeted,
+			retweetCount: tweet.retweeted_status.retweet_count
+		}
+
 	a.className = 'tweet_wrapper';
 	a.setAttribute('data-t-id', tweet.id_str);
 	a.setAttribute('data-t-timestamp', new Date(Date.parse(tweet.created_at)).getTime());
@@ -986,9 +1010,12 @@ function Tweet(tweet, quoted) {
 
 	var id_str_org = tweet.id_str;
 
+	var div = document.createElement('div');
+	div.className = className;
+
 	if(tweet.retweeted_status)
 	{
-		a.innerHTML += `<div class="retweeted_tweet">${symbol.retweet}<span class="retweeted_tweet_text">&nbsp;
+		div.innerHTML += `<div class="retweeted_tweet">${symbol.retweet}<span class="retweeted_tweet_text">&nbsp;
 						<a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}')">${tweet.user.name}</a> 님이 리트윗했습니다</span></div>`
 		
 		/*tweet.text = tweet.retweeted_status.text;
@@ -1011,7 +1038,7 @@ function Tweet(tweet, quoted) {
 	text = text.replace(/(\r\n|\n|\r)/gm, '<br>');
 	text = twemoji.parse(text)
 	
-	a.innerHTML += `<img class="profile-image" src=${tweet.user.profile_image_url_https}></img>
+	div.innerHTML += `<img class="profile-image" src="${tweet.user.profile_image_url_https}"></img>
 					<div class="tweet-name"><a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}')">
 					<strong>${tweet.user.name}</strong>
 					<span class="tweet-id">@${tweet.user.screen_name}</span></a></div>
@@ -1033,7 +1060,7 @@ function Tweet(tweet, quoted) {
 			for(i in entities.media[0].video_info.variants)
 				container.getElementsByTagName('video')[0].innerHTML += `<source src="${entities.media[0].video_info.variants[i].url}" type='${entities.media[0].video_info.variants[i].content_type}'>`;
 
-			a.appendChild(container);
+			div.appendChild(container);
 		}
 		else
 		{
@@ -1043,7 +1070,7 @@ function Tweet(tweet, quoted) {
 			container.className = 'tweet-media-container';
 			for (var i in urls)
 				container.innerHTML += `<div class="tweet-image"><a href="javascript:void(0)" onclick="openImageview('${urls[i]}', '${urlstr}')"><img src="${urls[i]}"/></a></div>`;
-			a.appendChild(container);
+			div.appendChild(container);
 		}
 	}
 
@@ -1051,10 +1078,10 @@ function Tweet(tweet, quoted) {
 	if (!quoted && quoted_status)
 	{
 		var twt = new Tweet(quoted_status, true)
-		a.appendChild(twt.element);
+		div.appendChild(twt.element);
 	}
 
-	a.innerHTML += `<div class="tweet-date lpad">
+	div.innerHTML += `<div class="tweet-date lpad">
 					<a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}')">
 					${new Date(Date.parse(tweet.created_at)).format("a/p hh:mm - yyyy년 MM월 dd일")}
 					</a> · ${tagRemove(tweet.source)}</div>`;
@@ -1064,15 +1091,78 @@ function Tweet(tweet, quoted) {
 		tweet.favorite_count = "";
 
 	if (!quoted)
-		a.innerHTML += `<div aria-label="트윗 작업" role="group" class="tweet-task lpad">
-						<div class="tweet-task-box"><button aria-label="답글" data-testid="reply" type="button" onclick="App.tryReply('${id_str_org}')">
-					 	<span>${symbol.reply}</span></button></div><div class="tweet-task-box ${retweeted}" data-retweet="${id_str_org}"><button aria-label="리트윗" data-testid="retweet" type="button" onclick="App.execRetweet('${id_str_org}')">
+	{
+		var _e = document.createElement('div');
+		_e.innerHTML += `<div aria-label="트윗 작업" role="group" class="tweet-task lpad">
+						<div class="tweet-task-box"><button aria-label="답글" class="reply" data-testid="reply" type="button"">
+					 	<span>${symbol.reply}</span></button></div><div class="tweet-task-box ${retweeted}" data-retweet="${id_str_org}"><button aria-label="리트윗" class="retweet" data-testid="retweet" type="button">
 					 	<span class="tweet-task-count">${symbol.retweet}&nbsp;<span><span data-retweet-count="${id_str_org}">${tweet.retweet_count}</span></span></span></button>
-					 	</div><div class="tweet-task-box ${favorited}" data-favorite="${id_str_org}"><button aria-label="마음에 들어요" data-testid="like" type="button" onclick="App.execFavorite('${id_str_org}')"><span>${symbol.like}&nbsp;
+					 	</div><div class="tweet-task-box ${favorited}" data-favorite="${id_str_org}"><button aria-label="마음에 들어요" class="like" data-testid="like" type="button" onclick="App.execFavorite('${id_str_org}')"><span>${symbol.like}&nbsp;
 					 	<span class="tweet-task-count"><span data-favorite-count="${id_str_org}">${tweet.favorite_count}</span></span></span></button></div></div>`;
+		var replyButton = _e.getElementsByClassName('reply')[0],
+			retweetButton = _e.getElementsByClassName('retweet')[0],
+			likeButton = _e.getElementsByClassName('like')[0];
+		replyButton.addEventListener('click', evt => tryReply(), false);
+		retweetButton.addEventListener('click', evt => execRetweet(), false);
+		div.appendChild(_e.firstElementChild);
+	}
 
-	a.innerHTML = `<div class="${className}">${a.innerHTML}</div>`;
+	//a.innerHTML = `<div class="${className}">${a.innerHTML}</div>`;
+	a.appendChild(div);
 	this.element = a;
+
+	var tryReply = () => {	
+		App.tweetUploader.openPanel();
+		var usernames = [],
+			tweet_author = tweet.user.screen_name;
+		if (tweet_author != App.screen_name) usernames.push(tweet_author);
+		for (var name of Twitter_text.extractMentions(tweet.text))
+			if (name != tweet_author && name != App.screen_name)
+				usernames.push(name);
+
+		App.tweetUploader.text = usernames.map(x => '@' + x).join(' ');
+		if(App.tweetUploader.text) App.tweetUploader.text += ' ';
+		App.tweetUploader.inReplyTo = {id: tweet.id_str, name: tweet.user.name, screen_name: tweet_author, text: tweet.text};
+	};
+
+	var execRetweet = () => {
+		if (!this.isRetweeted)
+		{
+			this.isRetweeted = true;
+			App.showMsgBox("리트윗했습니다", "blue", 1000);
+			App.chkRetweet(tweet.id_str, true, 'auto');
+			Client.post(`statuses/retweet/${tweet.id_str}`, (error, tweet, response) => {
+				if (error) {
+					console.warn(error);
+					// already retweeted
+					if(error[0].code == 327)
+					{
+						App.showMsgBox("이미 리트윗한 트윗입니다", "tomato", 1000);
+						return;
+					}
+
+					App.showMsgBox(`오류가 발생했습니다<br />${error[0].code}: ${error[0].message}`, "tomato", 5000);
+					App.chkRetweet(tweet.id_str, false, 'auto');
+				}
+				else { }
+			});
+		}
+		else
+		{
+			this.isRetweeted = false;
+			App.showMsgBox("언리트윗했습니다", "blue", 1000);
+			App.chkRetweet(tweet.id_str, false, 'auto');
+
+			Client.post('statuses/unretweet/' + tweet.id_str, (error, tweet, response) => {
+				if (error) {
+					console.warn(error);
+					App.chkRetweet(tweet.id_str, true, 'auto');
+				}
+				else { }
+			});
+		}
+		document.activeElement.blur();
+	}
 }
 
 function TweetUploader() {
