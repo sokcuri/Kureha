@@ -490,6 +490,64 @@ body {
 	padding: 0;
 }
 
+.retweeted_retweeted_tweet {
+	margin: 0 60px 5px 66px;
+	color: #555;
+}
+
+.retweeted_retweeted_tweet svg {
+	margin-left: -30px;
+	display: inline-block;
+	fill: currentcolor;
+	height: 1.25em;
+	max-width: 100%;
+	position: relative;
+	-webkit-user-select: none;
+	vertical-align: text-bottom;
+	color: #1f67b5;
+}
+
+.retweeted_retweeted_tweet img {
+	vertical-align: middle;
+    width: 25px;
+    height: 25px;
+    margin-bottom: 0px;
+    float: none;
+    margin-top: -5px;
+	margin-right: 10px;
+    border-radius: 4px;
+	margin-right: 5px;
+}
+
+.favorited_retweeted_tweet {
+	margin: 0 60px 5px 66px;
+	color: #555;
+}
+
+.favorited_retweeted_tweet svg {
+	margin-left: -30px;
+	display: inline-block;
+	fill: currentcolor;
+	height: 1.25em;
+	max-width: 100%;
+	position: relative;
+	-webkit-user-select: none;
+	vertical-align: text-bottom;
+	color: #e81c4f;
+}
+
+.favorited_retweeted_tweet img {
+	vertical-align: middle;
+    width: 25px;
+    height: 25px;
+    margin-bottom: 0px;
+    float: none;
+    margin-top: -5px;
+	margin-right: 10px;
+    border-radius: 4px;
+	margin-right: 5px;
+}
+
 .retweeted_tweet {
 	margin: 0 60px 5px 62px;
 	color: #555;
@@ -504,9 +562,6 @@ body {
 	position: relative;
 	-webkit-user-select: none;
 	vertical-align: text-bottom;
-}
-
-.retweeted_tweet_text {
 }
 
 article.retweeted button.retweet {

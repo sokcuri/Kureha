@@ -461,6 +461,11 @@ var App = {
 					if(target)
 						target.classList.add('deleted');
 				}
+				else if (tweet.event == 'retweeted_retweet' || tweet.event == 'favorited_retweet')
+				{
+					App.addItem(notification, new Tweet(tweet.target_object, false, tweet.event, tweet.source));
+					console.log(tweet);
+				}
 				else
 				{
 					console.log(tweet);
@@ -806,7 +811,7 @@ function tag(strings, ...values)
 	}
 }
 
-function Tweet(tweet, quoted) {
+function Tweet(tweet, quoted, event, source) {
 	var tweet = tweet;
 	var quoted = quoted;
 	var a = document.createElement('article');
@@ -853,7 +858,19 @@ function Tweet(tweet, quoted) {
 	var div = document.createElement('div');
 	div.className = className;
 
-	if(tweet.retweeted_status)
+	if (event == 'retweeted_retweet')
+	{
+		div.innerHTML += `<div class="retweeted_retweeted_tweet">&nbsp;&nbsp;${symbol.retweet}
+						<a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${source.screen_name}')">${source.name}</a> 님이 내가 리트윗한 트윗을 리트윗했습니다.</span>`;
+		if(tweet.retweeted_status) tweet = tweet.retweeted_status;
+	}
+	if (event == 'favorited_retweet')
+	{
+		div.innerHTML += `<div class="favorited_retweeted_tweet">&nbsp;&nbsp;${symbol.like}
+						<a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${source.screen_name}')">${source.name}</a> 님이 내 리트윗을 마음에 들어 합니다.</span>`;
+		if(tweet.retweeted_status) tweet = tweet.retweeted_status;
+	}
+	else if(tweet.retweeted_status)
 	{
 		div.innerHTML += `<div class="retweeted_tweet">${symbol.retweet}<span class="retweeted_tweet_text">&nbsp;
 						<a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}')">${tweet.user.name}</a> 님이 리트윗했습니다</span></div>`
