@@ -1359,11 +1359,11 @@ window.onload = e => {
 		}
 	}
 	
-	header_navi.innerHTML += `<span class="navigator selected"><a href="javascript:void(0)" onclick="naviSelect(0)">${symbol.home}</a></div>`;
-	header_navi.innerHTML += `<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(1)">${symbol.noti}</a></div>`;
-	header_navi.innerHTML += `<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(2)">${symbol.dm}</a></div>`;
-	header_navi.innerHTML += `<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(3)">${symbol.search}</a></div>`;
-	header_navi.innerHTML += `<span class="navigator"><a href="javascript:void(0)" onclick="naviSelect(4)">${symbol.write}</a></div>`;
+	header_navi.innerHTML += `<span class="navigator selected" onclick="naviSelect(0)"><a href="javascript:void(0)">${symbol.home}</a></div>`;
+	header_navi.innerHTML += `<span class="navigator" onclick="naviSelect(1)"><a href="javascript:void(0)">${symbol.noti}</a></div>`;
+	header_navi.innerHTML += `<span class="navigator" onclick="naviSelect(2)"><a href="javascript:void(0)">${symbol.dm}</a></div>`;
+	header_navi.innerHTML += `<span class="navigator" onclick="naviSelect(3)"><a href="javascript:void(0)">${symbol.search}</a></div>`;
+	header_navi.innerHTML += `<span class="navigator" onclick="naviSelect(4)"><a href="javascript:void(0)">${symbol.write}</a></div>`;
 	header_navi.innerHTML += `<div id="page_indicator"></div>`;
 	header_setting.innerHTML = `<a href="javascript:void(0)" onclick="App.openSettings()">${symbol.settings}</a>`;
 

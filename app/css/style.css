@@ -582,8 +582,7 @@ article.favorited button.like:hover {
 
 .navigator a:link, a:visited, a:active {
 	color: inherit;
-}
-.navigator a:hover {
-	color: #55acee;
 	text-decoration: none;
 }
+.navigator { cursor: pointer;}
+.navigator:hover { color: #55acee; }
