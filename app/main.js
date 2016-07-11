@@ -479,7 +479,7 @@ var App = {
 
 	chkRetweet: (id, check, count) => {
 		for (var tl in App.timelines) {
-			for (var t of App.timelines[tl].filter(x => x.id == id)) {
+			for (var t of App.timelines[tl].filter(x => (x.id == id || (x.hasRetweet && x.retweet.id == id)))) {
 				var lbl = t.retweetCountLabel;
 				if (typeof(count) != 'undefined' && typeof(count) != 'string')
 					if (count)
@@ -503,7 +503,7 @@ var App = {
 
 	chkFavorite: (id, check, count) => {
 		for (var tl in App.timelines) {
-			for (var t of App.timelines[tl].filter(x => x.id == id)) {
+			for (var t of App.timelines[tl].filter(x => (x.id == id || (x.hasRetweet && x.retweet.id == id)))) {
 				var lbl = t.favoriteCountLabel;
 				if (typeof(count) != 'undefined' && typeof(count) != 'string')
 					if (count)
