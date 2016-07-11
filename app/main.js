@@ -120,6 +120,17 @@ var App = {
 		debug: false
 	},
 
+	// current configuration used by twitter
+	// https://dev.twitter.com/rest/reference/get/help/configuration
+	twitter_conf: {
+		characters_reserved_per_media: 24,
+		dm_text_character_limit: 10000,
+		max_media_per_upload: 1,
+		photo_size_limit: 3145728,
+		short_url_length: 23,
+		short_url_length_https: 23,
+	},
+
 	id_str: '',
 	name: '',
 	screen_name: '',
@@ -389,7 +400,7 @@ var App = {
 
 		App.alertConnect(true);
 
-		Client.stream('user', 'include_followings_activity: true', (stream) => {
+		Client.stream('user', { }, (stream) => {
 			Client.mainStream = stream;
 			Client.mainStreamRunning = true;
 			App.alertStream(true);
@@ -1087,7 +1098,7 @@ function TweetUploader() {
 		e.appendChild(txt);
 		e.appendChild(btnContainer);
 
-		var txtChanged = e => (lenIndicator.innerHTML = 140 - txt.value.length);
+		var txtChanged = e => (lenIndicator.innerHTML = 140 - (App.tweetUploader.mediaSelector.selectedFiles.length ? App.twitter_conf.characters_reserved_per_media : 0) - Twitter_text.getTweetLength(txt.value));
 		txt.addEventListener('input', txtChanged);
 		txt.addEventListener('keydown', e => {
 			switch (e.keyCode) {
@@ -1181,7 +1192,7 @@ function TweetUploader() {
 			"get": () => txt.value,
 			"set": (val) => {
 				txt.value = val;
-				lenIndicator.innerHTML = 140 - txt.value.length;
+				lenIndicator.innerHTML = 140 - (App.tweetUploader.mediaSelector.selectedFiles.length ? App.twitter_conf.characters_reserved_per_media : 0) - Twitter_text.getTweetLength(txt.value);
 			}
 		},
 		"inReplyTo": {
@@ -1247,12 +1258,13 @@ function MediaSelector() {
 				e.target.outerHTML = '';
 				fileInput.disabled = false;
 				fileInputContainer.classList.remove('disabled');
-
+				lenIndicator.innerHTML = 140 - (App.tweetUploader.mediaSelector.selectedFiles.length ? App.twitter_conf.characters_reserved_per_media : 0) - Twitter_text.getTweetLength(txt.value);
 				console.log(this.selectedFiles);
 			})
 			return e;
 		})());
 		this.selectedFiles.push(path);
+		lenIndicator.innerHTML = 140 - (App.tweetUploader.mediaSelector.selectedFiles.length ? App.twitter_conf.characters_reserved_per_media : 0) - Twitter_text.getTweetLength(txt.value);
 		
 		fileInput.value = '';
 		if (this.selectedFiles.length == 4)
