@@ -564,6 +564,20 @@ body {
 	vertical-align: text-bottom;
 }
 
+.user_protected {
+    margin-left: 3px;
+	color: #434343;
+}
+.user_protected svg {
+	display: inline-block;
+	fill: currentcolor;
+	height: 1.25em;
+	max-width: 100%;
+	position: relative;
+	-webkit-user-select: none;
+	vertical-align: text-bottom;
+}
+
 article.retweeted button.retweet {
 /*	color: #19cf86;*/
 	color: #1f67b5;
