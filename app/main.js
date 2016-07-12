@@ -415,6 +415,9 @@ var App = {
 						return;
 
 					App.addItem(home_timeline, new Tweet(tweet));
+					if(App.config.enableHomeTLNoti) App.showNotify(tweet);
+					if(App.config.enableHomeTLSound) document.getElementById('update-sound').play();
+
 					//console.log(App.calcItemHeight(new Tweet(tweet)));
 
 					// debug flag
@@ -427,7 +430,11 @@ var App = {
 						for (var name of Twitter_text.extractMentions(tweet.text))
 							if (name == App.screen_name) copy_mention = true;
 					if(copy_mention)
+					{
 						App.addItem(notification, new Tweet(tweet));
+						if(!App.config.enableHomeTLNoti && App.config.enableMentionTLNoti) App.showNotify(tweet);
+						if(!App.config.enableHomeTLSound && App.config.enableMentionTLSound) document.getElementById('update-sound').play();
+					}
 					
 					// 리트윗시 원문이 노티로 가게
 					if(tweet.retweeted_status)
@@ -438,23 +445,7 @@ var App = {
 					// alert noti
 					if(App.config.enableHomeTLNoti)
 					{
-						// Notification 요청
-						if (window.Notification)
-						Notification.requestPermission();
-
-						var noti = new Notification(tweet.user.name,
-							{tag: App.runMainStream.sequence, body: tweet.text, icon: tweet.user.profile_image_url_https});
-
-						// 노티를 클릭하면 창 닫기
-						noti.onclick = () => noti.close();
-						
-						// 노티 타임아웃 처리
-						noti.onshow = () => setTimeout(() => noti.close(), 3000);
 					}
-
-					// alert sound
-					if(App.config.enableHomeTLSound)
-						document.getElementById('update-sound').play();
 				}
 				else if (tweet.delete)
 				{
@@ -681,6 +672,26 @@ var App = {
 			//setTimeout(getAboutme, 3000);
 		});
 	},
+	showNotify: (tweet) => {
+		// Notification 요청
+		if (!("Notification" in window))
+		{
+			
+		}
+		else if (Notification.permission === "granted")
+		{
+			Notification.requestPermission();
+
+			var noti = new Notification(tweet.user.name,
+				{tag: App.showNotify.sequence, body: tweet.text, icon: tweet.user.profile_image_url_https});
+
+			// 노티를 클릭하면 창 닫기
+			noti.onclick = () => noti.close();
+			
+			// 노티 타임아웃 처리
+			noti.onshow = () => setTimeout(() => noti.close(), 3000);
+		}
+	},
 	addItem: (tlContainer, tweet) => {
 		var tl = tlContainer.firstElementChild;
 
@@ -783,7 +794,7 @@ App.chkConnect.event_timestamp = 0;
 App.getTimeline.since_id = '1';
 App.getMentionsTimeline.since_id = '1';
 App.getAboutme.max_position = 0;
-App.runMainStream.sequence = 0;
+App.showNotify.sequence = 0;
 
 function Test(event) {
 	a = document.createElement('article');
