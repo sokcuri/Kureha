@@ -617,20 +617,23 @@ var App = {
 	}
 	*/
 	procOffscreen: (tlContainer) => {
-		for (var item of tlContainer.firstElementChild.children)
-			if (isOffscreen(tlContainer, item)) {
-				if (item.firstElementChild.style.display != 'none') {
-					item.style.height = (item.firstElementChild.getClientRects()[0].height + 10) + 'px';
-					item.firstElementChild.style.display = 'none';
-					Array.from(item.getElementsByTagName('video')).forEach(i => {i.pause();i.currentTime = 0;});
+		if(tlContainer.firstElementChild)
+		{
+			for (var item of tlContainer.firstElementChild.children)
+				if (isOffscreen(tlContainer, item)) {
+					if (item.firstElementChild.style.display != 'none') {
+						item.style.height = (item.firstElementChild.getClientRects()[0].height + 10) + 'px';
+						item.firstElementChild.style.display = 'none';
+						Array.from(item.getElementsByTagName('video')).forEach(i => {i.pause();i.currentTime = 0;});
+					}
+				} else {
+					if( item.firstElementChild.style.display == 'none') {
+						item.style.height = '';
+						item.firstElementChild.style.display = 'block';
+						Array.from(item.getElementsByTagName('video')).forEach(i => {i.play();});
+					}
 				}
-			} else {
-				if( item.firstElementChild.style.display == 'none') {
-					item.style.height = '';
-					item.firstElementChild.style.display = 'block';
-					Array.from(item.getElementsByTagName('video')).forEach(i => {i.play();});
-				}
-			}
+		}
 	},
 	currTimeline: () => {
 		return container.children[Number(container.style.left.replace('vw', ''))/-100];
