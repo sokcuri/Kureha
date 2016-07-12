@@ -905,7 +905,7 @@ function Tweet(tweet, quoted, event, source) {
 	text = text.replace(/(<a[^>]*) href="([^"]*)"/g, '$1 href="javascript:void(0)" onclick="openPopup(\'$2\')"');
 
 	// @(아이디) 꼴 골뱅이에도 링크가 붙도록 변경
-	text = text.replace(/@(<a[^>]* class="tweet-url username" [^>]*>)/, '$1@');
+	text = text.replace(/@(<a[^>]* class="tweet-url username" [^>]*>)/g, '$1@');
 
 	// 공백을 <br>로 치환
 	text = text.replace(/(\r\n|\n|\r)/gm, '<br>');
