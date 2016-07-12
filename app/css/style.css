@@ -386,6 +386,7 @@ body {
 
 .tweet-media-container
 {
+	clear: both;
 	display: flex;
 	flex-wrap: wrap;
 	padding: 0 10px 10px 60px;
