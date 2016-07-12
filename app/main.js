@@ -1130,7 +1130,7 @@ function TweetUploader() {
 	var _isOpen = false;
 	var _inReplyTo = '';
 	var e = document.createElement('div'),
-		replyInfo = document.createElement('div');
+		replyInfo = document.createElement('div'),
 		txt = document.createElement('textarea'),
 		btnContainer = document.createElement('div'),
 		closeButton = document.createElement('div'),
@@ -1183,6 +1183,7 @@ function TweetUploader() {
 	}
 
 	var execTweet = () => {
+		var text = txt.value;
 		this.closePanel();
 
 		if (this.mediaSelector.selectedFiles.length != 0)
@@ -1214,7 +1215,7 @@ function TweetUploader() {
 
 		function _ex(media_ids)
 		{
-			var param = {status: txt.value};
+			var param = {status: text};
 			if (media_ids) param.media_ids = media_ids;
 
 			if(_inReplyTo != '') param.in_reply_to_status_id = _inReplyTo;
