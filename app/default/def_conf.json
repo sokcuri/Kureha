@@ -1,0 +1,25 @@
+{
+    "ConsumerKey": "",
+    "ConsumerSecret": "",
+    "AccessToken": "",
+    "AccessSecret": "",
+    
+    "runStream": true,
+    "enableHomeTLNoti": false,
+    "enableHomeTLSound": false,
+    "enableMentionTLNoti": true,
+    "enableMentionTLSound": true,
+    "hideMyRetweets": true,
+    "magicScroll": false,
+    "magicScrollSensitivity": 250,
+    
+    "tweetOpacity": 70,
+    "defaultBackground": true,
+    "bgColor": "#FFFFFF",
+    "bgImage": "",
+    "bgPosition": "initial",
+    "bgSize": "initial",
+    "bgRepeat": "no-repeat",
+
+    "debug": false
+}

@@ -95,42 +95,11 @@ var App = {
 	// Kuritsu Consumer Key
 	_DefaultConsumerKey: 'hFFszQ5tet93VbnD9m153Tudc',
 	_DefaultConsumerSecret: 'Aub7LIPgREDs6AhzYmvEriXDugNThlxVOx2dMS0JUPfH1zgeLf',
-	config: {
-		ConsumerKey: '',
-		ConsumerSecret: '',
-		AccessToken: '',
-		AccessSecret: '',
-		
-		runStream: true,
-		enableHomeTLNoti: false,
-		enableHomeTLSound: false,
-		enableMentionTLNoti: true,
-		enableMentionTLSound: true,
-		hideMyRetweets: true,
-		magicScroll: false,
-		magicScrollSensitivity: 250,
-		
-		tweetOpacity: 70,
-		defaultBackground: true,
-		bgColor: '#FFFFFF',
-		bgImage: '',
-		bgPosition: 'initial',
-		bgSize: 'initial',
-		bgRepeat: 'no-repeat',
-
-		debug: false
-	},
+	config: require('./default/def_conf.json'),
 
 	// current configuration used by twitter
 	// https://dev.twitter.com/rest/reference/get/help/configuration
-	twitter_conf: {
-		characters_reserved_per_media: 24,
-		dm_text_character_limit: 10000,
-		max_media_per_upload: 1,
-		photo_size_limit: 3145728,
-		short_url_length: 23,
-		short_url_length_https: 23,
-	},
+	twitter_conf: require('./default/def_twtconf.json'),
 
 	id_str: '',
 	name: '',
