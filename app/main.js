@@ -619,7 +619,7 @@ var App = {
 	procOffscreen: (tlContainer) => {
 		if(tlContainer && tlContainer.firstElementChild)
 		{
-			for (var item of tlContainer.firstElementChild.children)
+			Array.from(tlContainer.firstElementChild.children).forEach((item) => {
 				if (isOffscreen(tlContainer, item)) {
 					if (item.firstElementChild.style.display != 'none') {
 						item.style.height = (item.firstElementChild.getClientRects()[0].height + 10) + 'px';
@@ -640,6 +640,7 @@ var App = {
 						});
 					}
 				}
+			});
 		}
 	},
 	currTimeline: () => {
