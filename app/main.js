@@ -1040,6 +1040,7 @@ function Tweet(tweet, quoted, event, source) {
 		App.tweetUploader.text = usernames.map(x => '@' + x).join(' ');
 		if(App.tweetUploader.text) App.tweetUploader.text += ' ';
 		App.tweetUploader.inReplyTo = {id: tweet.id_str, name: tweet.user.name, screen_name: tweet_author, text: tweet.text};
+		App.resizeContainer();
 	};
 
 	var execRetweet = () => {
