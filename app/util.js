@@ -63,7 +63,7 @@ function openImageview(href, more) {
 function isOffscreen(t, el) {
 	return ((el.offsetLeft + el.offsetWidth) < 0 || (el.offsetTop + el.offsetHeight) < 0 ||
 		(el.offsetLeft + el.getClientRects()[0].width < t.scrollLeft || el.offsetleft > t.scrollLeft + t.getClientRects()[0].width) ||
-		(el.offsetTop + el.getClientRects()[0].height < t.scrollTop || el.offsetTop > t.scrollTop + t.getClientRects()[0].height));
+		(el.offsetTop + el.getClientRects()[0].height + Number(t.style.paddingTop.replace('px','')) < t.scrollTop || el.offsetTop > t.scrollTop + t.getClientRects()[0].height + Number(t.style.paddingTop.replace('px',''))));
 }
 
 function getOffscreenHPos(t, el) {
