@@ -624,13 +624,20 @@ var App = {
 					if (item.firstElementChild.style.display != 'none') {
 						item.style.height = (item.firstElementChild.getClientRects()[0].height + 10) + 'px';
 						item.firstElementChild.style.display = 'none';
-						Array.from(item.getElementsByTagName('video')).forEach(i => {i.pause();i.currentTime = 0;});
+						Array.from(item.getElementsByTagName('video')).forEach(i => {
+							i.pause();
+							i.setAttribute('src', '');
+							i.load(); // dispose
+						});
 					}
 				} else {
 					if( item.firstElementChild.style.display == 'none') {
 						item.style.height = '';
 						item.firstElementChild.style.display = 'block';
-						Array.from(item.getElementsByTagName('video')).forEach(i => {i.play();});
+						Array.from(item.getElementsByTagName('video')).forEach(i => {
+							i.removeAttribute('src');
+							i.load();
+						});
 					}
 				}
 		}
