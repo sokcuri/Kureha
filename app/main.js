@@ -571,7 +571,7 @@ var App = {
 
 	resizeContainer: () => {
 		container.style.height = 'calc(100% - ' + toolbox.getClientRects()[0].height + 'px)';
-		App.procOffscreen();
+		App.procOffscreen(App.currTimeline());
 	},
 
 	openSettings: () => {
@@ -593,10 +593,32 @@ var App = {
 			win.focus();
 	  });
 	},
+/*
+	var t = [home_timeline];
+	for (tl of t)
+	{
+		home_timeline.addEventListener("scroll", () => {
+			App.procScrollEmphasize(home_timeline);
+			
+			// offscreen process
+			App.procOffscreen();
 
-	procOffscreen: () => {
-		for (var item of home_timeline.firstElementChild.children)
-			if (isOffscreen(item)) {
+			// magic scroll 100px padding
+			if(App.config.magicScroll)
+			{
+				if(home_timeline.scrollTop < 100)
+				home_timeline.style.paddingTop = home_timeline.scrollTop + 'px';
+			}
+			else
+			{
+				home_timeline.style.paddingTop = '0px';
+			}
+		});
+	}
+	*/
+	procOffscreen: (tlContainer) => {
+		for (var item of tlContainer.firstElementChild.children)
+			if (isOffscreen(tlContainer, item)) {
 				if (item.firstElementChild.style.display != 'none') {
 					item.style.height = (item.firstElementChild.getClientRects()[0].height + 10) + 'px';
 					item.firstElementChild.style.display = 'none';
@@ -609,6 +631,9 @@ var App = {
 					Array.from(item.getElementsByTagName('video')).forEach(i => {i.play();});
 				}
 			}
+	},
+	currTimeline: () => {
+		return container.children[Number(container.style.left.replace('vw', ''))/-100];
 	},
 
 	procScrollEmphasize:e => {
@@ -719,7 +744,7 @@ var App = {
 			}
 		}
 
-		App.procOffscreen();
+		App.procOffscreen(App.currTimeline());
 	},
 	removeItem: (t, target) => {
 		if(typeof target == "number")
@@ -1374,28 +1399,33 @@ window.onload = e => {
 		}
 	};
 
+	function offScreen(tlContainer)
+	{
+		App.procScrollEmphasize(tlContainer);
+		
+		// offscreen process
+		App.procOffscreen(tlContainer);
+
+		// magic scroll 100px padding
+		if(App.config.magicScroll &&
+		  (tlContainer.offsetHeight < tlContainer.getElementsByClassName('timeline')[0].offsetHeight)) // is overflow
+		{
+			if(tlContainer.scrollTop < 100)
+			tlContainer.style.paddingTop = tlContainer.scrollTop + 'px';
+		}
+		else
+		{
+			tlContainer.style.paddingTop = '0px';
+		}
+	}
+	
 	// full screen scroll init issue fix
 	home_timeline.onscroll = () =>
 	{
 		htl_scr02 = htl_scr01;
 		htl_scr01 = home_timeline.scrollTop;
 		
-		App.procScrollEmphasize(home_timeline);
-		
-		// offscreen process
-		App.procOffscreen();
-
-		// magic scroll 100px padding
-		if(App.config.magicScroll)
-		{
-			if(home_timeline.scrollTop < 100)
-			home_timeline.style.paddingTop = home_timeline.scrollTop + 'px';
-		}
-		else
-		{
-			home_timeline.style.paddingTop = '0px';
-		}
-		
+		offScreen(home_timeline);
 	}
 
 	notification.onscroll = () =>
@@ -1404,11 +1434,11 @@ window.onload = e => {
 		ntl_scr02 = ntl_scr01;
 		ntl_scr01 = notification.scrollTop;
 
-		App.procScrollEmphasize(notification);
+		offScreen(notification);
 	}
 
 
-	window.onresize = () => App.procOffscreen();
+	window.onresize = () => App.procOffscreen(App.currTimeline());
 	
 	window.magicScroll = false;
 	home_timeline.onwheel = e => {
@@ -1419,7 +1449,8 @@ window.onload = e => {
 			dy = e.deltaY;
 		
 		if (magicScroll && dy > 0) return false;
-		else if (tl.scrollTop == 0 && dy > 0)
+		else if (tl.scrollTop == 0 && dy > 0 &&
+				(tl.offsetHeight < tl.getElementsByClassName('timeline')[0].offsetHeight)) // is overflow
 		{
 			magicScroll = true;
 			setTimeout(() => {window.magicScroll = false;}, App.config.magicScrollSensitivity);
@@ -1559,10 +1590,10 @@ function scrollTo(element, to, duration) {
     var perTick = difference / duration * 10;
 
     setTimeout(() => {
-        element.scrollTop = element.scrollTop + perTick;
-		App.procOffscreen(); 
+        element.scrollTop = element.scrollTop + perTick; 
         if (element.scrollTop === to) return;
         scrollTo(element, to, duration - 10);
+		App.procOffscreen(App.currTimeline());
     }, 10);
 }
 function naviSelect(e)

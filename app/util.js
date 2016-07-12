@@ -60,16 +60,16 @@ function openImageview(href, more) {
   });
 }
 
-function isOffscreen(el) {
+function isOffscreen(t, el) {
 	return ((el.offsetLeft + el.offsetWidth) < 0 || (el.offsetTop + el.offsetHeight) < 0 ||
-		(el.offsetLeft + el.getClientRects()[0].width < home_timeline.scrollLeft || el.offsetleft > home_timeline.scrollLeft + home_timeline.getClientRects()[0].width) ||
-		(el.offsetTop + el.getClientRects()[0].height < home_timeline.scrollTop || el.offsetTop > home_timeline.scrollTop + home_timeline.getClientRects()[0].height));
+		(el.offsetLeft + el.getClientRects()[0].width < t.scrollLeft || el.offsetleft > t.scrollLeft + t.getClientRects()[0].width) ||
+		(el.offsetTop + el.getClientRects()[0].height < t.scrollTop || el.offsetTop > t.scrollTop + t.getClientRects()[0].height));
 }
 
-function getOffscreenHPos(el) {
-	if (el.offsetTop + el.getClientRects()[0].height < home_timeline.scrollTop)
+function getOffscreenHPos(t, el) {
+	if (el.offsetTop + el.getClientRects()[0].height < t.scrollTop)
 		return -1;
-	else if (el.offsetTop > home_timeline.scrollTop + home_timeline.getClientRects()[0].height)
+	else if (el.offsetTop > t.scrollTop + t.getClientRects()[0].height)
 		return 1;
 	else return 0;
 }
