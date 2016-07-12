@@ -617,7 +617,7 @@ var App = {
 	}
 	*/
 	procOffscreen: (tlContainer) => {
-		if(tlContainer.firstElementChild)
+		if(tlContainer && tlContainer.firstElementChild)
 		{
 			for (var item of tlContainer.firstElementChild.children)
 				if (isOffscreen(tlContainer, item)) {
