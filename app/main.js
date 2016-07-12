@@ -931,6 +931,18 @@ function Tweet(tweet, quoted, event, source) {
 		tweet.retweet_count = tweet.retweeted_status.retweet_count;*/
 		tweet = tweet.retweeted_status;
 	}
+	else if (tweet.in_reply_to_status_id_str !== null && !quoted)
+	{
+		// 자신의 트윗에 답글 단 경우 즉, 이어쓰기 트윗
+		if (tweet.user.screen_name === tweet.in_reply_to_screen_name) {
+			var replied_to = tweet.user.name;
+		} else {
+			var user_mentions = tweet.entities.user_mentions;
+			var replied_to = user_mentions[0].name;
+		}
+		div.innerHTML += `<div class="replied_tweet">${symbol.reply}<span class="replied_tweet_text">&nbsp;
+			<a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.in_reply_to_screen_name}')">${replied_to}</a> 님에게 답글을 보냈습니다</span></div>`
+	}
 
 	var embed = {
 		id_str: tweet.id_str,

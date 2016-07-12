@@ -549,12 +549,12 @@ body {
 	margin-right: 5px;
 }
 
-.retweeted_tweet {
+.retweeted_tweet, .replied_tweet {
 	margin: 0 60px 5px 62px;
 	color: #555;
 }
 
-.retweeted_tweet svg {
+.retweeted_tweet svg, .replied_tweet svg {
 	margin-left: -30px;
 	display: inline-block;
 	fill: currentcolor;
