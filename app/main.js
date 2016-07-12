@@ -1665,6 +1665,7 @@ function naviSelect(e)
 
 		page_indicator.style.left = (e * 20) + '%';
 		container.style.left = (e * (-100)) + 'vw';
+		App.procOffscreen(App.currTimeline());
 	}	
 }
 function chooseFile(name) {
