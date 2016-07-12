@@ -1442,7 +1442,7 @@ window.onload = e => {
 	window.onresize = () => App.procOffscreen(App.currTimeline());
 	
 	window.magicScroll = false;
-	home_timeline.onwheel = e => {
+	var magicScrollHandler = e => {
 		if(!App.config.magicScroll)
 			return;
 
@@ -1464,7 +1464,9 @@ window.onload = e => {
 			tl.scrollTop += dy;
 			tl.style.paddingTop = 0;
 		}
-	}
+	};
+	home_timeline.onwheel = magicScrollHandler;
+	notification.onwheel = magicScrollHandler;
 
 	App.document.body.addEventListener('paste', function(event) {
 		/* 작동설명:
