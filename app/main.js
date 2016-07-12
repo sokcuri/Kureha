@@ -755,7 +755,7 @@ var App = {
 			}
 		}
 
-		App.procOffscreen(App.currTimeline());
+		App.procOffscreen(tlContainer);
 	},
 	removeItem: (t, target) => {
 		if(typeof target == "number")
