@@ -25,7 +25,7 @@ if(!String.prototype.format)
   };
 
   String.prototype.zf = function(len) {
-    return "0".string(len - this.length) + this;
+    return '0'.string(len - this.length) + this;
   };
   Number.prototype.zf = function(len) {
     return this.toString().zf(len);
@@ -34,23 +34,23 @@ if(!String.prototype.format)
 
 // date formatting
 Date.prototype.format = function(f) {
-  if (!this.valueOf()) return " ";
+  if (!this.valueOf()) return ' ';
 
-  var weekName = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
+  var weekName = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
   var d = this;
 
   return f.replace(/(yyyy|yy|MM|dd|E|hh|mm|ss|a\/p)/gi, function($1) {
     switch ($1) {
-      case "yyyy": return d.getFullYear();
-      case "yy": return (d.getFullYear() % 1000);
-      case "MM": return (d.getMonth() + 1);
-      case "dd": return d.getDate();
-      case "E": return weekName[d.getDay()];
-      case "HH": return d.getHours().zf(2);
-      case "hh": return ((h = d.getHours() % 12) ? h : 12).zf(2);
-      case "mm": return d.getMinutes().zf(2);
-      case "ss": return d.getSeconds().zf(2);
-      case "a/p": return d.getHours() < 12 ? "오전" : "오후";
+      case 'yyyy': return d.getFullYear();
+      case 'yy': return (d.getFullYear() % 1000);
+      case 'MM': return (d.getMonth() + 1);
+      case 'dd': return d.getDate();
+      case 'E': return weekName[d.getDay()];
+      case 'HH': return d.getHours().zf(2);
+      case 'hh': return ((h = d.getHours() % 12) ? h : 12).zf(2);
+      case 'mm': return d.getMinutes().zf(2);
+      case 'ss': return d.getSeconds().zf(2);
+      case 'a/p': return d.getHours() < 12 ? '오전' : '오후';
       default: return $1;
     }
   });
@@ -212,7 +212,7 @@ var App = {
         console.log('oauth_token :' + oauth_token)
         console.log('oauth_token_secret :' + oauth_token_secret)
         console.log('requestoken results :' + Util.inspect(results))
-        console.log("Requesting access token")
+        console.log('Requesting access token')
 
         OAuth._requestToken = oauth_token;
 
@@ -289,17 +289,17 @@ var App = {
         // retry vertifyCredentials if limit
         if (error.code == 'ENOTFOUND')
         {
-          App.showMsgBox("인터넷 또는 서버가 불안정합니다. 자동으로 서버에 접속을 시도합니다", "tomato", 3000);
+          App.showMsgBox('인터넷 또는 서버가 불안정합니다. 자동으로 서버에 접속을 시도합니다', 'tomato', 3000);
           return setTimeout(() => App.vertifyCredentials(callback), 1000);
         }
         else if(error[0].code == 88)
         {
-          App.showMsgBox("API 리밋으로 연결이 지연되고 있습니다. 잠시만 기다려 주세요", "tomato", 12000);
+          App.showMsgBox('API 리밋으로 연결이 지연되고 있습니다. 잠시만 기다려 주세요', 'tomato', 12000);
           return setTimeout(() => App.vertifyCredentials(callback), 10000);
         }
         else
         {
-          App.showMsgBox("알 수 없는 문제로 연결이 지연되고 있습니다. 잠시만 기다려 주세요", "tomato", 12000);
+          App.showMsgBox('알 수 없는 문제로 연결이 지연되고 있습니다. 잠시만 기다려 주세요', 'tomato', 12000);
           return setTimeout(() => App.vertifyCredentials(callback), 10000);
         }
       }
@@ -628,7 +628,7 @@ var App = {
   },
 
   getTimeline: () => {
-    Client.get('https://api.twitter.com/1.1/statuses/home_timeline', {since_id: App.getTimeline.since_id|""}, (error, event, response) => {
+    Client.get('https://api.twitter.com/1.1/statuses/home_timeline', {since_id: App.getTimeline.since_id || ''}, (error, event, response) => {
       if (!error) for (var item of event.reverse()) {
         App.addItem(home_timeline, new Tweet(item));
         App.getTimeline.since_id = item.id_str;
@@ -649,7 +649,7 @@ var App = {
   },
 
   getMentionsTimeline: () => {
-    Client.get('statuses/mentions_timeline', {since_id: App.getMentionsTimeline.since_id|""}, (error, event, response) => {
+    Client.get('statuses/mentions_timeline', {since_id: App.getMentionsTimeline.since_id|''}, (error, event, response) => {
       if(!error) for (var item of event.reverse()) {
         App.addItem(notification, new Tweet(item));
         App.getMentionsTimeline.since_id = item.id_str;
@@ -683,11 +683,11 @@ var App = {
   },
   showNotify: (tweet) => {
     // Notification 요청
-    if (!("Notification" in window))
+    if (!('Notification' in window))
     {
 
     }
-    else if (Notification.permission === "granted")
+    else if (Notification.permission === 'granted')
     {
       Notification.requestPermission();
 
@@ -731,7 +731,7 @@ var App = {
     App.procOffscreen(tlContainer);
   },
   removeItem: (t, target) => {
-    if(typeof target == "number")
+    if(typeof target == 'number')
       target = document.querySelector(`[data-item-id="${target}"]`);
     t.firstElementChild.removeChild(target);
   },
@@ -743,7 +743,7 @@ var App = {
     if(!document.getElementById('calcItem'))
     {
       var elemDiv = document.createElement('div');
-      elemDiv.style.cssText = "position: absolute; visibility: hidden";
+      elemDiv.style.cssText = 'position: absolute; visibility: hidden';
       elemDiv.innerHTML = '';
       elemDiv.id = 'calcItem';
       document.body.insertBefore(elemDiv, document.body.firstChild);
@@ -751,7 +751,7 @@ var App = {
     //document.createElement("div")
     calcItem.innerHTML = e.element.outerHTML;
     var result = calcItem.getClientRects()[0].height;
-    calcItem.innerHTML = "";
+    calcItem.innerHTML = '';
     return result;
   },
 
@@ -817,7 +817,7 @@ function Test(event) {
 function Activity(event) {
   a = document.createElement('article');
   a.className = 'tweet';
-  a.innerHTML = "";
+  a.innerHTML = '';
   var tweet_div = 'action: {0}, sources.0.name: {1}';
   a.innerHTML += tweet_div.format(event.action, event.sources[0].name);
            //<!--<input type="button" value="-" onclick="removeRow(this.parentNode)">//-->
@@ -867,12 +867,12 @@ function Tweet(tweet, quoted, event, source) {
   if (mentioned_me) className += ' tweet_emp blue';
 
   // retweeted / favorited
-  var retweeted = "";
-  var favorited = "";
+  var retweeted = '';
+  var favorited = '';
   if (tweet.favorited)
-    favorited = "favorited";
+    favorited = 'favorited';
   if (tweet.retweeted || tweet.retweeted_status && tweet.user.id_str == App.id_str)
-    retweeted = "retweeted";
+    retweeted = 'retweeted';
 
   var id_str_org = tweet.id_str;
 
@@ -946,7 +946,7 @@ function Tweet(tweet, quoted, event, source) {
   text = twemoji.parse(text)
 
   // 프로텍트 이미지
-  protected = "";
+  protected = '';
   if(tweet.user.protected) protected = symbol.protected;
 
   div.innerHTML += `<img class="profile-image" src="${tweet.user.profile_image_url_https}"></img>
@@ -994,12 +994,12 @@ function Tweet(tweet, quoted, event, source) {
 
   div.innerHTML += `<div class="tweet-date lpad">
           <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}')">
-          ${new Date(Date.parse(tweet.created_at)).format("a/p hh:mm - yyyy년 MM월 dd일")}
+          ${new Date(Date.parse(tweet.created_at)).format('a/p hh:mm - yyyy년 MM월 dd일')}
           </a> · ${tagRemove(tweet.source)}</div>`;
   if (!tweet.retweet_count)
-    tweet.retweet_count = "";
+    tweet.retweet_count = '';
   if (!tweet.favorite_count)
-    tweet.favorite_count = "";
+    tweet.favorite_count = '';
 
   if (!quoted)
   {
@@ -1042,7 +1042,7 @@ function Tweet(tweet, quoted, event, source) {
   var execRetweet = () => {
     if (!this.isRetweeted)
     {
-      App.showMsgBox("리트윗했습니다", "blue", 1000);
+      App.showMsgBox('리트윗했습니다', 'blue', 1000);
       App.chkRetweet(tweet.id_str, true, 'auto');
       Client.post(`statuses/retweet/${tweet.id_str}`, (error, tweet, response) => {
         if (error) {
@@ -1051,14 +1051,14 @@ function Tweet(tweet, quoted, event, source) {
           {
             // already retweeted
             case 327:
-              App.showMsgBox("이미 리트윗한 트윗입니다", "tomato", 1000);
+              App.showMsgBox('이미 리트윗한 트윗입니다', 'tomato', 1000);
               return;
             // rate limit reached
             case 88:
-              App.showMessageBox("API 리밋입니다", "tomato", 1000);
+              App.showMessageBox('API 리밋입니다', 'tomato', 1000);
               return;
             default:
-              App.showMsgBox(`오류가 발생했습니다<br>${error[0].code}: ${error[0].message}`, "tomato", 5000);
+              App.showMsgBox(`오류가 발생했습니다<br>${error[0].code}: ${error[0].message}`, 'tomato', 5000);
           }
           App.chkRetweet(tweet.id_str, false, 'auto');
         }
@@ -1067,7 +1067,7 @@ function Tweet(tweet, quoted, event, source) {
     }
     else
     {
-      App.showMsgBox("언리트윗했습니다", "blue", 1000);
+      App.showMsgBox('언리트윗했습니다', 'blue', 1000);
       App.chkRetweet(tweet.id_str, false, 'auto');
 
       Client.post('statuses/unretweet/' + tweet.id_str, (error, tweet, response) => {
@@ -1082,7 +1082,7 @@ function Tweet(tweet, quoted, event, source) {
   }
 
   var execFavorite = () => {
-    App.showMsgBox("마음에 드는 트윗으로 지정했습니다", "blue", 1000);
+    App.showMsgBox('마음에 드는 트윗으로 지정했습니다', 'blue', 1000);
     if(!this.isFavorited)
     {
       App.chkFavorite(tweet.id_str, true, 'auto');
@@ -1093,14 +1093,14 @@ function Tweet(tweet, quoted, event, source) {
           {
             // already favorited
             case 139:
-              App.showMsgBox("이미 마음에 드는 트윗으로 지정한 트윗입니다", "tomato", 1000);
+              App.showMsgBox('이미 마음에 드는 트윗으로 지정한 트윗입니다', 'tomato', 1000);
               return;
             // rate limit reached
             case 88:
-              App.showMessageBox("API 리밋입니다", "tomato", 1000);
+              App.showMessageBox('API 리밋입니다', 'tomato', 1000);
               return;
             default:
-              App.showMsgBox(`오류가 발생했습니다<br />${error[0].code}: ${error[0].message}`, "tomato", 5000);
+              App.showMsgBox(`오류가 발생했습니다<br />${error[0].code}: ${error[0].message}`, 'tomato', 5000);
           }
           App.chkFavorite(tweet.id_str, false, 'auto');
         }
@@ -1109,7 +1109,7 @@ function Tweet(tweet, quoted, event, source) {
     }
     else
     {
-      App.showMsgBox("마음에 드는 트윗을 해제했습니다", "blue", 1000);
+      App.showMsgBox('마음에 드는 트윗을 해제했습니다', 'blue', 1000);
       App.chkFavorite(tweet.id_str, false, 'auto');
 
       Client.post('favorites/destroy', {id: tweet.id_str}, (error, tweet, response) => {
@@ -1211,7 +1211,7 @@ function TweetUploader() {
                 return _ex(files.map(x => x.media_id_string).join(','));
               }
             }
-            else return App.showMsgBox(`오류가 발생했습니다<br />${error[0].code}: ${error[0].message}`, "tomato", 5000);
+            else return App.showMsgBox(`오류가 발생했습니다<br />${error[0].code}: ${error[0].message}`, 'tomato', 5000);
           });
         })(i);
     }
@@ -1226,10 +1226,10 @@ function TweetUploader() {
 
       Client.post('statuses/update', param, (error, event, response) => {
         if (!error) {
-          App.showMsgBox("트윗했습니다", "blue", 3000);
+          App.showMsgBox('트윗했습니다', 'blue', 3000);
         }
         else {
-          App.showMsgBox(`오류가 발생했습니다<br />${error[0].code}: ${error[0].message}`, "tomato", 5000);
+          App.showMsgBox(`오류가 발생했습니다<br />${error[0].code}: ${error[0].message}`, 'tomato', 5000);
         }
       });
     }
@@ -1258,19 +1258,19 @@ function TweetUploader() {
   this.focus = () => txt.focus();
 
   Object.defineProperties(this, {
-    "isOpen": {
-      "get": () => _isOpen
+    isOpen: {
+      get: () => _isOpen
     },
-    "text": {
-      "get": () => txt.value,
-      "set": (val) => {
+    text: {
+      get: () => txt.value,
+      set: (val) => {
         txt.value = val;
         lenIndicator.innerHTML = 140 - (App.tweetUploader.mediaSelector.selectedFiles.length ? App.twitter_conf.characters_reserved_per_media : 0) - Twitter_text.getTweetLength(txt.value);
       }
     },
-    "inReplyTo": {
-      "get": () => _inReplyTo,
-      "set": (obj) => {
+    inReplyTo: {
+      get: () => _inReplyTo,
+      set: (obj) => {
         _inReplyTo = obj.id;
         replyInfo.hidden = false;
         replyInfo.innerHTML = `<div class="name">${obj.name} 님에게 보내는 답글</div><div class="orig-text">@${obj.screen_name}: ${obj.text}</div>`;
@@ -1514,7 +1514,7 @@ window.onload = e => {
   header_navi.innerHTML += `<span class="navigator" onclick="naviSelect(2)"><a href="javascript:void(0)">${symbol.dm}</a></div>`;
   header_navi.innerHTML += `<span class="navigator" onclick="naviSelect(3)"><a href="javascript:void(0)">${symbol.search}</a></div>`;
   header_navi.innerHTML += `<span class="navigator" onclick="naviSelect(4)"><a href="javascript:void(0)">${symbol.write}</a></div>`;
-  header_navi.innerHTML += `<div id="page_indicator"></div>`;
+  header_navi.innerHTML += '<div id="page_indicator"></div>';
   header_setting.innerHTML = `<a href="javascript:void(0)" onclick="App.openSettings()">${symbol.settings}</a>`;
 
   toolbox.appendChild(App.tweetUploader.element);
@@ -1649,7 +1649,7 @@ function naviSelect(e)
 }
 function chooseFile(name) {
   var chooser = document.querySelector(name);
-  chooser.addEventListener("change", evt => console.log(this.value), false);
+  chooser.addEventListener('change', evt => console.log(this.value), false);
 
   chooser.click();
 }

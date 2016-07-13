@@ -12,7 +12,7 @@ function urlify(text) {
 
 function tagRemove(text) {
   var regex = /(<([^>]+)>)/ig;
-  return text.replace(regex, "");
+  return text.replace(regex, '');
 }
 
 function openExternal(href) {
