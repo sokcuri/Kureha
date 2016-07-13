@@ -1,0 +1,69 @@
+body {
+	margin: 0;
+	font-family: 'Segoe UI', 'Yu Gothic UI', 'Meiryo UI', 'Malgun Gothic', Tahoma, Gulim, sans-serif;
+	font-size: 11pt;
+}
+
+header {
+
+}
+
+header p { margin: 10px 0; }
+
+header .banner {
+	position: relative;
+	height: 120px;
+	background-color: mediumspringgreen;
+}
+
+header .banner .pic {
+	position: absolute;
+	left: 10px;
+	bottom: -50px;
+	box-sizing: border-box;
+	width: 80px;
+	height: 80px;
+	background: gray;
+	border: 5px solid white;
+	border-radius: 5px;
+}
+
+header .contents {
+	padding: 0 15px;
+}
+
+header .commands {
+	box-sizing: border-box;
+	padding-top: 10px;
+	height: 50px;
+	text-align: right;
+}
+
+header .name {
+	display: block;
+	font-weight: bold;
+}
+
+header .screen-name {
+	font-size: 9pt;
+	color: #66757f;
+}
+
+header .follows-me {
+	padding: 3px 5px;
+	background: #e1e8ed;
+	font-size: 8pt;
+	text-transform: uppercase;
+	color: #66757f;
+	border-radius: 3px;
+}
+
+header .location,
+header .website {
+	color: #66757f;
+}
+
+header .counts { font-size: 9pt; }
+header .counts > span { margin-right: 20px; }
+header .counts .num { font-weight: bold; }
+header .counts .label { color: #66757f; }
