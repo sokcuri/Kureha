@@ -1,274 +1,279 @@
 <!doctype html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>Settings</title>
-		<script>
-		var win = nw.Window.get();
-		// nw.Window.get().setResizable(false);
-		// nw.Window.get().setMaximumSize(win.width, win.height);
-		// nw.Window.get().setMinimumSize(win.width, win.height);
-		// nw.Window.get().resizeTo(450, 450);
-		var appHTML = App.document.documentElement;
+  <head>
+    <meta charset="utf-8">
+    <title>Settings</title>
+    <script>
+    var win = nw.Window.get();
+    // nw.Window.get().setResizable(false);
+    // nw.Window.get().setMaximumSize(win.width, win.height);
+    // nw.Window.get().setMinimumSize(win.width, win.height);
+    // nw.Window.get().resizeTo(450, 450);
+    var appHTML = App.document.documentElement;
 
-		RadioNodeList.prototype.addEventListener = function (event, handler, useCapture) {
-			for (item of this) item.addEventListener(event, handler, useCapture);
-		}
-		
-		window.onclose = e =>
-		{
-			// save configuration
-			App.saveConfig();
-		}
+    RadioNodeList.prototype.addEventListener = function (event, handler, useCapture) {
+      for (item of this) item.addEventListener(event, handler, useCapture);
+    }
 
- 	 	window.onload = e =>
- 	 	{
-			var form = document.forms[0];
-			for (var key in config)
-			{
-				if (!form[key]) continue;
-				if (form[key].type == 'checkbox')
-					form[key].checked = config[key];
-				else if (form[key].type == 'file')
-					continue;
-				else
-					form[key].value = config[key];
-			}
+    window.onclose = e =>
+    {
+      // save configuration
+      App.saveConfig();
+    }
 
-			tweetOpacity.nextElementSibling.innerHTML = App.config.tweetOpacity + '%';
+    window.onload = e =>
+    {
+      var form = document.forms[0];
+      for (var key in config)
+      {
+        if (!form[key]) continue;
+        if (form[key].type == 'checkbox')
+          form[key].checked = config[key];
+        else if (form[key].type == 'file')
+          continue;
+        else
+          form[key].value = config[key];
+      }
 
-			var inputs = document.getElementsByTagName('input');
-			for (input of inputs) {
-				if (input.type == 'checkbox' || input.type == 'radio')
-					input.addEventListener('click', (e) => chk_config(e.currentTarget), false);
-				else
-					input.addEventListener('change', (e) => chk_config(e.currentTarget), false);
-			}
+      tweetOpacity.nextElementSibling.innerHTML = App.config.tweetOpacity + '%';
 
-			runStream.addEventListener('click', e => {
-				if (runStream.checked) { App.runMainStream(); App.alertStream(true); }
-				else { App.stopMainStream(); App.alertStream(false); }
-			}, false);
+      var inputs = document.getElementsByTagName('input');
+      for (input of inputs) {
+        if (input.type == 'checkbox' || input.type == 'radio')
+          input.addEventListener('click', (e) => chk_config(e.currentTarget), false);
+        else
+          input.addEventListener('change', (e) => chk_config(e.currentTarget), false);
+      }
 
-			tweetOpacity.addEventListener('input', e => {
-				App.styleSheet.innerHTML = `.tweet{background-color:rgba(255,255,255,${tweetOpacity.value/100.0})}`;
-				tweetOpacity.nextElementSibling.innerHTML = tweetOpacity.value + '%';
-			})
+      runStream.addEventListener('click', e => {
+        if (runStream.checked) {
+          App.runMainStream();
+          App.alertStream(true);
+        } else {
+          App.stopMainStream();
+          App.alertStream(false);
+        }
+      }, false);
 
-			form['defaultBackground'].addEventListener('click',
-				e => App.setBackground(), false);
-			bgColor.addEventListener('change',
-				e => appHTML.style.backgroundColor = App.config.bgColor, false);
-			bgImage.addEventListener('change',
-				e => appHTML.style.backgroundImage = `url('${App.config.bgImage.replace(/\\/g, '\\\\')}')`, false);
-			form['bgPosition'].addEventListener('click',
-				e => appHTML.style.backgroundPosition = App.config.bgPosition, false);
-			form['bgSize'].addEventListener('click',
-				e => appHTML.style.backgroundSize = App.config.bgSize, false);
-			form['bgRepeat'].addEventListener('click',
-				e => appHTML.style.backgroundRepeat = App.config.bgRepeat, false);
- 	 	}
+      tweetOpacity.addEventListener('input', e => {
+        App.styleSheet.innerHTML = `.tweet{background-color:rgba(255,255,255,${tweetOpacity.value/100.0})}`;
+        tweetOpacity.nextElementSibling.innerHTML = tweetOpacity.value + '%';
+      })
 
- 	 	function chk_config(e)
- 	 	{
-			var form = document.forms[0];
-			var key = e.name || e.id;
-			
-			switch (e.type)
-			{
-				case 'checkbox':
-					config[key] = e.checked;
-					break;
-				default:
-					config[key] = e.value;
-					break;
-			}
+      form['defaultBackground'].addEventListener('click',
+        e => App.setBackground(), false);
+      bgColor.addEventListener('change',
+        e => appHTML.style.backgroundColor = App.config.bgColor, false);
+      bgImage.addEventListener('change',
+        e => appHTML.style.backgroundImage = `url('${App.config.bgImage.replace(/\\/g, '\\\\')}')`, false);
+      form['bgPosition'].addEventListener('click',
+        e => appHTML.style.backgroundPosition = App.config.bgPosition, false);
+      form['bgSize'].addEventListener('click',
+        e => appHTML.style.backgroundSize = App.config.bgSize, false);
+      form['bgRepeat'].addEventListener('click',
+        e => appHTML.style.backgroundRepeat = App.config.bgRepeat, false);
+    }
 
-			// save configuration
-			App.saveConfig();
- 	 	}
- 	 	</script>
- 		<link href="css/settings.css" rel="stylesheet">
-	</head>
-	<body>
-		<div id="wrapper">
-			<header class="top">
-				<span>설정</span>
-			</header>
-			<main>
-				<form>
-					<section>
-						<header><span>타임라인</span></header>
-						<div class="contents"><!-- hotfix for stupid bottom margin -->
-							<div class="multicolumn">
-								<div>
-									<div class="settings-item"><b>일반</b></div>
-									<div class="settings-item">
-										<label>
-											<input id="runStream" type="checkbox"><label for="runStream"><div></div></label>
-											타임라인 스트리밍
-										</label>
-									</div>
-									<div class="settings-item">
-										<label>
-											<input id="hideMyRetweets" type="checkbox"><label for="hideMyRetweets"><div></div></label>
-											자신의 리트윗 숨기기
-										</label>
-									</div>
-								</div>
-								<div>
-									<div class="settings-item"><b>트윗 배경 불투명도</b></div>
-									<div class="settings-item" style="display:flex">
-										<input id="tweetOpacity" type="range" min="0" max="100" value="70" style="flex:1">
-										<label for="tweetOpacity" style="margin-left:10px;width:40px;text-align:right">000%</label>
-									</div>
-								</div>
-								<div>
-									<div class="settings-item"><b>매직 스크롤</b></div>
-									<div class="settings-item">
-										<label>
-											<input id="magicScroll" type="checkbox"><label for="magicScroll"><div></div></label>
-											매직 스크롤 켜기
-										</label>
-									</div>
-									<div class="settings-item">
-										<label>
-											감도 (밀리초):
-											<input id="magicScrollSensitivity" type="number" min="250" max="1000" value="250">
-										</label>
-									</div>
-								</div>
-							</div>	
-						</div>
-					</section>
-					<section>
-						<header><span>배경</span></header>
-						<div class="contents">
-							<div class="settings-item">
-								<input id="defaultBackground" type="radio" name="defaultBackground" class="expander" value="true"><label></label>
-								<label for="defaultBackground">기본 배경 사용</label>
-							</div>
-							<div class="settings-item">
-								<input id="customBackground" type="radio" name="defaultBackground" class="expander" value="false"><label></label>
-								<label for="customBackground">배경 사용자 설정</label>
-								<div class="expander-item">
-									<table cellspacing="0">
-										<tr>
-											<th>배경색</th>
-											<td><input id="bgColor" type="color"></td>
-										</tr>
-										<tr>
-											<th>배경 이미지</th>
-											<td>
-												<input id="bgImage" type="file" accept=".jpg,.png" style="width:100%">
-											</td>
-										</tr>
-										<tr>
-											<th>위치</th>
-											<td class="flex">
-												<label>
-													<input type="radio" name="bgPosition" value="initial">
-													기본값
-												</label>
-												<label>
-													<input type="radio" name="bgPosition" value="center">
-													가운데
-												</label>
-											</td>
-										</tr>
-										<tr>
-											<th>크기</th>
-											<td class="flex">
-												<label>
-													<input type="radio" name="bgSize" value="initial">
-													기본값
-												</label>
-												<label>
-													<input type="radio" name="bgSize" value="contain">
-													창 크기에 맞춤
-												</label>
-												<label>
-													<input type="radio" name="bgSize" value="cover">
-													채우기
-												</label>
-											</td>
-										</tr>
-										<tr>
-											<th>반복</th>
-											<td class="flex">
-												<label>
-													<input type="radio" name="bgRepeat" value="no-repeat">
-													없음
-												</label>
-												<label>
-													<input type="radio" name="bgRepeat" value="repeat-x">
-													가로 반복
-												</label>
-												<label>
-													<input type="radio" name="bgRepeat" value="repeat-y">
-													세로 반복
-												</label>
-												<label>
-													<input type="radio" name="bgRepeat" value="repeat">
-													반복
-												</label>
-											</td>
-										</tr>
-									</table>
-								</div>
-							</div>
-						</div>
-					</section>
-					<section>
-						<header><span>데스크톱 알림</span></header>
-						<div class="contents">
-							<div class="multicolumn">
-								<div>
-									<div class="settings-item"><b>홈 타임라인</b></div>
-									<div class="settings-item">
-										<label>
-											<input id="enableHomeTLNoti" type="checkbox"><label for="enableHomeTLNoti"><div></div></label>
-											알림 표시
-										</label>
-									</div>
-									<div class="settings-item">
-										<label>
-											<input id="enableHomeTLSound" type="checkbox"><label for="enableHomeTLSound"><div></div></label>
-											알림 소리 재생
-										</label>
-									</div>
-								</div>
-								<div>
-									<div class="settings-item"><b>멘션</b></div>
-									<div class="settings-item">
-										<label>
-											<input id="enableMentionTLNoti" type="checkbox"><label for="enableMentionTLNoti"><div></div></label>
-											알림 표시
-										</label>
-									</div>
-									<div class="settings-item">
-										<label>
-											<input id="enableMentionTLSound" type="checkbox"><label for="enableMentionTLSound"><div></div></label>
-											알림 소리 재생
-										</label>
-									</div>
-								</div>
-							</div>
-						</div>
-					</section>
-					<section>
-						<header><span>개발자 옵션</span></header>
-						<div class="contents">
-							<div class="settings-item">
-								<label>
-									<input id="debug" type="checkbox"><label for="debug"><div></div></label>
-									콘솔에 디버그 정보 출력
-								</label>
-							</div>
-						</div>
-					</section>
-				</form>
-			</main>
-		</div>
-	</body>
+    function chk_config(e)
+    {
+      var form = document.forms[0];
+      var key = e.name || e.id;
+
+      switch (e.type)
+      {
+        case 'checkbox':
+          config[key] = e.checked;
+          break;
+        default:
+          config[key] = e.value;
+          break;
+      }
+
+      // save configuration
+      App.saveConfig();
+    }
+        </script>
+        <link href="css/settings.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="wrapper">
+      <header class="top">
+        <span>설정</span>
+      </header>
+      <main>
+        <form>
+          <section>
+            <header><span>타임라인</span></header>
+            <div class="contents"><!-- hotfix for stupid bottom margin -->
+              <div class="multicolumn">
+                <div>
+                  <div class="settings-item"><b>일반</b></div>
+                  <div class="settings-item">
+                    <label>
+                      <input id="runStream" type="checkbox"><label for="runStream"><div></div></label>
+                      타임라인 스트리밍
+                    </label>
+                  </div>
+                  <div class="settings-item">
+                    <label>
+                      <input id="hideMyRetweets" type="checkbox"><label for="hideMyRetweets"><div></div></label>
+                      자신의 리트윗 숨기기
+                    </label>
+                  </div>
+                </div>
+                <div>
+                  <div class="settings-item"><b>트윗 배경 불투명도</b></div>
+                  <div class="settings-item" style="display:flex">
+                    <input id="tweetOpacity" type="range" min="0" max="100" value="70" style="flex:1">
+                    <label for="tweetOpacity" style="margin-left:10px;width:40px;text-align:right">000%</label>
+                  </div>
+                </div>
+                <div>
+                  <div class="settings-item"><b>매직 스크롤</b></div>
+                  <div class="settings-item">
+                    <label>
+                      <input id="magicScroll" type="checkbox"><label for="magicScroll"><div></div></label>
+                      매직 스크롤 켜기
+                    </label>
+                  </div>
+                  <div class="settings-item">
+                    <label>
+                      감도 (밀리초):
+                      <input id="magicScrollSensitivity" type="number" min="250" max="1000" value="250">
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section>
+            <header><span>배경</span></header>
+            <div class="contents">
+              <div class="settings-item">
+                <input id="defaultBackground" type="radio" name="defaultBackground" class="expander" value="true"><label></label>
+                <label for="defaultBackground">기본 배경 사용</label>
+              </div>
+              <div class="settings-item">
+                <input id="customBackground" type="radio" name="defaultBackground" class="expander" value="false"><label></label>
+                <label for="customBackground">배경 사용자 설정</label>
+                <div class="expander-item">
+                  <table cellspacing="0">
+                    <tr>
+                      <th>배경색</th>
+                      <td><input id="bgColor" type="color"></td>
+                    </tr>
+                    <tr>
+                      <th>배경 이미지</th>
+                      <td>
+                        <input id="bgImage" type="file" accept=".jpg,.png" style="width:100%">
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>위치</th>
+                      <td class="flex">
+                        <label>
+                          <input type="radio" name="bgPosition" value="initial">
+                          기본값
+                        </label>
+                        <label>
+                          <input type="radio" name="bgPosition" value="center">
+                          가운데
+                        </label>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>크기</th>
+                      <td class="flex">
+                        <label>
+                          <input type="radio" name="bgSize" value="initial">
+                          기본값
+                        </label>
+                        <label>
+                          <input type="radio" name="bgSize" value="contain">
+                          창 크기에 맞춤
+                        </label>
+                        <label>
+                          <input type="radio" name="bgSize" value="cover">
+                          채우기
+                        </label>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>반복</th>
+                      <td class="flex">
+                        <label>
+                          <input type="radio" name="bgRepeat" value="no-repeat">
+                          없음
+                        </label>
+                        <label>
+                          <input type="radio" name="bgRepeat" value="repeat-x">
+                          가로 반복
+                        </label>
+                        <label>
+                          <input type="radio" name="bgRepeat" value="repeat-y">
+                          세로 반복
+                        </label>
+                        <label>
+                          <input type="radio" name="bgRepeat" value="repeat">
+                          반복
+                        </label>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section>
+            <header><span>데스크톱 알림</span></header>
+            <div class="contents">
+              <div class="multicolumn">
+                <div>
+                  <div class="settings-item"><b>홈 타임라인</b></div>
+                  <div class="settings-item">
+                    <label>
+                      <input id="enableHomeTLNoti" type="checkbox"><label for="enableHomeTLNoti"><div></div></label>
+                      알림 표시
+                    </label>
+                  </div>
+                  <div class="settings-item">
+                    <label>
+                      <input id="enableHomeTLSound" type="checkbox"><label for="enableHomeTLSound"><div></div></label>
+                      알림 소리 재생
+                    </label>
+                  </div>
+                </div>
+                <div>
+                  <div class="settings-item"><b>멘션</b></div>
+                  <div class="settings-item">
+                    <label>
+                      <input id="enableMentionTLNoti" type="checkbox"><label for="enableMentionTLNoti"><div></div></label>
+                      알림 표시
+                    </label>
+                  </div>
+                  <div class="settings-item">
+                    <label>
+                      <input id="enableMentionTLSound" type="checkbox"><label for="enableMentionTLSound"><div></div></label>
+                      알림 소리 재생
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section>
+            <header><span>개발자 옵션</span></header>
+            <div class="contents">
+              <div class="settings-item">
+                <label>
+                  <input id="debug" type="checkbox"><label for="debug"><div></div></label>
+                  콘솔에 디버그 정보 출력
+                </label>
+              </div>
+            </div>
+          </section>
+        </form>
+      </main>
+    </div>
+  </body>
 </html>

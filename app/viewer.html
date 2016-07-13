@@ -1,101 +1,101 @@
 <!doctype html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>Image Viewer</title>
-		<link rel="stylesheet" href="css/viewer.css">
-		<script>
-		window.onload = function(e)
-		{
-			var url = window.location.href,
-				query = window.location.search.substring(1),
-				args = query.split('&').map(function(x){ return x.split('='); }),
-				src = decodeURIComponent(args[0][1]);
-			/* args[0][0]: "img"
-			 * args[0][1]: url of selected image
-			 * args[1][0]: "more"
-			 * args[1][1]: list of image urls delimited by ';' */
-			window.more = decodeURIComponent(args[1][1]).split(';');
-			image.src = src + ":orig";
+  <head>
+    <meta charset="utf-8">
+    <title>Image Viewer</title>
+    <link rel="stylesheet" href="css/viewer.css">
+    <script>
+    window.onload = function(e)
+    {
+      var url = window.location.href,
+        query = window.location.search.substring(1),
+        args = query.split('&').map(function(x){ return x.split('='); }),
+        src = decodeURIComponent(args[0][1]);
+      /* args[0][0]: "img"
+       * args[0][1]: url of selected image
+       * args[1][0]: "more"
+       * args[1][1]: list of image urls delimited by ';' */
+      window.more = decodeURIComponent(args[1][1]).split(';');
+      image.src = src + ":orig";
 
-			window.index = -1;
-			for (var i = 0; i < more.length; i++)
-				if (src === more[i])
-				{
-					index = i;
-					break;
-				}
-			
-			image.addEventListener("load", function() {
-				image.classList.remove('hidden');
-				loader.hidden = true;
-			});
-			
-			updateHeader = function()
-			{
-				indicator.innerHTML = (index + 1) + " / " + (more.length);
-				prev_image.className = (index == 0) ? "page disabled" : "page";
-				next_image.className = (index == more.length - 1) ? "page disabled" : "page";
-			}
+      window.index = -1;
+      for (var i = 0; i < more.length; i++)
+        if (src === more[i])
+        {
+          index = i;
+          break;
+        }
 
-			updateArrow = function()
-			{
-				arr_prev.className = (index == 0) ? "hidden" : "";
-				arr_next.className = (index == more.length - 1) ? "hidden" : "";
-			}
+      image.addEventListener("load", function() {
+        image.classList.remove('hidden');
+        loader.hidden = true;
+      });
 
-			updateHeader();
-			updateArrow();
+      updateHeader = function()
+      {
+        indicator.innerHTML = (index + 1) + " / " + (more.length);
+        prev_image.className = (index == 0) ? "page disabled" : "page";
+        next_image.className = (index == more.length - 1) ? "page disabled" : "page";
+      }
 
-			image.addEventListener("click", function() {
-				window.close();
-			});
+      updateArrow = function()
+      {
+        arr_prev.className = (index == 0) ? "hidden" : "";
+        arr_next.className = (index == more.length - 1) ? "hidden" : "";
+      }
 
-			prevClick = function()
-			{
-				if (index == 0) return false;
-				loader.hidden = false;
-				image.classList.add('hidden');
-				image.src = more[--index] + ":orig";
-				updateHeader();
-				updateArrow();
-			}
+      updateHeader();
+      updateArrow();
 
-			nextClick = function()
-			{
-				if (index == more.length - 1) return false;
-				loader.hidden = false;
-				image.classList.add('hidden');
-				image.src = more[++index] + ":orig";
-				updateHeader();
-				updateArrow();
-			}
+      image.addEventListener("click", function() {
+        window.close();
+      });
 
-			prev_image.addEventListener("click", prevClick);
-			next_image.addEventListener("click", nextClick);
-			arr_prev.addEventListener("click", prevClick);
-			arr_next.addEventListener("click", nextClick);
-		};
-		</script>
-	</head>
-	<body>
-		<div id="wrapper">
-			<div id="header">
-				<a class="page" id="prev_image" href="javascript:void(0)">◀</a>
-				<a class="page" id="next_image" href="javascript:void(0)">▶</a>
-				&nbsp;
-				<span id="indicator"></span>
-			</div>
-			<div class="showbox centered">
-			  <div id="loader" class="loader">
-				<svg class="circular" viewBox="25 25 50 50">
-				  <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"/>
-				</svg>
-			  </div>
-			</div>
-			<div id="image-container"><img id="image" class="hidden"></div>
-			<a href="javascript:void(0)" id="arr_prev"></a>
-			<a href="javascript:void(0)" id="arr_next"></a>
-		</div>
-	</body>
+      prevClick = function()
+      {
+        if (index == 0) return false;
+        loader.hidden = false;
+        image.classList.add('hidden');
+        image.src = more[--index] + ":orig";
+        updateHeader();
+        updateArrow();
+      }
+
+      nextClick = function()
+      {
+        if (index == more.length - 1) return false;
+        loader.hidden = false;
+        image.classList.add('hidden');
+        image.src = more[++index] + ":orig";
+        updateHeader();
+        updateArrow();
+      }
+
+      prev_image.addEventListener("click", prevClick);
+      next_image.addEventListener("click", nextClick);
+      arr_prev.addEventListener("click", prevClick);
+      arr_next.addEventListener("click", nextClick);
+    };
+    </script>
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="header">
+        <a class="page" id="prev_image" href="javascript:void(0)">◀</a>
+        <a class="page" id="next_image" href="javascript:void(0)">▶</a>
+        &nbsp;
+        <span id="indicator"></span>
+      </div>
+      <div class="showbox centered">
+        <div id="loader" class="loader">
+          <svg class="circular" viewBox="25 25 50 50">
+            <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"/>
+          </svg>
+        </div>
+      </div>
+      <div id="image-container"><img id="image" class="hidden"></div>
+      <a href="javascript:void(0)" id="arr_prev"></a>
+      <a href="javascript:void(0)" id="arr_next"></a>
+    </div>
+  </body>
 </html>

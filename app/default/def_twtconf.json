@@ -1,8 +1,8 @@
 {
-	"characters_reserved_per_media": 24,
-	"dm_text_character_limit": 10000,
-	"max_media_per_upload": 1,
-	"photo_size_limit": 3145728,
-	"short_url_length": 23,
-	"short_url_length_https": 23
+  "characters_reserved_per_media": 24,
+  "dm_text_character_limit": 10000,
+  "max_media_per_upload": 1,
+  "photo_size_limit": 3145728,
+  "short_url_length": 23,
+  "short_url_length_https": 23
 }
