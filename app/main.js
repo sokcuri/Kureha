@@ -7,8 +7,7 @@ nw.Window.get().on('new-win-policy', function(frame, url, policy) {
 });
 
 // string formatting
-if(!String.prototype.format)
-{
+if (!String.prototype.format) {
   String.prototype.format = function() {
     var args = arguments;
     return this.replace(/{(\d+)}/g, function(match, number) {
@@ -17,8 +16,7 @@ if(!String.prototype.format)
   };
   String.prototype.string = function(len) {
     var s = '', i = 0;
-    while (i++ < len)
-    {
+    while (i++ < len) {
       s += this;
     }
     return s;
@@ -125,15 +123,12 @@ var App = {
   loadConfig: callback => {
     var jsonfile = require('jsonfile');
     jsonfile.readFile('./config.json', (err, obj) => {
-      if(!err)
-      {
+      if (!err) {
         console.info('loadConfig Succeeded.');
         App.config = obj;
-        if(callback)
+        if (callback)
           callback();
-      }
-      else
-      {
+      } else {
         console.warn(`loadConfig Failed: \r\n${Util.inspect(err)}`);
         App.saveConfig(callback);
         return;
@@ -143,8 +138,7 @@ var App = {
 
   setBackground: () => {
     var html = document.documentElement;
-    if (App.config.defaultBackground == 'true')
-    {
+    if (App.config.defaultBackground == 'true') {
       html.style.background = `url('arisaka_mashiro.png') center no-repeat fixed`;
       return;
     }
@@ -159,18 +153,18 @@ var App = {
     var jsonfile = require('jsonfile');
     jsonfile.spaces = 4;
     jsonfile.writeFile('./config.json', App.config, (err) => {
-      if(!err) console.info('saveConfig Succeeded.');
+      if (!err) console.info('saveConfig Succeeded.');
       else console.warn(`saveConfig Failed: \r\n${Util.inspect(err)}`);
 
-      if(callback) callback();
+      if (callback) callback();
     });
   },
 
   confirmAuth: msg => {
-    if(!msg) var msg = 'oauth 토큰이 유효하지 않습니다. 지금 토큰을 요청할까요?\r\n' +
+    if (!msg) var msg = 'oauth 토큰이 유효하지 않습니다. 지금 토큰을 요청할까요?\r\n' +
                         '토큰을 요청하지 않으면 기능이 작동하지 않습니다.';
     var result = confirm(msg);
-    if(result) App.getRequestToken(App.getConsumerKey(), App.getConsumerSecret());
+    if (result) App.getRequestToken(App.getConsumerKey(), App.getConsumerSecret());
   },
 
   confirmAuthFirst: () => {
@@ -183,32 +177,31 @@ var App = {
     var pin;
     pin = prompt('토큰 요청후 발급받은 핀번호를 입력하세요');
 
-    if(pin != null)
+    if (pin != null)
       App.getAccessToken(pin);
   },
 
   getConsumerKey: () => {
-    if(!App.config.ConsumerKey)
+    if (!App.config.ConsumerKey)
       return App._DefaultConsumerKey;
     else return App.config.ConsumerKey;
   },
 
   getConsumerSecret: () => {
-    if(!App.config.ConsumerSecret)
+    if (!App.config.ConsumerSecret)
       return App._DefaultConsumerSecret;
     else return App.config.ConsumerSecret;
   },
 
   getRequestToken: (consumerKey, consumerSecret) => {
-    if(!consumerKey) consumerKey = App.getConsumerKey();
-    if(!consumerSecret) consumerSecret = App.getConsumerSecret();
+    if (!consumerKey) consumerKey = App.getConsumerKey();
+    if (!consumerSecret) consumerSecret = App.getConsumerSecret();
     OAuth._consumerKey = consumerKey;
     OAuth._consumerSecret = consumerSecret;
     OAuth.getOAuthRequestToken((error, oauth_token, oauth_token_secret, results) => {
-      if(error)
+      if (error)
         console.error(error);
-      else
-      {
+      else {
         console.log('oauth_token :' + oauth_token);
         console.log('oauth_token_secret :' + oauth_token_secret);
         console.log('requestoken results :' + Util.inspect(results));
@@ -225,17 +218,14 @@ var App = {
   },
 
   getAccessToken: pin => {
-    if (!pin)
-    {
+    if (!pin) {
       alert('핀번호를 입력해 주십시오.');
       return getAccessToken();
     }
     OAuth.getOAuthAccessToken(OAuth._requestToken, OAuth._consumerSecret, pin,
       (err, access_token, access_secret, results) => {
-        if(err)
-        {
-          switch(err.data)
-          {
+        if (err) {
+          switch (err.data) {
             case 'Error processing your OAuth request: Invalid oauth_verifier parameter':
               alert('핀번호가 올바르지 않습니다.');
               getAccessToken();
@@ -284,46 +274,35 @@ var App = {
 
   vertifyCredentials: (callback) => {
     Client.get('account/verify_credentials', (error, event, response) => {
-      if(error)
-      {
+      if (error) {
         // retry vertifyCredentials if limit
-        if (error.code == 'ENOTFOUND')
-        {
+        if (error.code == 'ENOTFOUND') {
           App.showMsgBox('인터넷 또는 서버가 불안정합니다. 자동으로 서버에 접속을 시도합니다', 'tomato', 3000);
           return setTimeout(() => App.vertifyCredentials(callback), 1000);
-        }
-        else if(error[0].code == 88)
-        {
+        } else if (error[0].code == 88) {
           App.showMsgBox('API 리밋으로 연결이 지연되고 있습니다. 잠시만 기다려 주세요', 'tomato', 12000);
           return setTimeout(() => App.vertifyCredentials(callback), 10000);
-        }
-        else
-        {
+        } else {
           App.showMsgBox('알 수 없는 문제로 연결이 지연되고 있습니다. 잠시만 기다려 주세요', 'tomato', 12000);
           return setTimeout(() => App.vertifyCredentials(callback), 10000);
         }
-      }
-      else
-      {
+      } else {
         App.clearMsgBox();
         App.id_str = event.id_str;
         App.name = event.name;
         App.screen_name = event.screen_name;
       }
 
-      if(callback)
+      if (callback)
         callback(error);
     });
   },
 
   getLimitStatus: () => {
     Client.get('application/rate_limit_status', (error, event, response) => {
-      if(error)
-      {
+      if (error) {
         console.error(error);
-      }
-      else
-      {
+      } else {
         console.log(event);
       }
     });
@@ -332,34 +311,26 @@ var App = {
   chkConnect: () => {
     var timestamp = new Date().getTime();
     Client.get('https://api.twitter.com/1/', (error, event, response) => {
-      if(App.chkConnect.event_timestamp > timestamp) return;
+      if (App.chkConnect.event_timestamp > timestamp) return;
       App.chkConnect.event_timestamp = timestamp;
 
-      if(App.config.runStream && !Client.mainStreamRunning && !App.chkConnect.iserror)
-      {
+      if (App.config.runStream && !Client.mainStreamRunning && !App.chkConnect.iserror) {
         App.chkConnect.iserror = true;
         App.alertConnect(false);
-      }
-
-      else if(error.code)
-      {
-        if(!App.chkConnect.iserror)
-        {
+      } else if (error.code) {
+        if (!App.chkConnect.iserror) {
           App.chkConnect.iserror = true;
           App.alertConnect(false);
 
-          if(App.config.runStream)
+          if (App.config.runStream)
             App.stopMainStream();
         }
-      }
-      else
-      {
-        if(App.chkConnect.iserror)
-        {
+      } else {
+        if (App.chkConnect.iserror) {
           App.chkConnect.iserror = false;
           App.alertConnect(true);
 
-          if(App.config.runStream)
+          if (App.config.runStream)
             App.runMainStream();
         }
       }
@@ -369,7 +340,7 @@ var App = {
   },
 
   runMainStream: () => {
-    if(Client.mainStream)
+    if (Client.mainStream)
       Client.mainStream.destroy();
 
     App.alertConnect(true);
@@ -381,58 +352,52 @@ var App = {
       App.alertConnect(true);
       App.chkConnect();
       stream.on('data', (tweet) => {
-        if(tweet.text)
-        {
+        if (tweet.text) {
           // 자기 자신의 리트윗은 스트리밍에서 막음
-          if(App.config.hideMyRetweets && tweet.retweeted_status && tweet.user.id_str == App.id_str)
+          if (App.config.hideMyRetweets && tweet.retweeted_status && tweet.user.id_str == App.id_str)
             return;
 
           App.addItem(home_timeline, new Tweet(tweet));
-          if(App.config.enableHomeTLNoti) App.showNotify(tweet);
-          if(App.config.enableHomeTLSound) document.getElementById('update-sound').play();
+          if (App.config.enableHomeTLNoti) App.showNotify(tweet);
+          if (App.config.enableHomeTLSound) document.getElementById('update-sound').play();
 
           //console.log(App.calcItemHeight(new Tweet(tweet)));
 
           // debug flag
-          if(App.config.debug)
+          if (App.config.debug)
             console.log(tweet);
 
           // 리트윗된 트윗이 아닐때 멘션되었으면 멘션창으로 이동시킴
           var copy_mention = false;
-          if(!tweet.retweeted_status)
+          if (!tweet.retweeted_status)
             for (var name of Twitter_text.extractMentions(tweet.text))
               if (name == App.screen_name) copy_mention = true;
-          if(copy_mention)
-          {
+          if (copy_mention) {
             App.addItem(notification, new Tweet(tweet));
-            if(!App.config.enableHomeTLNoti && App.config.enableMentionTLNoti) App.showNotify(tweet);
-            if(!App.config.enableHomeTLSound && App.config.enableMentionTLSound) document.getElementById('update-sound').play();
+            if (!App.config.enableHomeTLNoti && App.config.enableMentionTLNoti) App.showNotify(tweet);
+            if (!App.config.enableHomeTLSound && App.config.enableMentionTLSound) document.getElementById('update-sound').play();
           }
 
           // 리트윗시 원문이 노티로 가게
-          if(tweet.retweeted_status)
+          if (tweet.retweeted_status)
             tweet = tweet.retweeted_status;
 
           App.runMainStream.sequence = (App.runMainStream.sequence + 1) % 3;
 
           // alert noti
+          /*
           if(App.config.enableHomeTLNoti)
           {
           }
-        }
-        else if (tweet.delete)
-        {
+          */
+        } else if (tweet.delete) {
           var target = document.querySelector(`[data-tweet-id="${tweet.delete.status.id_str}"]`);
-          if(target)
+          if (target)
             target.classList.add('deleted');
-        }
-        else if (tweet.event == 'retweeted_retweet' || tweet.event == 'favorited_retweet')
-        {
+        } else if (tweet.event == 'retweeted_retweet' || tweet.event == 'favorited_retweet') {
           App.addItem(notification, new Tweet(tweet.target_object, false, tweet.event, tweet.source));
           console.log(tweet);
-        }
-        else
-        {
+        } else {
           console.log(tweet);
         }
       });
@@ -493,15 +458,12 @@ var App = {
             lbl.innerText = count;
           else
             lbl.innerText = '';
-        if (check)
-        {
+        if (check) {
           t.isFavorited = true;
           t.element.classList.add('favorited');
           if (count == 'auto')
             lbl.innerText++;
-        }
-        else
-        {
+        } else {
           t.isFavorited = false;
           t.element.classList.remove('favorited');
           if (count == 'auto')
@@ -516,8 +478,7 @@ var App = {
      *   a: message, b: duration (default color is blue)
      * 3-argument:
      *   a: message, b: color, c: duration (in msec) */
-    if(!c)
-    {
+    if (!c) {
       c = b;
       b = 'blue';
     }
@@ -527,11 +488,10 @@ var App = {
     msgbox.setAttribute('timestamp', new Date().getTime());
     App.resizeContainer();
 
-    if(c)
-    {
+    if (c) {
       var timestamp = msgbox.getAttribute('timestamp');
       setTimeout(id => {
-        if(msgbox.getAttribute('timestamp') == timestamp)
+        if (msgbox.getAttribute('timestamp') == timestamp)
           App.clearMsgBox();
       }, c);
     }
@@ -552,7 +512,7 @@ var App = {
     var h = 365;
     var left = (screen.width/2)-(w/2);
     var top = (screen.height/2)-(h/2);
-    if(window.setting) nw.Window.get(window.popup).focus();
+    if (window.setting) nw.Window.get(window.popup).focus();
     nw.Window.open('app/settings.html', {width: w, height: h, id: 'setting'},
     win => {
       win.window.config = App.config;
@@ -590,8 +550,7 @@ var App = {
   }
   */
   procOffscreen: (tlContainer) => {
-    if(tlContainer && tlContainer.firstElementChild)
-    {
+    if (tlContainer && tlContainer.firstElementChild) {
       Array.from(tlContainer.firstElementChild.children).forEach((item) => {
         if (isOffscreen(tlContainer, item)) {
           if (item.firstElementChild.style.display != 'none') {
@@ -604,7 +563,7 @@ var App = {
             });
           }
         } else {
-          if( item.firstElementChild.style.display == 'none') {
+          if ( item.firstElementChild.style.display == 'none') {
             item.style.height = '';
             item.firstElementChild.style.display = 'block';
             Array.from(item.getElementsByTagName('video')).forEach(i => {
@@ -621,7 +580,7 @@ var App = {
   },
 
   procScrollEmphasize:e => {
-    if(!e.scrollTop)
+    if (!e.scrollTop)
       e.classList.add('scrolltop');
     else
       e.classList.remove('scrolltop');
@@ -639,43 +598,42 @@ var App = {
 
   getTweetItem: e => {
     Client.get(`https://api.twitter.com/1.1/statuses/show/${e}`, {}, (error, event, response) => {
-      if(!error)
-      {
-        if(App.config.debug) console.log(event);
+      if (!error) {
+        if (App.config.debug) console.log(event);
         App.addItem(home_timeline, new Tweet(event));
+      } else {
+        console.error(error);
       }
-      else console.error(error);
     });
   },
 
   getMentionsTimeline: () => {
     Client.get('statuses/mentions_timeline', {since_id: App.getMentionsTimeline.since_id|''}, (error, event, response) => {
-      if(!error) for (var item of event.reverse()) {
-        App.addItem(notification, new Tweet(item));
-        App.getMentionsTimeline.since_id = item.id_str;
+      if (!error) {
+        for (var item of event.reverse()) {
+          App.addItem(notification, new Tweet(item));
+          App.getMentionsTimeline.since_id = item.id_str;
+        }
+      } else {
+        console.log(event);
       }
-      else console.log(event);
     });
   },
 
   getAboutme: () => {
     Client.get('https://api.twitter.com/i/activity/about_me', {cards_platform:'Web-12', include_cards:'1', model_version:'7', count: 600, since_id:App.getAboutme.max_position}, (error, event, response) => {
       if (!error) {
-        if(event.length)
-        {
+        if (event.length) {
           App.getAboutme.max_position = event[0].max_position;
         }
-        for (var i = event.length - 1; i >= 0; i--)
-        {
+        for (var i = event.length - 1; i >= 0; i--) {
           addActivity(notification, event[i]);
 
           // debug flag
-          if(App.config.debug)
+          if (App.config.debug)
             console.log(event[i]);
         }
-      }
-      else
-      {
+      } else {
         console.warn(error);
       }
       //setTimeout(getAboutme, 3000);
@@ -683,12 +641,9 @@ var App = {
   },
   showNotify: (tweet) => {
     // Notification 요청
-    if (!('Notification' in window))
-    {
+    if (!('Notification' in window)) {
 
-    }
-    else if (Notification.permission === 'granted')
-    {
+    } else if (Notification.permission === 'granted') {
       Notification.requestPermission();
 
       var noti = new Notification(tweet.user.name,
@@ -707,23 +662,20 @@ var App = {
     App.timelines[tlContainer.id].push(tweet);
 
     // 200개가 넘어가면 가장 오래된 10개를 지운다.
-    if(tl.childElementCount > 200)
+    if (tl.childElementCount > 200)
       App.removeItems(tlContainer, 10);
 
     // 유저가 스크롤바를 잡고 있을때는 추가되는 트윗을 감춤.
     // onmouseup 이벤트 발생시 트윗들을 다시 꺼냄
-    if (window.scrolling)
-    {
+    if (window.scrolling) {
       document.getElementById('new_tweet_noti').hidden = false;
       tweet.element.classList.add('hidden');
     }
     tl.insertBefore(tweet.element, tl.firstElementChild);
 
-    if(!window.scrolling)
-    {
+    if (!window.scrolling) {
       // scrollbar 이동
-      if (tlContainer.scrollTop)
-      {
+      if (tlContainer.scrollTop) {
         tlContainer.scrollTop += tl.firstElementChild.getClientRects()[0].height + 10;
       }
     }
@@ -731,7 +683,7 @@ var App = {
     App.procOffscreen(tlContainer);
   },
   removeItem: (t, target) => {
-    if(typeof target == 'number')
+    if (typeof target == 'number')
       target = document.querySelector(`[data-item-id="${target}"]`);
     t.firstElementChild.removeChild(target);
   },
@@ -740,8 +692,7 @@ var App = {
     for (var t of removed) t.element.remove();
   },
   calcItemHeight: e => {
-    if(!document.getElementById('calcItem'))
-    {
+    if (!document.getElementById('calcItem')) {
       var elemDiv = document.createElement('div');
       elemDiv.style.cssText = 'position: absolute; visibility: hidden';
       elemDiv.innerHTML = '';
@@ -762,34 +713,28 @@ var App = {
       App.styleSheet.innerHTML = `.tweet{background-color:rgba(255,255,255,${App.config.tweetOpacity/100.0})}`;
       document.body.appendChild(App.styleSheet);
 
-      if(!App.config.AccessToken || !App.config.AccessSecret)
-      {
+      if (!App.config.AccessToken || !App.config.AccessSecret) {
         oauth_req.style.display = '';
         App.resizeContainer();
         return App.confirmAuthFirst();
       }
 
       App.vertifyCredentials(error => {
-        if(error)
-        {
+        if (error) {
           oauth_req.style.display = '';
           App.resizeContainer();
 
           return App.confirmAuth();
-        }
-        else
-        {
+        } else {
           oauth_req.style.display = 'none';
           App.resizeContainer();
           App.getTimeline();
           App.getTweetItem('751494319601754112');
           App.getMentionsTimeline();
-          if(App.config.runStream)
+          if (App.config.runStream)
             App.runMainStream();
           else
-          {
             App.alertStream(false);
-          }
           //getAboutme();
         }
       });
@@ -824,10 +769,8 @@ function Activity(event) {
   this.element = a;
 }
 
-function tag(strings, ...values)
-{
-  for(s in strings)
-  {
+function tag(strings, ...values) {
+  for (s in strings) {
     console.log(s);
   }
 }
@@ -861,7 +804,7 @@ function Tweet(tweet, quoted, event, source) {
   a.setAttribute('data-tweet-timestamp', tweet.timestamp_ms);
 
   var mentioned_me = false;
-  if(!tweet.retweeted_status)
+  if (!tweet.retweeted_status)
     for (var name of Twitter_text.extractMentions(tweet.text))
       if (name == App.screen_name) mentioned_me = true;
   if (mentioned_me) className += ' tweet_emp blue';
@@ -879,20 +822,16 @@ function Tweet(tweet, quoted, event, source) {
   var div = document.createElement('div');
   div.className = className;
 
-  if (event == 'retweeted_retweet')
-  {
+  if (event == 'retweeted_retweet') {
     div.innerHTML += `<div class="retweeted_retweeted_tweet">&nbsp;&nbsp;${symbol.retweet}
             <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${source.screen_name}')">${source.name}</a> 님이 내가 리트윗한 트윗을 리트윗했습니다.</span>`;
-    if(tweet.retweeted_status) tweet = tweet.retweeted_status;
+    if (tweet.retweeted_status) tweet = tweet.retweeted_status;
   }
-  if (event == 'favorited_retweet')
-  {
+  if (event == 'favorited_retweet') {
     div.innerHTML += `<div class="favorited_retweeted_tweet">&nbsp;&nbsp;${symbol.like}
             <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${source.screen_name}')">${source.name}</a> 님이 내 리트윗을 마음에 들어 합니다.</span>`;
-    if(tweet.retweeted_status) tweet = tweet.retweeted_status;
-  }
-  else if(tweet.retweeted_status)
-  {
+    if (tweet.retweeted_status) tweet = tweet.retweeted_status;
+  } else if (tweet.retweeted_status) {
     div.innerHTML += `<div class="retweeted_tweet">${symbol.retweet}<span class="retweeted_tweet_text">&nbsp;
             <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}')">${tweet.user.name}</a> 님이 리트윗했습니다</span></div>`;
 
@@ -903,9 +842,7 @@ function Tweet(tweet, quoted, event, source) {
     tweet.favorite_count = tweet.retweeted_status.favorite_count;
     tweet.retweet_count = tweet.retweeted_status.retweet_count;*/
     tweet = tweet.retweeted_status;
-  }
-  else if (tweet.in_reply_to_status_id_str !== null && !quoted)
-  {
+  } else if (tweet.in_reply_to_status_id_str !== null && !quoted) {
     // 자신의 트윗에 답글 단 경우 즉, 이어쓰기 트윗
     if (tweet.user.screen_name === tweet.in_reply_to_screen_name) {
       var replied_to = tweet.user.name;
@@ -947,7 +884,7 @@ function Tweet(tweet, quoted, event, source) {
 
   // 프로텍트 이미지
   protected = '';
-  if(tweet.user.protected) protected = symbol.protected;
+  if (tweet.user.protected) protected = symbol.protected;
 
   div.innerHTML += `<img class="profile-image" src="${tweet.user.profile_image_url_https}"></img>
           <div class="tweet-name"><a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}')">
@@ -956,26 +893,22 @@ function Tweet(tweet, quoted, event, source) {
           <p class="tweet-text lpad">${text}</p>`;
 
   var entities = tweet.extended_entities || tweet.entities || null;
-  if(entities.media)
-  {
+  if (entities.media) {
     var container = document.createElement('div');
 
-    if(entities.media[0].type == 'animated_gif' || entities.media[0].type == 'video')
-    {
+    if (entities.media[0].type == 'animated_gif' || entities.media[0].type == 'video') {
       var muted = (entities.media[0].type == 'video') ? 'muted' : '';
       var loop = (entities.media[0].type == 'animated_gif') ? 'loop' : '';
       var type = (entities.media[0].type == 'animated_gif') ? 'tweet-gif' : 'tweet-video';
       container.className = 'tweet-media-container';
       container.innerHTML += `<div class="${type}"><video id="my-video" class="video-js" ${loop} ${muted} autoplay controls preload="auto" poster="${entities.media[0].media_url_https}" data-setup="{}"></video></div>`;
 
-      for(i in entities.media[0].video_info.variants)
+      for (i in entities.media[0].video_info.variants)
         container.getElementsByTagName('video')[0].innerHTML += `<source src="${entities.media[0].video_info.variants[i].url}" type='${entities.media[0].video_info.variants[i].content_type}'>`;
 
       div.appendChild(container);
-    }
-    else
-    {
-      var urls = entities.media.map(function(x){return x.media_url_https;});
+    } else {
+      var urls = entities.media.map((x) => x.media_url_https);
       var urlstr = urls.join(';');
       container.setAttribute('data-media-count', entities.media.length);
       container.className = 'tweet-media-container';
@@ -986,8 +919,7 @@ function Tweet(tweet, quoted, event, source) {
   }
 
   var quoted_status = tweet.quoted_status || null;
-  if (!quoted && quoted_status)
-  {
+  if (!quoted && quoted_status) {
     var twt = new Tweet(quoted_status, true);
     div.appendChild(twt.element);
   }
@@ -1001,8 +933,7 @@ function Tweet(tweet, quoted, event, source) {
   if (!tweet.favorite_count)
     tweet.favorite_count = '';
 
-  if (!quoted)
-  {
+  if (!quoted) {
     var _e = document.createElement('div');
     _e.innerHTML += `<div aria-label="트윗 작업" role="group" class="tweet-task lpad">
             <div class="tweet-task-box"><button aria-label="답글" class="reply" type="button"">
@@ -1034,21 +965,19 @@ function Tweet(tweet, quoted, event, source) {
         usernames.push(name);
 
     App.tweetUploader.text = usernames.map(x => '@' + x).join(' ');
-    if(App.tweetUploader.text) App.tweetUploader.text += ' ';
+    if (App.tweetUploader.text) App.tweetUploader.text += ' ';
     App.tweetUploader.inReplyTo = {id: tweet.id_str, name: tweet.user.name, screen_name: tweet_author, text: tweet.text};
     App.resizeContainer();
   };
 
   var execRetweet = () => {
-    if (!this.isRetweeted)
-    {
+    if (!this.isRetweeted) {
       App.showMsgBox('리트윗했습니다', 'blue', 1000);
       App.chkRetweet(tweet.id_str, true, 'auto');
       Client.post(`statuses/retweet/${tweet.id_str}`, (error, tweet, response) => {
         if (error) {
           console.warn(error);
-          switch (error[0].code)
-          {
+          switch (error[0].code) {
             // already retweeted
             case 327:
               App.showMsgBox('이미 리트윗한 트윗입니다', 'tomato', 1000);
@@ -1062,11 +991,8 @@ function Tweet(tweet, quoted, event, source) {
           }
           App.chkRetweet(tweet.id_str, false, 'auto');
         }
-        else { }
       });
-    }
-    else
-    {
+    } else {
       App.showMsgBox('언리트윗했습니다', 'blue', 1000);
       App.chkRetweet(tweet.id_str, false, 'auto');
 
@@ -1075,7 +1001,6 @@ function Tweet(tweet, quoted, event, source) {
           console.warn(error);
           App.chkRetweet(tweet.id_str, true, 'auto');
         }
-        else { }
       });
     }
     document.activeElement.blur();
@@ -1083,14 +1008,12 @@ function Tweet(tweet, quoted, event, source) {
 
   var execFavorite = () => {
     App.showMsgBox('마음에 드는 트윗으로 지정했습니다', 'blue', 1000);
-    if(!this.isFavorited)
-    {
+    if (!this.isFavorited) {
       App.chkFavorite(tweet.id_str, true, 'auto');
       Client.post('favorites/create', {id: tweet.id_str}, (error, tweet, response) => {
         if (error) {
           console.warn(error);
-          switch (error[0].code)
-          {
+          switch (error[0].code) {
             // already favorited
             case 139:
               App.showMsgBox('이미 마음에 드는 트윗으로 지정한 트윗입니다', 'tomato', 1000);
@@ -1104,11 +1027,8 @@ function Tweet(tweet, quoted, event, source) {
           }
           App.chkFavorite(tweet.id_str, false, 'auto');
         }
-        else { }
       });
-    }
-    else
-    {
+    } else {
       App.showMsgBox('마음에 드는 트윗을 해제했습니다', 'blue', 1000);
       App.chkFavorite(tweet.id_str, false, 'auto');
 
@@ -1116,13 +1036,11 @@ function Tweet(tweet, quoted, event, source) {
         if (error) {
           console.warn(error);
           // no status found
-          if(error[0].code == 144)
+          if (error[0].code == 144)
             return;
           App.chkFavorite(tweet.id_str, true, 'auto');
         }
-        else { }
       });
-
     }
     document.activeElement.blur();
   };
@@ -1190,8 +1108,7 @@ function TweetUploader() {
     var text = txt.value;
     this.closePanel();
 
-    if (this.mediaSelector.selectedFiles.length != 0)
-    {
+    if (this.mediaSelector.selectedFiles.length != 0) {
       var path = this.mediaSelector.selectedFiles;
       var files = [];
       App.showMsgBox('트윗을 올리는 중입니다', 'orange', 30000);
@@ -1210,25 +1127,25 @@ function TweetUploader() {
               if (files.filter(f => f !== undefined).length === path.length) {
                 return _ex(files.map(x => x.media_id_string).join(','));
               }
+            } else {
+              return App.showMsgBox(`오류가 발생했습니다<br />${error[0].code}: ${error[0].message}`, 'tomato', 5000);
             }
-            else return App.showMsgBox(`오류가 발생했습니다<br />${error[0].code}: ${error[0].message}`, 'tomato', 5000);
           });
         })(i);
+    } else {
+      return _ex();
     }
-    else return _ex();
 
-    function _ex(media_ids)
-    {
+    function _ex(media_ids) {
       var param = {status: text};
       if (media_ids) param.media_ids = media_ids;
 
-      if(_inReplyTo != '') param.in_reply_to_status_id = _inReplyTo;
+      if (_inReplyTo != '') param.in_reply_to_status_id = _inReplyTo;
 
       Client.post('statuses/update', param, (error, event, response) => {
         if (!error) {
           App.showMsgBox('트윗했습니다', 'blue', 3000);
-        }
-        else {
+        } else {
           App.showMsgBox(`오류가 발생했습니다<br />${error[0].code}: ${error[0].message}`, 'tomato', 5000);
         }
       });
@@ -1307,13 +1224,11 @@ function MediaSelector() {
   this.selectedFiles = [];
 
   this.addFile = path => {
-    if (this.selectedFiles.length == 4)
-    {
+    if (this.selectedFiles.length == 4) {
       App.showMsgBox('이미지는 4개까지 첨부할 수 있습니다.', 'tomato', 3000);
       return;
     }
-    if (this.selectedFiles.indexOf(path) != -1)
-    {
+    if (this.selectedFiles.indexOf(path) != -1) {
       App.showMsgBox('같은 파일을 중복으로 선택할 수 없습니다.', 'tomato', 3000);
       return;
     }
@@ -1340,8 +1255,7 @@ function MediaSelector() {
     lenIndicator.innerHTML = 140 - (App.tweetUploader.mediaSelector.selectedFiles.length ? App.twitter_conf.characters_reserved_per_media : 0) - Twitter_text.getTweetLength(txt.value);
 
     fileInput.value = '';
-    if (this.selectedFiles.length == 4)
-    {
+    if (this.selectedFiles.length == 4) {
       fileInput.disabled = true;
       fileInputContainer.classList.add('disabled');
     }
@@ -1359,8 +1273,7 @@ function MediaSelector() {
 // enter full screen, scrollTop reset to zero issue
 // https://bugs.chromium.org/p/chromium/issues/detail?id=142427
 document.addEventListener('webkitfullscreenchange', () => {
-  if (document.webkitIsFullScreen !== null)
-  {
+  if (document.webkitIsFullScreen !== null) {
     // reset to original scroll pos
     if (!htl_scr01 && !home_timeline.scrollTop)
       home_timeline.scrollTop = htl_scr02;
@@ -1383,11 +1296,9 @@ window.onload = e => {
   home_timeline.onmouseup = e => {
     var that = e.currentTarget;
     window.scrolling = false;
-    for (var i = 1; i < that.firstElementChild.childNodes.length-1; i++)
-    {
-      if(that.firstElementChild.childNodes[i].className != undefined &&
-      that.firstElementChild.childNodes[i].classList.contains('hidden'))
-      {
+    for (var i = 1; i < that.firstElementChild.childNodes.length-1; i++) {
+      if (that.firstElementChild.childNodes[i].className != undefined &&
+      that.firstElementChild.childNodes[i].classList.contains('hidden')) {
         new_tweet_noti.hidden = true;
         that.firstElementChild.childNodes[i].classList.remove('hidden');
         if (that.scrollTop)
@@ -1397,37 +1308,32 @@ window.onload = e => {
     }
   };
 
-  function offScreen(tlContainer)
-  {
+  function offScreen(tlContainer) {
     App.procScrollEmphasize(tlContainer);
 
     // offscreen process
     App.procOffscreen(tlContainer);
 
     // magic scroll 100px padding
-    if(App.config.magicScroll &&
-      (tlContainer.offsetHeight < tlContainer.getElementsByClassName('timeline')[0].offsetHeight)) // is overflow
-    {
-      if(tlContainer.scrollTop < 100)
+    if (App.config.magicScroll &&
+    (tlContainer.offsetHeight < tlContainer.getElementsByClassName('timeline')[0].offsetHeight)) {// is overflow
+      if (tlContainer.scrollTop < 100) {
         tlContainer.style.paddingTop = tlContainer.scrollTop + 'px';
-    }
-    else
-    {
+      }
+    } else {
       tlContainer.style.paddingTop = '0px';
     }
   }
 
   // full screen scroll init issue fix
-  home_timeline.onscroll = () =>
-  {
+  home_timeline.onscroll = () => {
     htl_scr02 = htl_scr01;
     htl_scr01 = home_timeline.scrollTop;
 
     offScreen(home_timeline);
   };
 
-  notification.onscroll = () =>
-  {
+  notification.onscroll = () => {
     // full screen scroll init issue fix
     ntl_scr02 = ntl_scr01;
     ntl_scr01 = notification.scrollTop;
@@ -1440,24 +1346,24 @@ window.onload = e => {
 
   window.magicScroll = false;
   var magicScrollHandler = e => {
-    if(!App.config.magicScroll)
+    if (!App.config.magicScroll)
       return;
 
     var tl = e.currentTarget,
       dy = e.deltaY;
 
-    if (magicScroll && dy > 0) return false;
-    else if (tl.scrollTop == 0 && dy > 0 &&
-        (tl.offsetHeight < tl.getElementsByClassName('timeline')[0].offsetHeight)) // is overflow
-    {
+    if (magicScroll && dy > 0) {
+      return false;
+    } else if (tl.scrollTop == 0 && dy > 0 &&
+    (tl.offsetHeight < tl.getElementsByClassName('timeline')[0].offsetHeight)) { // is overflow
       magicScroll = true;
-      setTimeout(() => {window.magicScroll = false;}, App.config.magicScrollSensitivity);
+      setTimeout(() => {
+        window.magicScroll = false;
+      }, App.config.magicScrollSensitivity);
       tl.style.paddingTop = `${dy}px`;
       tl.scrollTop = dy;
       return false;
-    }
-    else if (dy < 0 && tl.style.paddingTop != '0px')
-    {
+    } else if (dy < 0 && tl.style.paddingTop != '0px') {
       tl.scrollTop += dy;
       tl.style.paddingTop = 0;
     }
@@ -1539,7 +1445,7 @@ var KEY = {
 
 document.onkeydown = e => {
   var isShift;
-  if(window.event) {
+  if (window.event) {
     key = window.event.keyCode;
     isShift = !!window.event.shiftKey;
   } else {
@@ -1547,8 +1453,7 @@ document.onkeydown = e => {
     isShift = !!e.shiftKey;
   }
 
-  if (document.activeElement.type != 'textarea')
-  {
+  if (document.activeElement.type != 'textarea') {
     switch (e.keyCode) {
       case KEY.NUMBER_1:
         naviSelect(0);
@@ -1560,7 +1465,7 @@ document.onkeydown = e => {
         naviSelect(2);
         break;
       case KEY.N:
-        if(!App.tweetUploader.isOpen)
+        if (!App.tweetUploader.isOpen)
           naviSelect(4);
         else App.tweetUploader.focus();
         return false;
@@ -1596,12 +1501,9 @@ function scrollTo(element, to, duration) {
     App.procOffscreen(App.currTimeline());
   }, 10);
 }
-function naviSelect(e)
-{
-  if(e > 2 || header_navi.children[e].classList.contains('selected'))
-  {
-    switch(e)
-    {
+function naviSelect(e) {
+  if (e > 2 || header_navi.children[e].classList.contains('selected')) {
+    switch (e) {
       case 0:
         home_timeline.style.paddingTop = '0';
         scrollTo(home_timeline, 0, 200);
@@ -1623,11 +1525,8 @@ function naviSelect(e)
           uploader.openPanel();
         break;
     }
-  }
-  else
-  {
-    switch(e)
-    {
+  } else {
+    switch (e) {
       case 0:
         header_text.innerHTML = '홈 타임라인';
         break;

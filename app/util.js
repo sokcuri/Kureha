@@ -20,7 +20,7 @@ function openExternal(href) {
 }
 
 function openPopup(href) {
-  if(window.popup && !window.closed) nw.Window.get(window.popup).close(true);
+  if (window.popup && !window.closed) nw.Window.get(window.popup).close(true);
   var w = 1000;
   var h = 800;
   var left = (screen.width/2)-(w/2);
@@ -43,7 +43,7 @@ function openPopup(href) {
 
 
 function openImageview(href, more) {
-  if(window.popup) nw.Window.get(window.popup).close(true);
+  if (window.popup) nw.Window.get(window.popup).close(true);
   var w = 1000;
   var h = 650;
   var left = (screen.width/2)-(w/2);
