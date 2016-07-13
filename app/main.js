@@ -82,7 +82,7 @@ var symbol = {
 	protected: '<svg viewBox="0 0 72 90"><path transform="scale(0.036,-0.04) translate(0,-1900)" d="M720 1760h467q125 0 209 -80.5t84 -199.5v-240h80q42 0 81 -40t39 -80v-840q0 -40 -39 -80t-81 -40h-1200q-42 0 -81 40t-39 80v840q0 40 39 80t81 40h80v240q0 120 78 200t202 80zM1200 1600h-480q-42 0 -81 -40t-39 -80v-240h720v240q0 40 -39 80t-81 40zM960 880 q-90 0 -145 -56t-55 -144t55 -144t145 -56t145 56t55 144t-55 144t-145 56z"></path></svg>'
 }
 
-Client = new Twitter({
+var Client = new Twitter({
 	consumer_key: '',
 	consumer_secret: '',
 	access_token_key: '',
@@ -145,6 +145,8 @@ var App = {
 		home_timeline: [],
 		notification: []
 	},
+
+	userCache: {},
 
 	// Load Config
 	loadConfig: callback => {
@@ -538,6 +540,26 @@ var App = {
 		}
 	},
 
+	getUser: (userId, onSuccess, onError) => {
+		if (App.userCache[userId] && App.userCache[userId].expiresAt >= new Date().getTime()) {
+			if (App.config.debug) console.log('getUser: 캐시된 사용자 정보를 사용합니다.');
+			onSuccess(App.userCache[userId].user);
+		} else {
+			if (App.config.debug) console.log('getUser: 캐시된 정보가 없거나 만료되었습니다. 다시 요청하는 중.');
+			Client.get('users/show', { id: userId }, (error, user, response) => {
+				if (error) {
+					onError(error);
+				} else {
+					App.userCache[userId] = {
+						user: user,
+						expiresAt: new Date().getTime() + 3600000
+					}
+					onSuccess(user);
+				}
+			});
+		}
+	},
+
 	showMsgBox: (a, b, c) => {
 		/* 2-argument: 
 		 *   a: message, b: duration (default color is blue)
@@ -574,6 +596,26 @@ var App = {
 		App.procOffscreen(App.currTimeline());
 	},
 
+	openProfile: userId => {
+		var w = 500;
+		var h = 700;
+		var left = (screen.width/2)-(w/2);
+		var top = (screen.height/2)-(h/2);
+		nw.Window.open('app/profile.html', {width: w, height: h, id: 'profile'},
+		win => {
+			win.window.userId = userId;
+			win.window.App = App;
+			win.window.Client = Client;
+			win.window.Tweet = Tweet;
+			win.id = 'profile';
+			win.width = w;
+			win.height = h;
+			win.x = Math.round(left);
+			win.y = Math.round(top);
+			win.focus();
+		});
+	},
+
 	openSettings: () => {
 		var w = 450;
 		var h = 365;
@@ -591,7 +633,7 @@ var App = {
 			win.y = Math.round(top);
 			
 			win.focus();
-	  });
+		});
 	},
 /*
 	var t = [home_timeline];
@@ -898,19 +940,19 @@ function Tweet(tweet, quoted, event, source) {
 	if (event == 'retweeted_retweet')
 	{
 		div.innerHTML += `<div class="retweeted_retweeted_tweet">&nbsp;&nbsp;${symbol.retweet}
-						<a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${source.screen_name}')">${source.name}</a> 님이 내가 리트윗한 트윗을 리트윗했습니다.</span>`;
+						<a href="javascript:void(0)" onclick="App.openProfile(${source.id_str})">${source.name}</a> 님이 내가 리트윗한 트윗을 리트윗했습니다.</span>`;
 		if(tweet.retweeted_status) tweet = tweet.retweeted_status;
 	}
 	if (event == 'favorited_retweet')
 	{
 		div.innerHTML += `<div class="favorited_retweeted_tweet">&nbsp;&nbsp;${symbol.like}
-						<a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${source.screen_name}')">${source.name}</a> 님이 내 리트윗을 마음에 들어 합니다.</span>`;
+						<a href="javascript:void(0)" onclick="App.openProfile(${source.id_str})">${source.name}</a> 님이 내 리트윗을 마음에 들어 합니다.</span>`;
 		if(tweet.retweeted_status) tweet = tweet.retweeted_status;
 	}
 	else if(tweet.retweeted_status)
 	{
 		div.innerHTML += `<div class="retweeted_tweet">${symbol.retweet}<span class="retweeted_tweet_text">&nbsp;
-						<a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}')">${tweet.user.name}</a> 님이 리트윗했습니다</span></div>`
+						<a href="javascript:void(0)" onclick="App.openProfile(${tweet.user.id_str})">${tweet.user.name}</a> 님이 리트윗했습니다</span></div>`
 		
 		/*tweet.text = tweet.retweeted_status.text;
 		tweet.created_at = tweet.retweeted_status.created_at;

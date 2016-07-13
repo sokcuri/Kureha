@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<title>User Profile</title>
 		<link rel="stylesheet" href="css/tweet.css">
-		<link rel="stylesheet" href="css/profile.css"> <!-- to be added -->
+		<link rel="stylesheet" href="css/profile.css">
 	</head>
 	<body>
 		<div id="wrapper">
@@ -17,24 +17,54 @@
 						<button>Follow</button>
 					</div>
 					<p class="name-container">
-						<span class="name">ㄱㄴ</span>
-						<span class="screen-name">@d57pub_</span>
-						<span class="follows-me">나를 팔로우합니다</span>
+						<span class="name">&nbsp;</span>
+						<span class="screen-name">&nbsp;</span>
+						<!--<span class="follows-me">나를 팔로우합니다</span>-->
 					</p>
-					<p class="description">Public: @d57pub_ (っ´ヮ`c)☆</p>
+					<p class="description">&nbsp;</p>
 					<p>
-						<span class="location">Seoul</span> · <span class="website">https://dalgona.github.io/</span>
+						<span class="location">&nbsp;</span> · <span class="website">&nbsp;</span>
 					</p>
 					<p class="counts">
-						<span><span class="num">123</span> <span class="label">트윗</span></span>
-						<span><span class="num">123</span> <span class="label">팔로잉</span></span>
-						<span><span class="num">123</span> <span class="label">팔로워</span></span>
+						<span><span class="num tweets">&nbsp;</span> <span class="label">트윗</span></span>
+						<span><span class="num followings">&nbsp;</span> <span class="label">팔로잉</span></span>
+						<span><span class="num followers">&nbsp;</span> <span class="label">팔로워</span></span>
 					</p>
 				</div>
+				<div class="separator"></div>
 			</header>
+			<main><div id="timeline"></div></main>
 		</div>
 		<script>
-			//
+			HTMLElement.prototype.$C = HTMLElement.prototype.getElementsByClassName;
+
+			window.onload = e => {
+				App.getUser(userId, user => showUser(user), error => console.error(error));
+			}
+
+			function showUser(user) {
+				var header = document.getElementsByTagName('header')[0];
+				header.$C('banner')[0].style.backgroundColor = '#' + user.profile_link_color;
+				header.$C('banner')[0].style.backgroundImage = `url('${user.profile_banner_url}')`;
+				header.$C('pic')[0].style.backgroundImage = `url('${user.profile_image_url_https.replace('_normal', '')}')`;
+				header.$C('name')[0].textContent = user.name;
+				header.$C('screen-name')[0].textContent = '@' + user.screen_name;
+				header.$C('description')[0].textContent = user.description;
+				header.$C('location')[0].textContent = user.location;
+				header.$C('website')[0].textContent = user.url;
+				header.$C('num tweets')[0].textContent = user.statuses_count;
+				header.$C('num followings')[0].textContent = user.friends_count;
+				header.$C('num followers')[0].textContent = user.followers_count;
+
+				Client.get('statuses/user_timeline', { user_id: userId, include_entities: true, count: 50 }, (err, tl, res) => {
+					if (err) {
+						// fail
+					} else {
+						for (var t of tl.reverse())
+							timeline.appendChild(new Tweet(t).element);
+					}
+				});
+			}
 		</script>
 	</body>
 </html>
