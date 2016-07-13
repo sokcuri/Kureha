@@ -1,20 +1,20 @@
 var os = require('os');
 
 // do not open the window and open it in external browser
-nw.Window.get().on('new-win-policy', function(frame, url, policy) {
+nw.Window.get().on('new-win-policy', function (frame, url, policy) {
   policy.ignore();
   nw.Shell.openExternal(url);
 });
 
 // string formatting
 if (!String.prototype.format) {
-  String.prototype.format = function() {
+  String.prototype.format = function () {
     var args = arguments;
-    return this.replace(/{(\d+)}/g, function(match, number) {
+    return this.replace(/{(\d+)}/g, function (match, number) {
       return typeof args[number] != 'undefined' ? args[number] : match;
     });
   };
-  String.prototype.string = function(len) {
+  String.prototype.string = function (len) {
     var s = '', i = 0;
     while (i++ < len) {
       s += this;
@@ -22,22 +22,22 @@ if (!String.prototype.format) {
     return s;
   };
 
-  String.prototype.zf = function(len) {
+  String.prototype.zf = function (len) {
     return '0'.string(len - this.length) + this;
   };
-  Number.prototype.zf = function(len) {
+  Number.prototype.zf = function (len) {
     return this.toString().zf(len);
   };
 }
 
 // date formatting
-Date.prototype.format = function(f) {
+Date.prototype.format = function (f) {
   if (!this.valueOf()) return ' ';
 
   var weekName = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
   var d = this;
 
-  return f.replace(/(yyyy|yy|MM|dd|E|hh|mm|ss|a\/p)/gi, function($1) {
+  return f.replace(/(yyyy|yy|MM|dd|E|hh|mm|ss|a\/p)/gi, function ($1) {
     switch ($1) {
       case 'yyyy': return d.getFullYear();
       case 'yy': return (d.getFullYear() % 1000);
@@ -429,7 +429,7 @@ var App = {
     for (var tl in App.timelines) {
       for (var t of App.timelines[tl].filter(x => (x.id == id || (x.hasRetweet && x.retweet.id == id)))) {
         var lbl = t.retweetCountLabel;
-        if (typeof(count) != 'undefined' && typeof(count) != 'string')
+        if (typeof count != 'undefined' && typeof count != 'string')
           if (count)
             lbl.innerText = count;
           else
@@ -453,7 +453,7 @@ var App = {
     for (var tl in App.timelines) {
       for (var t of App.timelines[tl].filter(x => (x.id == id || (x.hasRetweet && x.retweet.id == id)))) {
         var lbl = t.favoriteCountLabel;
-        if (typeof(count) != 'undefined' && typeof(count) != 'string')
+        if (typeof count != 'undefined' && typeof count != 'string')
           if (count)
             lbl.innerText = count;
           else
@@ -510,8 +510,8 @@ var App = {
   openSettings: () => {
     var w = 450;
     var h = 365;
-    var left = (screen.width/2)-(w/2);
-    var top = (screen.height/2)-(h/2);
+    var left = (screen.width / 2) - (w / 2);
+    var top = (screen.height / 2) - (h / 2);
     if (window.setting) nw.Window.get(window.popup).focus();
     nw.Window.open('app/settings.html', {width: w, height: h, id: 'setting'},
     win => {
@@ -563,7 +563,7 @@ var App = {
             });
           }
         } else {
-          if ( item.firstElementChild.style.display == 'none') {
+          if (item.firstElementChild.style.display == 'none') {
             item.style.height = '';
             item.firstElementChild.style.display = 'block';
             Array.from(item.getElementsByTagName('video')).forEach(i => {
@@ -576,7 +576,7 @@ var App = {
     }
   },
   currTimeline: () => {
-    return container.children[Number(container.style.left.replace('vw', ''))/-100];
+    return container.children[Number(container.style.left.replace('vw', '')) / -100];
   },
 
   procScrollEmphasize:e => {
@@ -608,7 +608,7 @@ var App = {
   },
 
   getMentionsTimeline: () => {
-    Client.get('statuses/mentions_timeline', {since_id: App.getMentionsTimeline.since_id|''}, (error, event, response) => {
+    Client.get('statuses/mentions_timeline', {since_id: App.getMentionsTimeline.since_id || ''}, (error, event, response) => {
       if (!error) {
         for (var item of event.reverse()) {
           App.addItem(notification, new Tweet(item));
@@ -710,7 +710,7 @@ var App = {
     App.loadConfig(() => {
       App.initializeClient(App.config.ConsumerKey, App.config.ConsumerSecret, App.config.AccessToken, App.config.AccessSecret);
       App.setBackground();
-      App.styleSheet.innerHTML = `.tweet{background-color:rgba(255,255,255,${App.config.tweetOpacity/100.0})}`;
+      App.styleSheet.innerHTML = `.tweet{background-color:rgba(255,255,255,${App.config.tweetOpacity / 100.0})}`;
       document.body.appendChild(App.styleSheet);
 
       if (!App.config.AccessToken || !App.config.AccessSecret) {
@@ -750,7 +750,7 @@ App.getMentionsTimeline.since_id = '1';
 App.getAboutme.max_position = 0;
 App.showNotify.sequence = 0;
 
-function Test(event) {
+function Test (event) {
   a = document.createElement('article');
   a.className = 'tweet';
   //a.setAttribute('data-tweet-id', tweet.id_str);
@@ -759,7 +759,7 @@ function Test(event) {
   this.element = a;
 }
 
-function Activity(event) {
+function Activity (event) {
   a = document.createElement('article');
   a.className = 'tweet';
   a.innerHTML = '';
@@ -769,13 +769,13 @@ function Activity(event) {
   this.element = a;
 }
 
-function tag(strings, ...values) {
+function tag (strings, ...values) {
   for (s in strings) {
     console.log(s);
   }
 }
 
-function Tweet(tweet, quoted, event, source) {
+function Tweet (tweet, quoted, event, source) {
   var tweet = tweet;
   var quoted = quoted;
   var a = document.createElement('article');
@@ -1046,7 +1046,7 @@ function Tweet(tweet, quoted, event, source) {
   };
 }
 
-function TweetUploader() {
+function TweetUploader () {
   this.mediaSelector = new MediaSelector();
 
   var _isOpen = false;
@@ -1136,7 +1136,7 @@ function TweetUploader() {
       return _ex();
     }
 
-    function _ex(media_ids) {
+    function _ex (media_ids) {
       var param = {status: text};
       if (media_ids) param.media_ids = media_ids;
 
@@ -1196,7 +1196,7 @@ function TweetUploader() {
   });
 }
 
-function MediaSelector() {
+function MediaSelector () {
   var e = document.createElement('div'),
     thumbContainer = document.createElement('div'),
     fileInputContainer = document.createElement('div'),
@@ -1296,7 +1296,7 @@ window.onload = e => {
   home_timeline.onmouseup = e => {
     var that = e.currentTarget;
     window.scrolling = false;
-    for (var i = 1; i < that.firstElementChild.childNodes.length-1; i++) {
+    for (var i = 1; i < that.firstElementChild.childNodes.length - 1; i++) {
       if (that.firstElementChild.childNodes[i].className != undefined &&
       that.firstElementChild.childNodes[i].classList.contains('hidden')) {
         new_tweet_noti.hidden = true;
@@ -1308,7 +1308,7 @@ window.onload = e => {
     }
   };
 
-  function offScreen(tlContainer) {
+  function offScreen (tlContainer) {
     App.procScrollEmphasize(tlContainer);
 
     // offscreen process
@@ -1371,7 +1371,7 @@ window.onload = e => {
   home_timeline.onwheel = magicScrollHandler;
   notification.onwheel = magicScrollHandler;
 
-  App.document.body.addEventListener('paste', function(event) {
+  App.document.body.addEventListener('paste', function (event) {
     /* 작동설명:
      * 트윗덱 붙여넣기 스크립트와 달리, 파일을 직접 입력받지 않는 대신
      * 파일의 경로를 받고 이를 읽어서 업로드를 한다.
@@ -1489,7 +1489,7 @@ document.onkeydown = e => {
     }
   }
 };
-function scrollTo(element, to, duration) {
+function scrollTo (element, to, duration) {
   if (duration <= 0) return;
   var difference = to - element.scrollTop;
   var perTick = difference / duration * 10;
@@ -1501,7 +1501,7 @@ function scrollTo(element, to, duration) {
     App.procOffscreen(App.currTimeline());
   }, 10);
 }
-function naviSelect(e) {
+function naviSelect (e) {
   if (e > 2 || header_navi.children[e].classList.contains('selected')) {
     switch (e) {
       case 0:
@@ -1546,7 +1546,7 @@ function naviSelect(e) {
     App.procOffscreen(App.currTimeline());
   }
 }
-function chooseFile(name) {
+function chooseFile (name) {
   var chooser = document.querySelector(name);
   chooser.addEventListener('change', evt => console.log(this.value), false);
 
