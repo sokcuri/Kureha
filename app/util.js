@@ -16,33 +16,31 @@ var regex = /(<([^>]+)>)/ig;
 }
 
 function openExternal(href) {
-	require('nw.gui').Shell.openExternal( href );
-	/*if(event)
-	{
-		event.stopPropagation();
-		event.stopImmediatePropagation();
-	}*/
+	require('nw.gui').Shell.openExternal(href);
 }
+
 function openPopup(href) {
-	/*
-	var gui = require('nw.gui');
-	var win = gui.Window.open (href, {
-	  position: 'center',
-	  width: 1000,
-	  height: 800
-	});*/
+	if(window.popup && !window.closed) nw.Window.get(window.popup).close(true);
+	var w = 1000;
+	var h = 800;
+	var left = (screen.width/2)-(w/2);
+	var top = (screen.height/2)-(h/2);
+	nw.Window.open('app/popup.html?href=' + encodeURIComponent(href), {x: left, y: top, width: w, height: h},
+	function(win) {
+		window.popup = win.window;
 
-  var w = 1000;
-  var h = 800;
-  var left = (screen.width/2)-(w/2);
-  var top = (screen.height/2)-(h/2);
-  var win = window.open(href, 'popup');
-  win.resizeTo(w, h);
-  win.moveTo(left, top);
+		// do not open the window and open it in external browser
+		win.on('new-win-policy', function(frame, url, policy) {
+		policy.ignore();
+		nw.Shell.openExternal(url);
+		});
 
-  var wind = nw.Window.get(win)
-  wind.focus();
+		win.window.id = 'popup';
+		win.window.config = App.config;
+	    win.focus();
+  });
 }
+
 
 function openImageview(href, more) {
 	if(window.popup) nw.Window.get(window.popup).close(true);

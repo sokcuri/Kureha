@@ -1,0 +1,27 @@
+<html>
+<head>
+<script>
+window.onload = () => 
+{
+    var url = window.location.href,
+        query = window.location.search.substring(1),
+        args = query.split('&').map(function(x){ return x.split('='); }),
+        src = decodeURIComponent(args[0][1]);
+
+    content.src = src;
+
+    getTitle = () => {
+        if(document.title != content.contentDocument.title)
+            if(content.contentDocument.title)
+                document.title = content.contentDocument.title;
+            else
+                document.title = content.contentDocument.location.href;
+        setTimeout(getTitle, 250);  
+    } 
+    getTitle();
+}
+</script>
+<body style="margin:0px;padding:0px;overflow:hidden">
+    <iframe id="content" frameborder="0" style="overflow:hidden;height:100%;width:100%" height="100%" width="100%"></iframe>
+</body>
+</html>

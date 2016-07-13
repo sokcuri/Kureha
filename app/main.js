@@ -1,5 +1,11 @@
 var os = require('os');
 
+// do not open the window and open it in external browser
+nw.Window.get().on('new-win-policy', function(frame, url, policy) {
+  policy.ignore();
+  nw.Shell.openExternal(url);
+});
+
 // string formatting
 if(!String.prototype.format) 
 {
