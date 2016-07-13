@@ -14,7 +14,7 @@ if(!String.prototype.format)
     return this.replace(/{(\d+)}/g, function(match, number) {
       return typeof args[number] != 'undefined' ? args[number] : match;
     });
-  }
+  };
   String.prototype.string = function(len) {
     var s = '', i = 0;
     while (i++ < len)
@@ -86,7 +86,7 @@ var symbol = {
   close: '<svg width="20" height="20"><g style="stroke-width:3px;stroke:#777"><line x1="3" y1="3" x2="17" y2="17"/><line x1="3" y1="17" x2="17" y2="3"/></g></svg>',
   settings: '<svg viewBox="0 0 72 120"><path transform="scale(0.04,-0.037) translate(0,-1900)" d="M1554 870l159 -102q17 -3 27 -10.5t14 -22t5 -25t1 -30.5v-7t-1 -12.5t-2.5 -13.5t-4.5 -4l-18 -42q-16 -38 -55 -54q1 13 -39 -27v4t-1.5 8.5t-3.5 9.5t-6.5 5t-11.5 -5l-170 42q-48 -71 -114 -122l38 -176l-11 -6q0 -20 -1 -31t-5 -27t-15 -28.5t-29 -23.5l-43 -17 l-27 7q-20 0 -30.5 0.5t-25.5 3.5t-25 10.5t-16 19.5l-86 142q-55 -16 -97 -16q-36 0 -80 11l-92 -144q-19 -29 -46 -39q-10 5 -15.5 -2t-5.5 -16l-1 -10q-13 0 -23 6t-14 12.5t-9.5 10t-9.5 -0.5l-43 18q-8 13 -24 24t-26.5 22t-10.5 28q0 40 2 43l41 168q-69 50 -121 117 l-176 -39l-26 -9q-28 0 -55 22.5t-35 47.5l-17 43q-10 5 -11.5 11t-1.5 36q0 17 10 28t24 22.5t20 26.5l149 91q-3 30 -3 72q0 46 6 91l-159 101q-17 3 -27 10.5t-14 22t-5 25t-1 30.5v7t1 12.5t2.5 13t4.5 3.5l18 43q11 32 38 56.5t56 24.5l23 -22l170 -42q49 71 115 123 l-39 175l11 6q0 20 1 31t5 27t15 28.5t29 23.5l43 17l27 -7q20 0 30.5 -0.5t25.5 -3.5t25 -10.5t16 -19.5l86 -142q55 16 97 16q36 0 80 -11l92 144l68 67q13 0 23 -6t14 -12.5t9.5 -10.5t10.5 1l43 -18q8 -13 23.5 -24t26 -22t10.5 -28q0 -40 -2 -43l-41 -168 q69 -50 121 -117l176 39l26 9q28 0 55 -22.5t35 -47.5l17 -43q10 -5 11.5 -11t1.5 -36q0 -17 -10 -28t-24 -22.5t-20 -26.5l-149 -91q3 -30 3 -72q0 -45 -6 -90zM802 569q10 -2 72.5 -25.5t85.5 -23.5t82.5 22t68.5 24l4 1q119 53 182 160t63 233q0 27 -1 42t-7 40t-18 49 q-30 75 -86 131.5t-130 88.5q-10 2 -72.5 25.5t-85.5 23.5t-82.5 -22t-68.5 -24q-122 -53 -185.5 -160.5t-63.5 -233.5q0 -27 1 -42t7 -40t18 -49q30 -75 86 -131.5t130 -88.5z"></path></svg>',
   protected: '<svg viewBox="0 0 72 90"><path transform="scale(0.036,-0.04) translate(0,-1900)" d="M720 1760h467q125 0 209 -80.5t84 -199.5v-240h80q42 0 81 -40t39 -80v-840q0 -40 -39 -80t-81 -40h-1200q-42 0 -81 40t-39 80v840q0 40 39 80t81 40h80v240q0 120 78 200t202 80zM1200 1600h-480q-42 0 -81 -40t-39 -80v-240h720v240q0 40 -39 80t-81 40zM960 880 q-90 0 -145 -56t-55 -144t55 -144t145 -56t145 56t55 144t-55 144t-145 56z"></path></svg>'
-}
+};
 
 Client = new Twitter({
   consumer_key: '',
@@ -209,10 +209,10 @@ var App = {
         console.error(error);
       else
       {
-        console.log('oauth_token :' + oauth_token)
-        console.log('oauth_token_secret :' + oauth_token_secret)
-        console.log('requestoken results :' + Util.inspect(results))
-        console.log('Requesting access token')
+        console.log('oauth_token :' + oauth_token);
+        console.log('oauth_token_secret :' + oauth_token_secret);
+        console.log('requestoken results :' + Util.inspect(results));
+        console.log('Requesting access token');
 
         OAuth._requestToken = oauth_token;
 
@@ -795,7 +795,7 @@ var App = {
       });
     });
   },
-}
+};
 
 // Static variable
 App.chkConnect.iserror = false;
@@ -853,7 +853,7 @@ function Tweet(tweet, quoted, event, source) {
       favoriteCount: tweet.retweeted_status.favorite_count,
       isRetweeted: tweet.retweeted_status.retweeted,
       retweetCount: tweet.retweeted_status.retweet_count
-    }
+    };
 
   a.className = 'tweet_wrapper';
 
@@ -894,7 +894,7 @@ function Tweet(tweet, quoted, event, source) {
   else if(tweet.retweeted_status)
   {
     div.innerHTML += `<div class="retweeted_tweet">${symbol.retweet}<span class="retweeted_tweet_text">&nbsp;
-            <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}')">${tweet.user.name}</a> 님이 리트윗했습니다</span></div>`
+            <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}')">${tweet.user.name}</a> 님이 리트윗했습니다</span></div>`;
 
     /*tweet.text = tweet.retweeted_status.text;
     tweet.created_at = tweet.retweeted_status.created_at;
@@ -914,7 +914,7 @@ function Tweet(tweet, quoted, event, source) {
       var replied_to = user_mentions[0].name;
     }
     div.innerHTML += `<div class="replied_tweet">${symbol.reply}<span class="replied_tweet_text">&nbsp;
-      <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.in_reply_to_screen_name}')">${replied_to}</a> 님에게 답글을 보냈습니다</span></div>`
+      <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.in_reply_to_screen_name}')">${replied_to}</a> 님에게 답글을 보냈습니다</span></div>`;
   }
 
   var embed = {
@@ -943,7 +943,7 @@ function Tweet(tweet, quoted, event, source) {
   text = text.replace(/(\r\n|\n|\r)/gm, '<br>');
 
   // 이모지 파싱
-  text = twemoji.parse(text)
+  text = twemoji.parse(text);
 
   // 프로텍트 이미지
   protected = '';
@@ -988,7 +988,7 @@ function Tweet(tweet, quoted, event, source) {
   var quoted_status = tweet.quoted_status || null;
   if (!quoted && quoted_status)
   {
-    var twt = new Tweet(quoted_status, true)
+    var twt = new Tweet(quoted_status, true);
     div.appendChild(twt.element);
   }
 
@@ -1079,7 +1079,7 @@ function Tweet(tweet, quoted, event, source) {
       });
     }
     document.activeElement.blur();
-  }
+  };
 
   var execFavorite = () => {
     App.showMsgBox('마음에 드는 트윗으로 지정했습니다', 'blue', 1000);
@@ -1125,7 +1125,7 @@ function Tweet(tweet, quoted, event, source) {
 
     }
     document.activeElement.blur();
-  }
+  };
 }
 
 function TweetUploader() {
@@ -1233,7 +1233,7 @@ function TweetUploader() {
         }
       });
     }
-  }
+  };
 
   this.element = e;
 
@@ -1253,7 +1253,7 @@ function TweetUploader() {
     _isOpen = false;
     e.hidden = true;
     App.resizeContainer();
-  }
+  };
 
   this.focus = () => txt.focus();
 
@@ -1333,7 +1333,7 @@ function MediaSelector() {
         fileInputContainer.classList.remove('disabled');
         lenIndicator.innerHTML = 140 - (App.tweetUploader.mediaSelector.selectedFiles.length ? App.twitter_conf.characters_reserved_per_media : 0) - Twitter_text.getTweetLength(txt.value);
         console.log(this.selectedFiles);
-      })
+      });
       return e;
     })());
     this.selectedFiles.push(path);
@@ -1424,7 +1424,7 @@ window.onload = e => {
     htl_scr01 = home_timeline.scrollTop;
 
     offScreen(home_timeline);
-  }
+  };
 
   notification.onscroll = () =>
   {
@@ -1433,7 +1433,7 @@ window.onload = e => {
     ntl_scr01 = notification.scrollTop;
 
     offScreen(notification);
-  }
+  };
 
 
   window.onresize = () => App.procOffscreen(App.currTimeline());

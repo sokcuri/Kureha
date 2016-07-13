@@ -7,7 +7,7 @@ function urlify(text) {
   return text.replace(urlRegex, function(url) {
     //return '<a href="' + url + '" target="_blank">' + url + '</a>';
     return '<a href="javascript:void(0)" onclick="openPopup(\'' + url + '\')">' + url + '</a>';
-  })
+  });
 }
 
 function tagRemove(text) {
