@@ -2,32 +2,28 @@ html { height: 100%; }
 
 body {
   background-color: #000;
-  height:100%;
-  margin:0;
+  height: 100%;
+  margin: 0;
   color: whitesmoke;
-  font-family: 'Segoe UI', 'Yu Gothic UI', 'Meiryo UI', 'Malgun Gothic', Tahoma, Gulim, sans-serif;
+  font-family: 'Segoe UI', 'Yu Gothic UI', 'Meiryo UI', 'Malgun Gothic', 'Tahoma', 'Gulim', sans-serif;
 }
 
-a.page:link
-{
+a.page:link {
   color: white;
   text-decoration: none;
 }
 
-a.page.disabled:link
-{
+a.page.disabled:link {
   color: gray;
   cursor: default;
 }
 
-#wrapper
-{
+#wrapper {
   width: 100%;
   height: 100%;
 }
 
-#header
-{
+#header {
   box-sizing: border-box;
   background-color: #333;
   color: lightgray;
@@ -36,15 +32,13 @@ a.page.disabled:link
   line-height: 40px;
 }
 
-#button-container
-{
+#button-container {
   position: absolute;
   top: 0;
   left: 0;
 }
 
-#image-container
-{
+#image-container {
   width: 100%;
   height: calc(100% - 40px);
 }
@@ -83,6 +77,7 @@ a.page.disabled:link
 #arr_next {
   right: 10px;
 }
+
 /* Modern Google Loader in Pure CSS */
 /* https://gist.github.com/CodeMyUI/3c3a57a17cb56828356a */
 .centered {
@@ -92,6 +87,7 @@ a.page.disabled:link
   /* bring your own prefixes */
   transform: translate(-50%, -50%);
 }
+
 .loader {
   position: relative;
   margin: 0px auto;
@@ -107,47 +103,50 @@ a.page.disabled:link
   width: 100px;
 }
 
-
 .path {
   stroke-dasharray: 1,200;
   stroke-dashoffset: 0;
   animation:
     dash 1.5s ease-in-out infinite,
-    color 6s ease-in-out infinite
-  ;
+    color 6s ease-in-out infinite;
   stroke-linecap: round;
 }
 
-@keyframes rotate{
-  100%{
+@keyframes rotate {
+  100% {
     transform: rotate(360deg);
   }
 }
-@keyframes dash{
-  0%{
+
+@keyframes dash {
+  0% {
     stroke-dasharray: 1,200;
     stroke-dashoffset: 0;
   }
-  50%{
+  50% {
     stroke-dasharray: 89,200;
     stroke-dashoffset: -35;
   }
-  100%{
+  100% {
     stroke-dasharray: 89,200;
     stroke-dashoffset: -124;
   }
 }
+
 @keyframes color{
-  100%, 0%{
+  100%, 0% {
     stroke: #d62d20;
   }
-  40%{
+
+  40% {
     stroke: #0057e7;
   }
-  66%{
+
+  66% {
     stroke: #008744;
   }
-  80%, 90%{
+
+  80%, 90% {
     stroke: #ffa700;
   }
 }

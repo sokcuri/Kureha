@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: 'Segoe UI', 'Yu Gothic UI', 'Meiryo UI', 'Malgun Gothic', Tahoma, Gulim, sans-serif;
+  font-family: 'Segoe UI', 'Yu Gothic UI', 'Meiryo UI', 'Malgun Gothic', 'Tahoma', 'Gulim', sans-serif;
   color: #333;
   -webkit-user-select: none;
   cursor: default;
@@ -40,7 +40,9 @@ header.top {
   z-index: 4294967295;
 }
 
-header.top span { font-weight: bold; }
+header.top span {
+  font-weight: bold;
+}
 
 main {
   margin-top: 41px;
@@ -65,7 +67,9 @@ section > .contents {
   padding: 5px;
 }
 
-section > .contents .settings-item { margin-bottom: 5px; }
+section > .contents .settings-item {
+  margin-bottom: 5px;
+}
 
 section .multicolumn {
   -webkit-column-count: 2;
@@ -87,21 +91,54 @@ section .multicolumn > div {
   color: #66757f;
 }
 
-.expander:checked + label + label + .expander-item { display: block; }
+.expander:checked + label + label + .expander-item {
+  display: block;
+}
 
-.settings-item table { width: 100%; }
-.settings-item table th { width: 100px; text-align: left; }
-.settings-item table td { text-align: right; }
-.settings-item table .flex { display: flex; text-align: left; flex-wrap: wrap; }
-.settings-item table .flex > * { width: 50%; }
-.settings-item table tr > * { padding: 10px 0; border-bottom: 1px solid #ccd6dd; }
-.settings-item table tr:first-of-type > * { padding-top: 5px; }
-.settings-item table tr:last-of-type > * { padding-bottom: 5px; border-bottom: none; }
+.settings-item table {
+  width: 100%;
+}
+
+.settings-item table th {
+  width: 100px;
+  text-align: left;
+}
+
+.settings-item table td {
+  text-align: right; 
+}
+
+.settings-item table .flex {
+  display: flex;
+  text-align: left;
+  flex-wrap: wrap;
+}
+
+.settings-item table .flex > * {
+  width: 50%; 
+}
+
+.settings-item table tr > * {
+  padding: 10px 0;
+  border-bottom: 1px solid #ccd6dd;
+}
+
+.settings-item table tr:first-of-type > * {
+  padding-top: 5px; 
+}
+
+.settings-item table tr:last-of-type > * {
+  padding-bottom: 5px; border-bottom: none; 
+}
 
 /* Custom input appearance */
-.settings-item input[type='input'] { display: flex; }
+.settings-item input[type='input'] {
+  display: flex; 
+}
 
-.settings-item input[type='checkbox'] { display: none; }
+.settings-item input[type='checkbox'] {
+  display: none; 
+}
 
 .settings-item input[type='checkbox'] + label {
   display: inline-block;
@@ -134,4 +171,6 @@ section .multicolumn > div {
   background-color: #55acee;
 }
 
-.settings-item input[type='color'] { width: 75px; }
+.settings-item input[type='color'] {
+  width: 75px;
+}
