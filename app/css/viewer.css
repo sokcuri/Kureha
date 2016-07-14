@@ -1,62 +1,62 @@
 html { height: 100%; }
 
 body {
-	background-color: #000;
-	height:100%;
-	margin:0;
-	color: whitesmoke;
+  background-color: #000;
+  height:100%;
+  margin:0;
+  color: whitesmoke;
   font-family: 'Segoe UI', 'Yu Gothic UI', 'Meiryo UI', 'Malgun Gothic', Tahoma, Gulim, sans-serif;
 }
 
 a.page:link
 {
-	color: white;
-	text-decoration: none;
+  color: white;
+  text-decoration: none;
 }
 
 a.page.disabled:link
 {
-	color: gray;
-	cursor: default;
+  color: gray;
+  cursor: default;
 }
 
 #wrapper
 {
-	width: 100%;
-	height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 #header
 {
-	box-sizing: border-box;
-	background-color: #333;
-	color: lightgray;
-	padding: 0 10px;
-	height: 40px;
-	line-height: 40px;
+  box-sizing: border-box;
+  background-color: #333;
+  color: lightgray;
+  padding: 0 10px;
+  height: 40px;
+  line-height: 40px;
 }
 
 #button-container
 {
-	position: absolute;
-	top: 0;
-	left: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 #image-container
 {
-	width: 100%;
-	height: calc(100% - 40px);
+  width: 100%;
+  height: calc(100% - 40px);
 }
 
 #image {
-	object-fit: scale-down;
-	width: 100%;
-	height: calc(100% - 5px);
+  object-fit: scale-down;
+  width: 100%;
+  height: calc(100% - 5px);
 }
 
 .hidden {
-	visibility: hidden;
+  visibility: hidden;
 }
 
 #arr_prev, #arr_next {
@@ -101,41 +101,41 @@ a.page.disabled:link
 }
 
 .circular {
- animation: rotate 2s linear infinite;
- height: 100px;
- position: relative;
- width: 100px;
+  animation: rotate 2s linear infinite;
+  height: 100px;
+  position: relative;
+  width: 100px;
 }
 
 
 .path {
   stroke-dasharray: 1,200;
   stroke-dashoffset: 0;
-  animation: 
-   dash 1.5s ease-in-out infinite,
-   color 6s ease-in-out infinite
+  animation:
+    dash 1.5s ease-in-out infinite,
+    color 6s ease-in-out infinite
   ;
   stroke-linecap: round;
 }
 
 @keyframes rotate{
- 100%{
-  transform: rotate(360deg);
- }
+  100%{
+    transform: rotate(360deg);
+  }
 }
 @keyframes dash{
- 0%{
-  stroke-dasharray: 1,200;
-  stroke-dashoffset: 0;
- }
- 50%{
-  stroke-dasharray: 89,200;
-  stroke-dashoffset: -35;
- }
- 100%{
-  stroke-dasharray: 89,200;
-  stroke-dashoffset: -124;
- }
+  0%{
+    stroke-dasharray: 1,200;
+    stroke-dashoffset: 0;
+  }
+  50%{
+    stroke-dasharray: 89,200;
+    stroke-dashoffset: -35;
+  }
+  100%{
+    stroke-dasharray: 89,200;
+    stroke-dashoffset: -124;
+  }
 }
 @keyframes color{
   100%, 0%{
