@@ -1,5 +1,21 @@
+
+
 var os = require('os');
 
+// run gc every 10 second.
+var tick = 0;
+if(global['gc']) {
+	setInterval(function(){
+	if(process.memoryUsage().rss > 1024 * 1024 * 200) { //200MB
+		global.gc();
+		console.log(`[${tick}] global.gc() executed - ${process.memoryUsage().rss}`);
+	}
+	else console.log(`[${tick}] gc tick - ${process.memoryUsage().rss}`);
+	tick++;
+	}, 10000);
+}
+
+var cnt = 0;
 // do not open the window and open it in external browser
 nw.Window.get().on('new-win-policy', function(frame, url, policy) {
   policy.ignore();
@@ -88,7 +104,7 @@ var symbol = {
 	protected: '<svg viewBox="0 0 72 90"><path transform="scale(0.036,-0.04) translate(0,-1900)" d="M720 1760h467q125 0 209 -80.5t84 -199.5v-240h80q42 0 81 -40t39 -80v-840q0 -40 -39 -80t-81 -40h-1200q-42 0 -81 40t-39 80v840q0 40 39 80t81 40h80v240q0 120 78 200t202 80zM1200 1600h-480q-42 0 -81 -40t-39 -80v-240h720v240q0 40 -39 80t-81 40zM960 880 q-90 0 -145 -56t-55 -144t55 -144t145 -56t145 56t55 144t-55 144t-145 56z"></path></svg>'
 }
 
-Client = new Twitter({
+var Client = new Twitter({
 	consumer_key: '',
 	consumer_secret: '',
 	access_token_key: '',
@@ -719,6 +735,7 @@ var App = {
 			document.getElementById('new_tweet_noti').hidden = false;
 			tweet.element.classList.add('hidden');
 		}
+		console.log(`cnt: ${cnt++}`);
 		tl.insertBefore(tweet.element, tl.firstElementChild);
 		
 		if(!window.scrolling)
@@ -729,6 +746,7 @@ var App = {
 				tlContainer.scrollTop += tl.firstElementChild.getClientRects()[0].height + 10;
 			}
 		}
+		tweet = "";
 
 		App.procOffscreen(tlContainer);
 	},
@@ -739,7 +757,11 @@ var App = {
 	},
 	removeItems: (timeline, count) => {
 		var removed = App.timelines[timeline.id].splice(0, count);
-		for (var t of removed) t.element.remove();
+		for (var t of removed)
+		{
+			discardElement(t.element);
+			//t.element.remove()
+		}
 	},
 	calcItemHeight: e => {
 		if(!document.getElementById('calcItem'))
@@ -808,21 +830,25 @@ App.getAboutme.max_position = 0;
 App.showNotify.sequence = 0;
 
 function Test(event) {
-	a = document.createElement('article');
+	var a = document.createElement('article');
 	a.className = 'tweet';
 	//a.setAttribute('data-tweet-id', tweet.id_str);
 	//a.setAttribute('data-tweet-timestamp', tweet.timestamp_ms);
-	a.innerHTML = 'TESTTEST';
+	var div = document.createElement('div');
+	div.innerHTML = 'TESTTEST';
+	a.appendChild(div);
 	this.element = a;
 }
 
 function Activity(event) {
-	a = document.createElement('article');
+	var a = document.createElement('article');
 	a.className = 'tweet';
 	a.innerHTML = "";
+	var div = document.createElement('div');
 	var tweet_div = 'action: {0}, sources.0.name: {1}';
-	a.innerHTML += tweet_div.format(event.action, event.sources[0].name);
+	div.innerHTML += tweet_div.format(event.action, event.sources[0].name);
 					 //<!--<input type="button" value="-" onclick="removeRow(this.parentNode)">//-->
+	a.appendChild(div);
 	this.element = a;
 }
 
@@ -948,13 +974,13 @@ function Tweet(tweet, quoted, event, source) {
 	text = twemoji.parse(text)
 
 	// 프로텍트 이미지
-	protected = "";
-	if(tweet.user.protected) protected = symbol.protected;
+	var tweet_protected = "";
+	if(tweet.user.protected) tweet_protected = symbol.protected;
 	
 	div.innerHTML += `<img class="profile-image" src="${tweet.user.profile_image_url_https}"></img>
 					<div class="tweet-name"><a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}')">
 					<strong>${tweet.user.name}</strong>
-					<span class="tweet-id">@${tweet.user.screen_name}</span></a><span class="user_protected">${protected}</div></div>
+					<span class="tweet-id">@${tweet.user.screen_name}</span></a><span class="user_protected">${tweet_protected}</div></div>
 					<p class="tweet-text lpad">${text}</p>`;
 	
 	var entities = tweet.extended_entities || tweet.entities || null;
@@ -1371,9 +1397,18 @@ document.addEventListener('webkitfullscreenchange', () => {
 	}
 }, false);
 
+var garbageBin;
 window.onload = e => {
 	App.document = document;
 
+	// create a 'garbage bin' object
+	if (typeof(garbageBin) === 'undefined')
+	{
+		//store elements that are to be discarded
+		garbageBin = document.createElement('div');
+		garbageBin.style.display = 'none';
+		document.body.appendChild(garbageBin);
+	}
 	// scrollbar hack
 	home_timeline.onmousedown = () => {
 		window.scrolling = true;
@@ -1525,6 +1560,14 @@ window.onload = e => {
 	// run Application
 	App.run();
 };
+
+	function discardElement(element)
+	{
+		//Move the element to the garbage bin element
+		garbageBin.appendChild(element);
+		//Empty the garbage bin
+		garbageBin.innerHTML = "";
+	}
 
 var KEY = {
 	NUMBER_1: 49,

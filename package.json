@@ -1,6 +1,7 @@
 {
   "name": "Kureha",
   "main": "app/index.html",
+  "js-flags": "--expose-gc",
   "window": {
     "min_width": 300,
     "width": 600,
