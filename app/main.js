@@ -3,19 +3,14 @@
 var os = require('os');
 
 // run gc every 10 second.
-var tick = 0;
 if(global['gc']) {
 	setInterval(function(){
-	if(process.memoryUsage().rss > 1024 * 1024 * 200) { //200MB
-		global.gc();
-		console.log(`[${tick}] global.gc() executed - ${process.memoryUsage().rss}`);
-	}
-	else console.log(`[${tick}] gc tick - ${process.memoryUsage().rss}`);
-	tick++;
+		if(process.memoryUsage().rss > 1024 * 1024 * 200) { //200MB
+			global.gc();
+		}
 	}, 10000);
 }
 
-var cnt = 0;
 // do not open the window and open it in external browser
 nw.Window.get().on('new-win-policy', function(frame, url, policy) {
   policy.ignore();
@@ -735,7 +730,6 @@ var App = {
 			document.getElementById('new_tweet_noti').hidden = false;
 			tweet.element.classList.add('hidden');
 		}
-		console.log(`cnt: ${cnt++}`);
 		tl.insertBefore(tweet.element, tl.firstElementChild);
 		
 		if(!window.scrolling)
