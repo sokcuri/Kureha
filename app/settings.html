@@ -4,28 +4,20 @@
     <meta charset="utf-8">
     <title>Settings</title>
     <script>
-    var win = nw.Window.get();
-    // nw.Window.get().setResizable(false);
-    // nw.Window.get().setMaximumSize(win.width, win.height);
-    // nw.Window.get().setMinimumSize(win.width, win.height);
-    // nw.Window.get().resizeTo(450, 450);
     var appHTML = App.document.documentElement;
 
     RadioNodeList.prototype.addEventListener = function (event, handler, useCapture) {
       for (item of this) item.addEventListener(event, handler, useCapture);
     }
 
-    window.onclose = e =>
-    {
+    window.onclose = e => {
       // save configuration
       App.saveConfig();
     }
 
-    window.onload = e =>
-    {
+    window.onload = e => {
       var form = document.forms[0];
-      for (var key in config)
-      {
+      for (var key in config) {
         if (!form[key]) continue;
         if (form[key].type == 'checkbox')
           form[key].checked = config[key];
@@ -74,13 +66,11 @@
         e => appHTML.style.backgroundRepeat = App.config.bgRepeat, false);
     }
 
-    function chk_config(e)
-    {
+    function chk_config(e) {
       var form = document.forms[0];
       var key = e.name || e.id;
 
-      switch (e.type)
-      {
+      switch (e.type) {
         case 'checkbox':
           config[key] = e.checked;
           break;

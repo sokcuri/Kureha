@@ -1,3 +1,6 @@
+const electron = require('electron');
+const BrowserWindow = electron.remote.BrowserWindow;
+const shell = electron.shell;
 var os = require('os');
 var fs = require('fs');
 var path = require('path');
@@ -16,15 +19,28 @@ function tagRemove (text) {
 }
 
 function openExternal (href) {
-  require('nw.gui').Shell.openExternal(href);
+  shell.openExternal(href);
 }
 
 function openPopup (href) {
-  if (window.popup && !window.closed) nw.Window.get(window.popup).close(true);
-  var w = 1000;
-  var h = 800;
-  var left = (screen.width / 2) - (w / 2);
-  var top = (screen.height / 2) - (h / 2);
+  if (window.popup && !window.closed) window.popup.close();
+  var width = 1000;
+  var height = 800;
+  var x = (screen.width / 2) - (width / 2);
+  var y = (screen.height / 2) - (height / 2);
+  var win = new BrowserWindow({
+    width, height, x, y,
+    center: true,
+    webPreferences: {
+      nodeIntegration: false,
+      plugins: true,
+    },
+  });
+  win.id = 'popup';
+  var url = `file://${__dirname}/popup.html?href=${encodeURIComponent(href)}`;
+  win.loadURL(url);
+  window.win = win;
+  /*
   nw.Window.open('app/popup.html?href=' + encodeURIComponent(href), {x: left, y: top, width: w, height: h},
   function (win) {
     window.popup = win.window;
@@ -39,15 +55,29 @@ function openPopup (href) {
     win.window.config = App.config;
     win.focus();
   });
+  */
 }
 
 
 function openImageview (href, more) {
-  if (window.popup) nw.Window.get(window.popup).close(true);
-  var w = 1000;
-  var h = 650;
-  var left = (screen.width / 2) - (w / 2);
-  var top = (screen.height / 2) - (h / 2);
+  if (window.popup) window.popup.close();
+  var width = 1000;
+  var height = 650;
+  var x = (screen.width / 2) - (width / 2);
+  var y = (screen.height / 2) - (height / 2);
+  var win = new BrowserWindow({
+    width, height, x, y,
+    center: true,
+    backgroundColor: '#000',
+    webPreferences: {
+      nodeIntegration: false,
+    },
+  });
+  win.id = 'popup';
+  var url = `file://${__dirname}/viewer.html?img=${encodeURIComponent(href)}&more=${encodeURIComponent(more)}`
+  win.loadURL(url);
+  window.win = win;
+  /*
   nw.Window.open('app/viewer.html?img=' + encodeURIComponent(href) + '&more=' + encodeURIComponent(more), 
   {x: left, y: top, width: w, height: h},
   function (win) {
@@ -56,6 +86,7 @@ function openImageview (href, more) {
     win.window.config = App.config;
     win.focus();
   });
+  */
 }
 
 function isOffscreen (t, el) {

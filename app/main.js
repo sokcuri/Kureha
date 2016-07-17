@@ -1,3 +1,5 @@
+//const electron = require('electron');
+//const BrowserWindow = electron.BrowserWindow;
 var os = require('os');
 
 // run gc every 10 second.
@@ -16,10 +18,12 @@ if (global.gc) {
 var cnt = 0;
 
 // do not open the window and open it in external browser
+/*
 nw.Window.get().on('new-win-policy', function (frame, url, policy) {
   policy.ignore();
   nw.Shell.openExternal(url);
 });
+*/
 
 // string formatting
 if (!String.prototype.format) {
@@ -510,11 +514,18 @@ var App = {
   },
 
   openSettings: () => {
-    var w = 450;
-    var h = 365;
-    var left = (screen.width / 2) - (w / 2);
-    var top = (screen.height / 2) - (h / 2);
-    if (window.setting) nw.Window.get(window.popup).focus();
+    var width = 450;
+    var height = 365;
+    var x = (screen.width / 2) - (width / 2);
+    var y = (screen.height / 2) - (height / 2);
+    if (window.setting) window.popup.focus();
+    var win = new BrowserWindow({
+      width, height, x, y,
+      center: true,
+    });
+    win.id = 'setting';
+    win.loadURL(`file://${__dirname}/settings.html`);
+    /*
     nw.Window.open('app/settings.html', {width: w, height: h, id: 'setting'},
     win => {
       win.window.config = App.config;
@@ -527,6 +538,7 @@ var App = {
 
       win.focus();
     });
+    */
   },
 /*
   var t = [home_timeline];
@@ -736,7 +748,7 @@ var App = {
           oauth_req.style.display = 'none';
           App.resizeContainer();
           App.getTimeline();
-          App.getTweetItem('751494319601754112');
+          //App.getTweetItem('751494319601754112');
           App.getMentionsTimeline();
           if (App.config.runStream)
             App.runMainStream();
