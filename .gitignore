@@ -50,7 +50,9 @@ Temporary Items
 locales/
 pnacl/
 resources/
-*
+/*.*
+LICENSE
+version
 !.gitattributes
 !.gitignore
 !index.js

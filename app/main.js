@@ -2,19 +2,6 @@
 //const BrowserWindow = electron.BrowserWindow;
 var os = require('os');
 
-// run gc every 10 second.
-var tick = 0;
-if (global.gc) {
-  setInterval(function () {
-    if (process.memoryUsage().rss > 1024 * 1024 * 200) { //200MB
-      global.gc();
-      console.log(`[${tick}] global.gc() executed - ${process.memoryUsage().rss}`);
-    }
-    else console.log(`[${tick}] gc tick - ${process.memoryUsage().rss}`);
-    tick++
-  }, 10000);
-}
-
 var cnt = 0;
 
 // do not open the window and open it in external browser
