@@ -1,9 +1,9 @@
 const electron = require('electron');
+const ipcRenderer = electron.ipcRenderer;
 const BrowserWindow = electron.remote.BrowserWindow;
 const shell = electron.shell;
-var os = require('os');
-var fs = require('fs');
-var path = require('path');
+const fs = require('fs');
+const path = require('path');
 
 function urlify (text) {
   var urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -57,7 +57,6 @@ function openPopup (href) {
   });
   */
 }
-
 
 function openImageview (href, more) {
   if (window.popup) window.popup.close();

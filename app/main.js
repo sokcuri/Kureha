@@ -125,45 +125,17 @@ var App = {
     notification: []
   },
 
-  // Load Config
-  loadConfig: callback => {
-    var jsonfile = require('jsonfile');
-    jsonfile.readFile('./config.json', (err, obj) => {
-      if (!err) {
-        console.info('loadConfig Succeeded.');
-        App.config = obj;
-        if (callback)
-          callback();
-      } else {
-        console.warn(`loadConfig Failed: \r\n${Util.inspect(err)}`);
-        App.saveConfig(callback);
-        return;
-      }
-    });
-  },
-
-  setBackground: () => {
+  setBackground (config) {
     var html = document.documentElement;
-    if (App.config.defaultBackground == 'true') {
+    if (config.defaultBackground == 'true') {
       html.style.background = `url('arisaka_mashiro.png') center no-repeat fixed`;
       return;
     }
-    html.style.backgroundImage = `url('${App.config.bgImage.replace(/\\/g, '\\\\')}')`;
-    html.style.backgroundColor = App.config.bgColor;
-    html.style.backgroundPosition = App.config.bgPosition;
-    html.style.backgroundSize = App.config.bgSize;
-    html.style.backgroundRepeat = App.config.bgRepeat;
-  },
-
-  saveConfig: callback => {
-    var jsonfile = require('jsonfile');
-    jsonfile.spaces = 4;
-    jsonfile.writeFile('./config.json', App.config, (err) => {
-      if (!err) console.info('saveConfig Succeeded.');
-      else console.warn(`saveConfig Failed: \r\n${Util.inspect(err)}`);
-
-      if (callback) callback();
-    });
+    html.style.backgroundImage = `url('${config.bgImage.replace(/\\/g, '\\\\')}')`;
+    html.style.backgroundColor = config.bgColor;
+    html.style.backgroundPosition = config.bgPosition;
+    html.style.backgroundSize = config.bgSize;
+    html.style.backgroundRepeat = config.bgRepeat;
   },
 
   confirmAuth: msg => {
@@ -259,7 +231,7 @@ var App = {
         //    Util.puts(data);
         //});
 
-        App.saveConfig();
+        ipcRenderer.send('save-config', config);
         App.initializeClient(OAuth._consumerKey, OAuth._consumerSecret, access_token, access_secret);
         App.run();
       });
@@ -513,32 +485,8 @@ var App = {
     App.procOffscreen(App.currTimeline());
   },
 
-  openSettings: () => {
-    var width = 450;
-    var height = 365;
-    var x = (screen.width / 2) - (width / 2);
-    var y = (screen.height / 2) - (height / 2);
-    if (window.setting) window.popup.focus();
-    var win = new BrowserWindow({
-      width, height, x, y,
-      center: true,
-    });
-    win.id = 'setting';
-    win.loadURL(`file://${__dirname}/settings.html`);
-    /*
-    nw.Window.open('app/settings.html', {width: w, height: h, id: 'setting'},
-    win => {
-      win.window.config = App.config;
-      win.window.App = App;
-      win.id = 'setting';
-      win.width = w;
-      win.height = h;
-      win.x = Math.round(left);
-      win.y = Math.round(top);
-
-      win.focus();
-    });
-    */
+  openSettings () {
+    ipcRenderer.send('open-setting');
   },
 /*
   var t = [home_timeline];
@@ -725,41 +673,53 @@ var App = {
     return result;
   },
 
-  run: () => {
-    App.loadConfig(() => {
-      App.initializeClient(App.config.ConsumerKey, App.config.ConsumerSecret, App.config.AccessToken, App.config.AccessSecret);
-      App.setBackground();
-      App.styleSheet.innerHTML = `.tweet{background-color:rgba(255,255,255,${App.config.tweetOpacity / 100.0})}`;
-      document.body.appendChild(App.styleSheet);
+  initializeStyle (config) {
+    App.setBackground(config);
+    App.styleSheet.innerHTML = `
+      .tweet {
+        background-color: rgba(255,255,255,${config.tweetOpacity / 100.0});
+      }
+    `;
+    document.body.appendChild(App.styleSheet);
+  },
 
-      if (!App.config.AccessToken || !App.config.AccessSecret) {
+  run () {
+    var config = App.config = ipcRenderer.sendSync('load-config');
+    App.initializeClient(config.ConsumerKey, config.ConsumerSecret, config.AccessToken, config.AccessSecret);
+    App.initializeStyle(config);
+
+    if (!config.AccessToken || !config.AccessSecret) {
+      oauth_req.style.display = '';
+      App.resizeContainer();
+      return App.confirmAuthFirst();
+    }
+
+    App.vertifyCredentials(error => {
+      if (error) {
         oauth_req.style.display = '';
         App.resizeContainer();
-        return App.confirmAuthFirst();
+
+        return App.confirmAuth();
+      } else {
+        oauth_req.style.display = 'none';
+        App.resizeContainer();
+        App.getTimeline();
+        //App.getTweetItem('751494319601754112');
+        App.getMentionsTimeline();
+        if (config.runStream)
+          App.runMainStream();
+        else
+          App.alertStream(false);
+        //getAboutme();
       }
-
-      App.vertifyCredentials(error => {
-        if (error) {
-          oauth_req.style.display = '';
-          App.resizeContainer();
-
-          return App.confirmAuth();
-        } else {
-          oauth_req.style.display = 'none';
-          App.resizeContainer();
-          App.getTimeline();
-          //App.getTweetItem('751494319601754112');
-          App.getMentionsTimeline();
-          if (App.config.runStream)
-            App.runMainStream();
-          else
-            App.alertStream(false);
-          //getAboutme();
-        }
-      });
     });
   },
 };
+
+ipcRenderer.on('reload-config', (event, arg) => {
+  console.info('reload!');
+  App.initializeStyle(arg);
+});
 
 // Static variable
 App.chkConnect.iserror = false;

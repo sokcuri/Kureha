@@ -1,21 +1,40 @@
 const electron = require('electron');
-
+const ipcMain = electron.ipcMain;
 const app = electron.app;
-
 const BrowserWindow = electron.BrowserWindow;
+const Configure = require('./app/config');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-var win;
+var win, settingWin;
 
 function createWindow () {
   win = new BrowserWindow({width: 600, height: 800});
   win.loadURL(`file://${__dirname}/app/index.html`);
-  win.webContents.openDevTools();
+  //win.webContents.openDevTools();
   win.on('closed', () => {
     win = null;
   });
 }
+
+ipcMain.on('load-config', (event, arg) => {
+  const config = Configure.load();
+  event.returnValue = config;
+});
+
+ipcMain.on('save-config', (event, arg) => {
+  Configure.save(arg);
+  win.webContents.send('reload-config', arg);
+});
+
+ipcMain.on('open-setting', (event, arg) => {
+  settingWin = new BrowserWindow({
+    width: 450,
+    height: 365,
+    center: true,
+  });
+  settingWin.loadURL(`file://${__dirname}/app/settings.html`);
+});
 
 app.on('ready', createWindow);
 
