@@ -1,7 +1,7 @@
 {
   "name": "Kureha",
-  "main": "./index.js",
-  "js-flags": "--expose-gc",
+  "version": "0.1.0",
+  "main": "index.js",
   "window": {
     "min_width": 300,
     "width": 600,
