@@ -32,6 +32,7 @@ ipcMain.on('open-setting', (event, arg) => {
     width: 450,
     height: 365,
     center: true,
+    autoHideMenuBar: true,
   });
   settingWin.loadURL(`file://${__dirname}/app/settings.html`);
 });

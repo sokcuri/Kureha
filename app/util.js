@@ -31,6 +31,7 @@ function openPopup (href) {
   var win = new BrowserWindow({
     width, height, x, y,
     center: true,
+    autoHideMenuBar: true,
     webPreferences: {
       webSecurity: true,
       nodeIntegration: false,
@@ -68,6 +69,7 @@ function openImageview (href, more) {
     width, height, x, y,
     center: true,
     backgroundColor: '#000',
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: false,
     },
