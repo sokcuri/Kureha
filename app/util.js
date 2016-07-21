@@ -32,13 +32,13 @@ function openPopup (href) {
     width, height, x, y,
     center: true,
     webPreferences: {
+      webSecurity: true,
       nodeIntegration: false,
       plugins: true,
     },
   });
   win.id = 'popup';
-  var url = `file://${__dirname}/popup.html?href=${encodeURIComponent(href)}`;
-  win.loadURL(url);
+  win.loadURL(href);
   window.win = win;
   /*
   nw.Window.open('app/popup.html?href=' + encodeURIComponent(href), {x: left, y: top, width: w, height: h},
