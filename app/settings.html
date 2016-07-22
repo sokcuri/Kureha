@@ -33,14 +33,13 @@
           form[key].value = config[key];
       }
 
-      
-
       var inputs = document.getElementsByTagName('input');
       for (input of inputs) {
         var on = (input.type == 'checkbox' || input.type == 'radio') ?
                  'click' : 'change';
         input.addEventListener(on, e => checkConfig(e.currentTarget));
       }
+      refreshSettingUI();
     };
 
     function refreshSettingUI () {
@@ -62,7 +61,6 @@
       refreshSettingUI();
     }
 
-    refreshSettingUI();
     </script>
     <link href="css/settings.css" rel="stylesheet">
   </head>

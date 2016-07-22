@@ -703,9 +703,17 @@ var App = {
   },
 };
 
-ipcRenderer.on('reload-config', (event, arg) => {
+ipcRenderer.on('reload-config', (event, config) => {
   console.info('reload!');
-  App.initializeStyle(arg);
+  App.config = config;
+  App.initializeStyle(config);
+  if (config.runStream) {
+    App.runMainStream();
+    App.alertStream(true);
+  } else {
+    App.stopMainStream();
+    App.alertStream(false);
+  }
 });
 
 // Static variable
