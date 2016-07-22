@@ -11,7 +11,6 @@ var win, settingWin;
 function createWindow () {
   win = new BrowserWindow({width: 600, height: 800});
   win.loadURL(`file://${__dirname}/app/index.html`);
-  //win.webContents.openDevTools();
   win.on('closed', () => {
     win = null;
   });
@@ -28,11 +27,18 @@ ipcMain.on('save-config', (event, arg) => {
 });
 
 ipcMain.on('open-setting', (event, arg) => {
+  if (settingWin) {
+    settingWin.focus();
+    return;
+  }
   settingWin = new BrowserWindow({
     width: 450,
     height: 365,
     center: true,
     autoHideMenuBar: true,
+  });
+  settingWin.on('closed', () => {
+    settingWin = null;
   });
   settingWin.loadURL(`file://${__dirname}/app/settings.html`);
 });
