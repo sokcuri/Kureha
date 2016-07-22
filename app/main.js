@@ -305,8 +305,7 @@ var App = {
   },
 
   runMainStream: () => {
-    if (Client.mainStream)
-      Client.mainStream.destroy();
+    if (Client.mainStreamRunning) return;
 
     App.alertConnect(true);
 
@@ -369,7 +368,8 @@ var App = {
       stream.on('error', error => console.error(error));
       stream.on('end', response => {
         console.warn(response);
-        Client.mainStream = '';
+        if (Client.mainStream.destroy)
+          Client.mainStream.destroy();
         Client.mainStreamRunning = false;
       });
     });
