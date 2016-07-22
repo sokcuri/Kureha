@@ -1043,7 +1043,10 @@ function TweetUploader () {
       var a = document.createElement('a');
       a.href = 'javascript:void(0)';
       a.innerHTML = symbol.close;
-      a.addEventListener('click', e => this.closePanel());
+      a.addEventListener('click', e => {
+        this.closePanel();
+        removeTempFiles();
+      });
       return a;
     })());
     btnContainer.appendChild(closeButton);
@@ -1068,11 +1071,23 @@ function TweetUploader () {
           break;
         case KEY.ESC:
           this.closePanel();
+          removeTempFiles();
           return false;
       }
     }, false);
     postButton.addEventListener('click', e => execTweet());
   }
+
+  
+  var removeTempFiles = () => {
+    // 임시폴더에 있는 파일은 지운다.
+    var paths = this.mediaSelector.selectedFiles;
+    var tmpdir = os.tmpdir();
+    var tempfiles = paths.filter(p => p.indexOf(tmpdir) === 0);
+    for (let f of tempfiles) {
+      fs.unlink(f, () => {});
+    }
+  };
 
   var execTweet = () => {
     var text = txt.value;
@@ -1084,15 +1099,12 @@ function TweetUploader () {
       App.showMsgBox('트윗을 올리는 중입니다', 'orange', 30000);
       for (var i in path)
         (index => {
-          var data = require('fs').readFileSync(path[index]);
+          var data = fs.readFileSync(path[index]);
           Client.post('media/upload', {media: data}, (error, media, response) => {
+            removeTempFiles();
             if (!error) {
               console.log(media);
               files[index] = media;
-              // 임시폴더에 있는 파일은 지운다.
-              if (path[index].indexOf(os.tmpdir()) === 0) {
-                fs.unlink(path[index], () => {});
-              }
               // make sure all fies are successfully uploaded.
               if (files.filter(f => f !== undefined).length === path.length) {
                 return _ex(files.map(x => x.media_id_string).join(','));
@@ -1100,6 +1112,7 @@ function TweetUploader () {
             } else {
               return App.showMsgBox(`오류가 발생했습니다<br />${error[0].code}: ${error[0].message}`, 'tomato', 5000);
             }
+            
           });
         })(i);
     } else {
