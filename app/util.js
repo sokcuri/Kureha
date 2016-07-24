@@ -2,6 +2,7 @@ const electron = require('electron');
 const ipcRenderer = electron.ipcRenderer;
 const BrowserWindow = electron.remote.BrowserWindow;
 const shell = electron.shell;
+const clipboard = electron.clipboard;
 const fs = require('fs');
 const path = require('path');
 

@@ -832,6 +832,8 @@ function Tweet (tweet, quoted, event, source) {
   };
   a.setAttribute('data-json', JSON.stringify(embed));
 
+  var permalink = `https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`;
+
   // 텍스트에 링크걸기
   var text_obj = [];
   var entity = [tweet.entities.hashtags, tweet.entities.urls, tweet.entities.user_mentions, (tweet.entities.media ? tweet.entities.media : '')];
@@ -895,7 +897,7 @@ function Tweet (tweet, quoted, event, source) {
   }
 
   div.innerHTML += `<div class="tweet-date lpad">
-          <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}')">
+          <a href="javascript:void(0)" onclick="openPopup('${permalink}')">
           ${new Date(Date.parse(tweet.created_at)).format('a/p hh:mm - yyyy년 MM월 dd일')}
           </a> · ${tagRemove(tweet.source)}</div>`;
   if (!tweet.retweet_count)
@@ -905,21 +907,80 @@ function Tweet (tweet, quoted, event, source) {
 
   if (!quoted) {
     var _e = document.createElement('div');
-    _e.innerHTML += `<div aria-label="트윗 작업" role="group" class="tweet-task lpad">
-            <div class="tweet-task-box"><button aria-label="답글" class="reply" type="button"">
-            <span>${symbol.reply}</span></button></div><div class="tweet-task-box ${retweeted}"><button aria-label="리트윗" class="retweet" type="button">
-            <span class="tweet-task-count">${symbol.retweet}&nbsp;<span><span class="retweet-count">${tweet.retweet_count}</span></span></span></button>
-            </div><div class="tweet-task-box ${favorited}"><button aria-label="마음에 들어요" class="like" type="button"><span>${symbol.like}&nbsp;
-            <span class="tweet-task-count"><span class="favorite-count">${tweet.favorite_count}</span></span></span></button></div></div>`;
+    _e.innerHTML += `
+      <div aria-label="트윗 작업" role="group" class="tweet-task lpad">
+        <div class="tweet-task-box">
+          <button aria-label="답글" class="reply" type="button">
+            ${symbol.reply}
+          </button>
+        </div>
+        <div class="tweet-task-box ${retweeted}">
+          <button aria-label="리트윗" class="retweet" type="button">
+            <span class="tweet-task-count">
+              ${symbol.retweet}&nbsp;
+              <span class="retweet-count">${tweet.retweet_count}</span>
+            </span>
+          </button>
+        </div>
+        <div class="tweet-task-box ${favorited}">
+          <button aria-label="마음에 들어요" class="like" type="button">
+            <span class="tweet-task-count">
+              ${symbol.like}&nbsp;
+              <span class="favorite-count">${tweet.favorite_count}</span>
+            </span>
+          </button>
+        </div>
+        <div class="tweet-task-box">
+          <button aria-label="트윗 메뉴" class="tripledot" type="button">
+            <span class="tweet-task-count">
+              &#x2026;
+            </span>
+          </button>
+        </div>
+      </div>`;
+    
+    const tweetMenu = document.createElement('div');
+    tweetMenu.className = 'tweet-menu menu-hidden';
+    tweetMenu.innerHTML += `
+      <div class="menu-basic">
+        <a class="item menuitem-copylink" href="#">트윗 링크 복사하기</a>
+        <a class="item" href="#">이 트윗을 인용하여 트윗 작성</a>
+        <a class="item" href="#">이 유저를 뮤트/블락하기</a>
+      </div>
+      <hr class="sep">
+      <div class="menu-plugin">
+        <a class="item" href="#">(나중에 플러그인 시스템을 구현한다면) 여기에 플러그인 메뉴를 넣을지도?</a>
+      </div>
+    `;
+
+    // 메뉴 항목을 클릭하면 메뉴를 닫는다.
+    tweetMenu.addEventListener('click', evt => {
+      let clickedItem = evt.target;
+      if (clickedItem.classList.contains('item')) {
+        tweetMenu.classList.add('menu-hidden');
+      }
+    });
+
     this.retweetCountLabel = _e.getElementsByClassName('retweet-count')[0];
     this.favoriteCountLabel = _e.getElementsByClassName('favorite-count')[0];
     var replyButton = _e.getElementsByClassName('reply')[0],
       retweetButton = _e.getElementsByClassName('retweet')[0],
-      likeButton = _e.getElementsByClassName('like')[0];
+      likeButton = _e.getElementsByClassName('like')[0],
+      tripleDotButton = _e.getElementsByClassName('tripledot')[0];
     replyButton.addEventListener('click', evt => tryReply(), false);
     retweetButton.addEventListener('click', evt => execRetweet(), false);
     likeButton.addEventListener('click', evt => execFavorite(), false);
+    tripleDotButton.addEventListener('click', evt => {
+      tweetMenu.classList.toggle('menu-hidden');
+    });
     div.appendChild(_e.firstElementChild);
+
+    tweetMenu.querySelector('.menuitem-copylink').addEventListener('click', evt => {
+      clipboard.writeText(permalink);
+      App.showMsgBox('클립보드에 트윗 링크를 복사했습니다', 'blue', 1000);
+    }, true);
+
+    div.appendChild(tweetMenu);
   }
 
   a.appendChild(div);
