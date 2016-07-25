@@ -952,6 +952,11 @@ function Tweet (tweet, quoted, event, source) {
         <a class="item" href="#">(나중에 플러그인 시스템을 구현한다면) 여기에 플러그인 메뉴를 넣을지도?</a>
       </div>
     `;
+    
+    var menuBasic = tweetMenu.querySelector('.menu-basic');
+    if (tweet.user.screen_name === App.screen_name) {
+      menuBasic.innerHTML += `<a class="item menuitem-delete" href="#">이 트윗 지우기</a>`;
+    }
 
     // 메뉴 항목을 클릭하면 메뉴를 닫는다.
     tweetMenu.addEventListener('click', evt => {
@@ -979,6 +984,14 @@ function Tweet (tweet, quoted, event, source) {
       clipboard.writeText(permalink);
       App.showMsgBox('클립보드에 트윗 링크를 복사했습니다', 'blue', 1000);
     }, true);
+    
+    if (tweet.user.screen_name === App.screen_name) {
+      tweetMenu.querySelector('.menuitem-delete').addEventListener('click', evt => {
+        if (confirm(`다음 트윗을 지우시겠습니까?\r\n\r\n${tweet.text}`)) {
+          execDelete();
+        }
+      }, true);
+    }
 
     div.appendChild(tweetMenu);
   }
@@ -1074,6 +1087,16 @@ function Tweet (tweet, quoted, event, source) {
       });
     }
     document.activeElement.blur();
+  };
+  
+  var execDelete = () => {
+    Client.post('statuses/destroy', {id: tweet.id_str}, (error, tweet, response) => {
+      if (error) {
+        console.warN(error);
+      } else {
+        App.showMsgBox('해당 트윗을 삭제했습니다', 'blue', 1000);
+      }
+    });
   };
 }
 
