@@ -5,12 +5,8 @@ const Config = {
   _filePath: path.join(__dirname, '../config.json'),
   load () {
     console.info('filePath: "%s"', this._filePath);
-    var json;
-    try {
-      json = require(this._filePath);
-    } catch (e) {
-      throw new Error('Fail to read config file!');
-    }
+    var json = fs.readFileSync(this._filePath);
+    json = JSON.parse(json);
     return json;
   },
   save (newConfig) {
