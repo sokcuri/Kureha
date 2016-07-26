@@ -12,6 +12,9 @@ function createWindow () {
   win = new BrowserWindow({width: 600, height: 800});
   win.loadURL(`file://${__dirname}/app/index.html`);
   win.on('closed', () => {
+    if (settingWin) {
+      settingWin.close();
+    }
     win = null;
   });
 }
