@@ -320,7 +320,6 @@ var App = {
           // 자기 자신의 리트윗은 스트리밍에서 막음
           if (App.config.hideMyRetweets && tweet.retweeted_status && tweet.user.id_str == App.id_str)
             return;
-
           App.addItem(home_timeline, new Tweet(tweet));
           if (App.config.enableHomeTLNoti) App.showNotify(tweet);
           if (App.config.enableHomeTLSound) document.getElementById('update-sound').play();
@@ -377,7 +376,8 @@ var App = {
 
   stopMainStream: () => {
     Client.mainStreamRunning = false;
-    Client.mainStream.destroy();
+    if (Client.mainStream && Client.mainStream.destroy)
+      Client.mainStream.destroy();
   },
 
   alertStream: e => {
@@ -502,7 +502,8 @@ var App = {
     if (tlContainer && tlContainer.firstElementChild) {
       Array.from(tlContainer.firstElementChild.children).forEach((item) => {
         if (isOffscreen(tlContainer, item)) {
-          if (item.firstElementChild.style.display != 'none') {
+          if (item.firstElementChild.style.display != 'none'
+          && item.firstElementChild.getClientRects().length > 0) {
             item.style.height = (item.firstElementChild.getClientRects()[0].height + 10) + 'px';
             item.firstElementChild.style.display = 'none';
             Array.from(item.getElementsByTagName('video')).forEach(i => {
@@ -511,15 +512,13 @@ var App = {
               i.load(); // dispose
             });
           }
-        } else {
-          if (item.firstElementChild.style.display == 'none') {
-            item.style.height = '';
-            item.firstElementChild.style.display = 'block';
-            Array.from(item.getElementsByTagName('video')).forEach(i => {
-              i.removeAttribute('src');
-              i.load();
-            });
-          }
+        } else if (item.firstElementChild.style.display == 'none') {
+          item.style.height = '';
+          item.firstElementChild.style.display = 'block';
+          Array.from(item.getElementsByTagName('video')).forEach(i => {
+            i.removeAttribute('src');
+            i.load();
+          });
         }
       });
     }
@@ -659,6 +658,31 @@ var App = {
     calcItem.innerHTML = '';
     return result;
   },
+  
+  checkWordFilter (text) {
+    if (typeof text !== 'string') {
+      return false;
+    }
+    text = text.trim();
+    var filtered = false;
+    // 대/소문자 구분없이 적용하기 위해 비교대상이 될 문자열을 소문자로 변환한다.
+    var lowercasedText = text.toLowerCase();
+    for (let word of App.filterWords) {
+      if (typeof word === 'string') {
+        let lowercasedWord = word.toLowerCase();
+        if (lowercasedText.indexOf(lowercasedWord) !== -1) {
+          filtered = true;
+          break;
+        }
+      } else if (word instanceof RegExp) {
+        if (word.test(text)) {
+          filtered = true;
+          break;
+        }
+      }
+    }
+    return filtered;
+  },
 
   initializeStyle (config) {
     App.setBackground(config);
@@ -668,12 +692,43 @@ var App = {
       }
     `;
     document.body.appendChild(App.styleSheet);
+    if (config.useWordFilter) {
+      document.body.classList.add('use-filter');
+    } else {
+      document.body.classList.remove('use-filter');
+    }
+  },
+
+  initializeFilter (filters_str) {
+    App.filterWords = [];
+    if (!filters_str) {
+      filters_str = '';
+      return;
+    }
+    let filters = filters_str.split('\n');
+    for (let word of filters) {
+      let match = word.match(/^\/(.+)\/$/);
+      if (match) {
+        word = new RegExp(match[1], 'ig');
+      }
+      App.filterWords.push(word);
+    }
+    var tweets = document.querySelectorAll('.tweet');
+    var applyFilterEvent = new CustomEvent('apply-filter');
+    console.info('tweets.length = %d', tweets.length);
+    for (let tweet of tweets) {
+      tweet.dispatchEvent(applyFilterEvent);
+      // 트윗 필터링 후 빈 공간 메우기 위해...
+      home_timeline.onscroll();
+      notification.onscroll();
+    }
   },
 
   run () {
     var config = App.config = ipcRenderer.sendSync('load-config');
     App.initializeClient(config.ConsumerKey, config.ConsumerSecret, config.AccessToken, config.AccessSecret);
     App.initializeStyle(config);
+    App.initializeFilter(config.filterWords);
 
     if (!config.AccessToken || !config.AccessSecret) {
       oauth_req.style.display = '';
@@ -704,9 +759,9 @@ var App = {
 };
 
 ipcRenderer.on('reload-config', (event, config) => {
-  console.info('reload!');
   App.config = config;
   App.initializeStyle(config);
+  App.initializeFilter(config.filterWords);
   if (config.runStream) {
     App.runMainStream();
     App.alertStream(true);
@@ -952,7 +1007,7 @@ function Tweet (tweet, quoted, event, source) {
         <a class="item" href="#">(나중에 플러그인 시스템을 구현한다면) 여기에 플러그인 메뉴를 넣을지도?</a>
       </div>
     `;
-    
+
     var menuBasic = tweetMenu.querySelector('.menu-basic');
     if (tweet.user.screen_name === App.screen_name) {
       menuBasic.innerHTML += `<a class="item menuitem-delete" href="#">이 트윗 지우기</a>`;
@@ -994,6 +1049,23 @@ function Tweet (tweet, quoted, event, source) {
     }
 
     div.appendChild(tweetMenu);
+    div.addEventListener('apply-filter', evt => {
+      var tweetElement = evt.currentTarget;
+      var text;
+      {
+        // 'tweet.text' 대신 해당 요소의 'p.tweet-text'를 찾는다.
+        // 이렇게 하면 API의 결과값 대신 실제 표시되는 텍스트를 가지고 필터링을 하게 된다.
+        // (예를 들면, API상에선 URL이 t.co로 표시되나, 실제로는 원래 주소가 보인다.)
+        let t = tweetElement.querySelector('.tweet-text');
+        if (t) {
+          text = t.textContent;
+        }
+      }
+      var filtered = App.checkWordFilter(text);
+      var method = filtered ? 'add' : 'remove';
+      tweetElement.classList[method]('filtered');
+    });
+    div.dispatchEvent(new CustomEvent('apply-filter'));
   }
 
   a.appendChild(div);

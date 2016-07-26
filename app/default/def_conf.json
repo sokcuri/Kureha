@@ -21,5 +21,8 @@
   "bgSize": "initial",
   "bgRepeat": "no-repeat",
 
+  "useWordFilter": false,
+  "filterWords": "",
+
   "debug": false
 }

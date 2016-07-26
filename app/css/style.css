@@ -314,6 +314,10 @@ body {
   animation: none;
 }
 
+body.use-filter .tweet.filtered {
+  display: none !important;
+}
+
 .tweet .lpad {
   padding-left: 60px;
 }
