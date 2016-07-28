@@ -61,34 +61,7 @@ function openPopup (href) {
 }
 
 function openImageview (href, more) {
-  if (window.popup) window.popup.close();
-  var width = 1000;
-  var height = 650;
-  var x = (screen.width / 2) - (width / 2);
-  var y = (screen.height / 2) - (height / 2);
-  var win = new BrowserWindow({
-    width, height, x, y,
-    center: true,
-    backgroundColor: '#000',
-    autoHideMenuBar: true,
-    webPreferences: {
-      nodeIntegration: false,
-    },
-  });
-  win.id = 'popup';
-  var url = `file://${__dirname}/viewer.html?img=${encodeURIComponent(href)}&more=${encodeURIComponent(more)}`
-  win.loadURL(url);
-  window.win = win;
-  /*
-  nw.Window.open('app/viewer.html?img=' + encodeURIComponent(href) + '&more=' + encodeURIComponent(more), 
-  {x: left, y: top, width: w, height: h},
-  function (win) {
-    window.popup = win.window;
-    win.window.id = 'popup';
-    win.window.config = App.config;
-    win.focus();
-  });
-  */
+  ipcRenderer.send('open-image-view', [href, more]);
 }
 
 function isOffscreen (t, el) {

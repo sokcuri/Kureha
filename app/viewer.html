@@ -5,86 +5,99 @@
     <title>Image Viewer</title>
     <link rel="stylesheet" href="css/viewer.css">
     <script>
-    window.onload = function(e)
-    {
+    var electron = require('electron');
+    var ipcRenderer = electron.ipcRenderer;
+    window.onload = e => {
       var url = window.location.href,
         query = window.location.search.substring(1),
-        args = query.split('&').map(function(x){ return x.split('='); }),
+        args = query.split('&').map(x => x.split('=')),
         src = decodeURIComponent(args[0][1]);
       /* args[0][0]: "img"
        * args[0][1]: url of selected image
        * args[1][0]: "more"
        * args[1][1]: list of image urls delimited by ';' */
       window.more = decodeURIComponent(args[1][1]).split(';');
-      image.src = src + ":orig";
+      image.src = `${src}:orig`;
 
       window.index = -1;
       for (var i = 0; i < more.length; i++)
-        if (src === more[i])
-        {
+        if (src === more[i]) {
           index = i;
           break;
         }
-
-      image.addEventListener("load", function() {
+      image.addEventListener('load', () => {
         image.classList.remove('hidden');
         loader.hidden = true;
       });
 
-      updateHeader = function()
-      {
-        indicator.innerHTML = (index + 1) + " / " + (more.length);
-        prev_image.className = (index == 0) ? "page disabled" : "page";
-        next_image.className = (index == more.length - 1) ? "page disabled" : "page";
+      updateHeader = () => {
+        indicator.innerHTML = (index + 1) + ' / ' + (more.length);
+        let method = index === 0 ? 'add' : 'remove';
+        prev_image.classList[method]('disabled');
+        method = index === more.length - 1 ? 'add' : 'remove';
+        next_image.classList[method]('disabled');
       }
 
-      updateArrow = function()
-      {
-        arr_prev.className = (index == 0) ? "hidden" : "";
-        arr_next.className = (index == more.length - 1) ? "hidden" : "";
+      updateArrow = () => {
+        let method = index === 0 ? 'add' : 'remove';
+        arr_prev.classList[method]('hidden');
+        method = index === more.length - 1 ? 'add' : 'remove';
+        arr_next.classList[method]('hidden');
       }
 
       updateHeader();
       updateArrow();
 
-      image.addEventListener("click", function() {
+      image.addEventListener('click', () => {
         window.close();
       });
 
-      prevClick = function()
-      {
-        if (index == 0) return false;
+      prevClick = () => {
+        if (index === 0) {
+          return false;
+        }
         loader.hidden = false;
         image.classList.add('hidden');
-        image.src = more[--index] + ":orig";
+        image.src = more[--index] + ':orig';
         updateHeader();
         updateArrow();
       }
 
-      nextClick = function()
-      {
-        if (index == more.length - 1) return false;
+      nextClick = () => {
+        if (index === more.length - 1) {
+          return false;
+        }
         loader.hidden = false;
         image.classList.add('hidden');
-        image.src = more[++index] + ":orig";
+        image.src = more[++index] + ':orig';
         updateHeader();
         updateArrow();
       }
 
-      prev_image.addEventListener("click", prevClick);
-      next_image.addEventListener("click", nextClick);
-      arr_prev.addEventListener("click", prevClick);
-      arr_next.addEventListener("click", nextClick);
-    };
+      prev_image.addEventListener('click', prevClick);
+      next_image.addEventListener('click', nextClick);
+      arr_prev.addEventListener('click', prevClick);
+      arr_next.addEventListener('click', nextClick);
+      save_image.addEventListener('click', saveImage);
+    }; 
+
+    function saveImage () {
+      ipcRenderer.send('save-image', image.src);
+    }
+
+    ipcRenderer.on('on-download-complete', (event, arg) => {
+      window.alert('다운로드 완료!');
+    });
     </script>
   </head>
   <body>
     <div id="wrapper">
       <div id="header">
-        <a class="page" id="prev_image" href="javascript:void(0)">◀</a>
-        <a class="page" id="next_image" href="javascript:void(0)">▶</a>
+        <a class="toolbar-item" id="prev_image" href="javascript:void(0)">◀</a>
+        <a class="toolbar-item" id="next_image" href="javascript:void(0)">▶</a>
         &nbsp;
         <span id="indicator"></span>
+        | <a class="toolbar-item" id="save_image" href="javascript:void(0)">&#128190; 현재 이미지 저장</a>
       </div>
       <div class="showbox centered">
         <div id="loader" class="loader">

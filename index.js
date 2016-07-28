@@ -2,19 +2,25 @@ const electron = require('electron');
 const ipcMain = electron.ipcMain;
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
+const dialog = electron.dialog;
+const request = require('request');
+const fs = require('fs');
+const path = require('path');
 const Configure = require('./app/config');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-var win, settingWin;
+var win, settingWin, imageViewWin;
 
 function createWindow () {
   win = new BrowserWindow({width: 600, height: 800});
   win.loadURL(`file://${__dirname}/app/index.html`);
   win.on('closed', () => {
-    if (settingWin) {
-      settingWin.close();
-    }
+    [settingWin, imageViewWin].forEach(subwin => {
+      if (subwin) {
+        subwin.close();
+      }
+    });
     win = null;
   });
 }
@@ -45,6 +51,60 @@ ipcMain.on('open-setting', (event, arg) => {
   });
   settingWin.loadURL(`file://${__dirname}/app/settings.html`);
 });
+
+ipcMain.on('open-image-view', (event, arg) => {
+  if (imageViewWin) {
+    imageViewWin.focus();
+  } else {
+    imageViewWin = new BrowserWindow({
+      width: 1000,
+      height: 650,
+      minWidth: 320,
+      minHeight: 240,
+      backgroundColor: '#000',
+      autoHideMenuBar: true,
+      webPreferences: {
+        nodeIntegration: true,
+      },
+    });
+    imageViewWin.on('closed', () => {
+      imageViewWin = null;
+    });
+  }
+  let href = encodeURIComponent(arg[0]);
+  let more = encodeURIComponent(arg[1]);
+  imageViewWin.loadURL(`file://${__dirname}/app/viewer.html?img=${href}&more=${more}`);
+});
+
+ipcMain.on('save-image', (event, url) => {
+  var ext = url.match(/\.(\w{3,4}):orig/);
+  if (ext) {
+    ext = ext[1];
+  } else {
+    ext = 'png';
+  }
+  dialog.showSaveDialog(imageViewWin, {
+    title: '이미지 파일 저장하기',
+    filters: [
+      {name: `${ext} 파일`, extensions: [ext]},
+    ],
+  }, filepath => {
+    if (filepath) {
+      let output = fs.createWriteStream(filepath);
+      request(url)
+        .on('error', error => {
+          console.error(error);
+        })
+        .on('response', response => { 
+          //window.alert('다운로드 완료!');
+          event.sender.send('on-download-complete');
+          console.info('complete!');
+        })
+        .pipe(output);
+    }
+  });
+});
+
 
 app.on('ready', createWindow);
 
