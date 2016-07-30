@@ -82,7 +82,7 @@
     }; 
 
     function saveImage () {
-      ipcRenderer.send('save-image', image.src);
+      ipcRenderer.send('save-media', image.src);
     }
 
     ipcRenderer.on('on-download-complete', (event, arg) => {

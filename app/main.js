@@ -771,6 +771,10 @@ ipcRenderer.on('reload-config', (event, config) => {
   }
 });
 
+ipcRenderer.on('on-download-complete', (event, arg) => {
+  App.showMsgBox('다운로드를 완료했습니다!', 'blue', 1000);
+});
+
 // Static variable
 App.chkConnect.iserror = false;
 App.chkConnect.event_timestamp = 0;
@@ -856,16 +860,16 @@ function Tweet (tweet, quoted, event, source) {
 
   if (event == 'retweeted_retweet') {
     div.innerHTML += `<div class="retweeted_retweeted_tweet">&nbsp;&nbsp;${symbol.retweet}
-            <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${source.screen_name}')">${source.name}</a> 님이 내가 리트윗한 트윗을 리트윗했습니다.</span>`;
+            <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${source.screen_name}')" data-screen-name="${source.screen_name}">${source.name}</a> 님이 내가 리트윗한 트윗을 리트윗했습니다.</span>`;
     if (tweet.retweeted_status) tweet = tweet.retweeted_status;
   }
   if (event == 'favorited_retweet') {
     div.innerHTML += `<div class="favorited_retweeted_tweet">&nbsp;&nbsp;${symbol.like}
-            <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${source.screen_name}')">${source.name}</a> 님이 내 리트윗을 마음에 들어 합니다.</span>`;
+            <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${source.screen_name}')" data-screen-name="${source.screen_name}">${source.name}</a> 님이 내 리트윗을 마음에 들어 합니다.</span>`;
     if (tweet.retweeted_status) tweet = tweet.retweeted_status;
   } else if (tweet.retweeted_status) {
     div.innerHTML += `<div class="retweeted_tweet">${symbol.retweet}<span class="retweeted_tweet_text">&nbsp;
-            <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}')">${tweet.user.name}</a> 님이 리트윗했습니다</span></div>`;
+            <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}')" data-screen-name="${tweet.user.screen_name}">${tweet.user.name}</a> 님이 리트윗했습니다</span></div>`;
     tweet = tweet.retweeted_status;
   } else if (tweet.in_reply_to_status_id_str !== null && !quoted) {
     // 자신의 트윗에 답글 단 경우 즉, 이어쓰기 트윗
@@ -876,7 +880,7 @@ function Tweet (tweet, quoted, event, source) {
       var replied_to = user_mentions[0].name;
     }
     div.innerHTML += `<div class="replied_tweet">${symbol.reply}<span class="replied_tweet_text">&nbsp;
-      <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.in_reply_to_screen_name}')">${replied_to}</a> 님에게 답글을 보냈습니다</span></div>`;
+      <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.in_reply_to_screen_name}')" data-screen-name="${tweet.in_reply_to_screen_name}">${replied_to}</a> 님에게 답글을 보냈습니다</span></div>`;
   }
 
   var embed = {
@@ -914,8 +918,8 @@ function Tweet (tweet, quoted, event, source) {
   if (tweet.user.protected) tweet_protected = symbol.protected;
 
   div.innerHTML += `<img class="profile-image" src="${tweet.user.profile_image_url_https}"></img>
-          <div class="tweet-name"><a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}')">
-          <strong>${tweet.user.name}</strong>
+          <div class="tweet-name"><a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}')" data-screen-name="${tweet.user.screen_name}">
+          <strong class="tweet-nickname">${tweet.user.name}</strong>
           <span class="tweet-id">@${tweet.user.screen_name}</span></a><span class="user_protected">${tweet_protected}</div></div>
           <p class="tweet-text lpad">${text}</p>`;
 
@@ -952,7 +956,7 @@ function Tweet (tweet, quoted, event, source) {
   }
 
   div.innerHTML += `<div class="tweet-date lpad">
-          <a href="javascript:void(0)" onclick="openPopup('${permalink}')">
+          <a href="javascript:void(0)" onclick="openPopup('${permalink}')" data-url="${permalink}">
           ${new Date(Date.parse(tweet.created_at)).format('a/p hh:mm - yyyy년 MM월 dd일')}
           </a> · ${tagRemove(tweet.source)}</div>`;
   if (!tweet.retweet_count)
@@ -1065,6 +1069,125 @@ function Tweet (tweet, quoted, event, source) {
       var method = filtered ? 'add' : 'remove';
       tweetElement.classList[method]('filtered');
     });
+    
+    const linkContextMenu = url => {
+      return [
+        {
+          label: '이 링크 복사하기',
+          click (item, focusedWindow) {
+            clipboard.writeText(url);
+            App.showMsgBox('클립보드에 해당 링크의 주소를 복사했습니다', 'blue', 1000);
+          },
+        },
+      ];
+    };
+
+    const hashtagContextMenu = tag => {
+      return [
+        {
+          label: `해시태그(${tag})를 복사하기`,
+          click (item, focusedWindow) {
+            clipboard.writeText(tag);
+            App.showMsgBox('클립보드에 해시태그를 복사했습니다', 'blue', 1000);
+          },
+        },
+        {
+          label: `"${tag}"를 포함한 트윗 작성하기`,
+          click (item, focusedWindow) {
+            App.tweetUploader.openPanel();
+            App.tweetUploader.text = `${tag} `;
+          },
+        },
+      ];
+    };
+
+    const mentionContextMenu = username => {
+      return [
+        {
+          label: `유저ID 복사하기 (@${username})`,
+          click (item, focusedWindow) {
+            clipboard.writeText(`@${username}`);
+            App.showMsgBox('클립보드에 유저ID를 복사했습니다', 'blue', 1000);
+          },
+        },
+        {
+          label: `유저의 트위터 URL 복사하기 (https://twitter.com/${username})`,
+          click (item, focusedWindow) {
+            clipboard.writeText(`https://twitter.com/${username}`);
+            App.showMsgBox('클립보드에 URL을 복사했습니다', 'blue', 1000);
+          },
+        },
+        {
+          label: `@${username}에게 멘션하기`,
+          click (item, focusedWindow) {
+            App.tweetUploader.openPanel();
+            App.tweetUploader.text = `@${username} `;
+          },
+        },
+      ];
+    };
+    
+    const mediaContextMenu = mediaElem => {
+      let url = mediaElem.src;
+      if (/pbs\.twimg\.com\/media\/.+(?:jpg|png)/.test(url)) {
+        url = url + ':orig';
+      }
+      if (/pbs\.twimg\.com\/profile_images\/.+/.test(url)) {
+        url = url.replace('_normal', '_bigger');
+      }
+      if (mediaElem.tagName === 'VIDEO') {
+        url = mediaElem.currentSrc;
+      }
+      return [
+        {
+          label: `이 미디어의 URL을 복사하기`,
+          click (item, focusedWindow) {
+            clipboard.writeText(url);
+            App.showMsgBox('클립보드에 미디어 URL을 복사했습니다', 'blue', 1000);
+          },
+        },
+        {
+          label: `이 미디어를 저장하기`,
+          click (item, focusedWindow) {
+            ipcRenderer.send('save-media', url);
+          },
+        },
+      ];
+    };
+
+    div.addEventListener('contextmenu', e => {
+      const target = e.target;
+      let menu;
+      if (target.classList.contains('hashtag')) {
+        let tag = target.getAttribute('title');
+        menu = hashtagContextMenu(tag);
+      } else if (target.hasAttribute('data-screen-name')) {
+        let username = target.getAttribute('data-screen-name');
+        menu = mentionContextMenu(username);
+      } else if (target.classList.contains('tweet-nickname')
+        || target.classList.contains('tweet-id')
+      ) {
+        let username = target.parentElement.getAttribute('data-screen-name');
+        menu = mentionContextMenu(username);
+      } else if (target.tagName === 'A') {
+        let url = target.getAttribute(target.hasAttribute('data-url') ? 'data-url' : 'title');
+        menu = linkContextMenu(url);
+      } else if (target.classList.contains('js-display-url')) {
+        let link = target.parentElement;
+        let url = link.getAttribute('title');
+        menu = linkContextMenu(url);
+      } else if (target.tagName === 'IMG') {
+        menu = mediaContextMenu(target);
+      } else if (target.tagName === 'VIDEO') {
+        menu = mediaContextMenu(target);
+      } else {
+        return;
+      }
+      menu = Menu.buildFromTemplate(menu);
+      menu.popup(remote.getCurrentWindow());
+    });
+
+    
     div.dispatchEvent(new CustomEvent('apply-filter'));
   }
 
@@ -1572,7 +1695,6 @@ window.onload = e => {
 
   toolbox.appendChild(App.tweetUploader.element);
 
-  //chooseFile('#fileDialog');
   // run Application
   App.run();
 };

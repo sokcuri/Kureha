@@ -76,19 +76,19 @@ ipcMain.on('open-image-view', (event, arg) => {
   imageViewWin.loadURL(`file://${__dirname}/app/viewer.html?img=${href}&more=${more}`);
 });
 
-ipcMain.on('save-image', (event, url) => {
-  var ext = url.match(/\.(\w{3,4}):orig/);
+ipcMain.on('save-media', (event, url) => {
+  var saveDialogOption = {
+    title: '미디어 파일 저장하기',
+  };
+  var ext = url.match(/\.\w{3}/gi).pop();
   if (ext) {
-    ext = ext[1];
-  } else {
-    ext = 'png';
-  }
-  dialog.showSaveDialog(imageViewWin, {
-    title: '이미지 파일 저장하기',
-    filters: [
+    ext = ext.slice(1); // strip dot
+    saveDialogOption.filters = [
       {name: `${ext} 파일`, extensions: [ext]},
-    ],
-  }, filepath => {
+    ];
+  }
+  var focusedWindow = BrowserWindow.getFocusedWindow();
+  dialog.showSaveDialog(focusedWindow, saveDialogOption, filepath => {
     if (filepath) {
       let output = fs.createWriteStream(filepath);
       request(url)
@@ -98,7 +98,6 @@ ipcMain.on('save-image', (event, url) => {
         .on('response', response => { 
           //window.alert('다운로드 완료!');
           event.sender.send('on-download-complete');
-          console.info('complete!');
         })
         .pipe(output);
     }
