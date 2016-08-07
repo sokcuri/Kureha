@@ -740,7 +740,6 @@ var App = {
       if (error) {
         oauth_req.style.display = '';
         App.resizeContainer();
-
         return App.confirmAuth();
       } else {
         oauth_req.style.display = 'none';
@@ -923,7 +922,7 @@ function Tweet (tweet, quoted, event, source) {
           <span class="tweet-id">@${tweet.user.screen_name}</span></a><span class="user_protected">${tweet_protected}</div></div>
           <p class="tweet-text lpad">${text}</p>`;
 
-  var entities = tweet.extended_entities || tweet.entities || null;
+  var entities = tweet.extended_entities || tweet.entities || {};
   if (entities.media) {
     var container = document.createElement('div');
 
@@ -1008,7 +1007,6 @@ function Tweet (tweet, quoted, event, source) {
       </div>
       <hr class="sep">
       <div class="menu-plugin">
-        <a class="item" href="#">(나중에 플러그인 시스템을 구현한다면) 여기에 플러그인 메뉴를 넣을지도?</a>
       </div>
     `;
 
@@ -1140,14 +1138,14 @@ function Tweet (tweet, quoted, event, source) {
       }
       return [
         {
-          label: `이 미디어의 URL을 복사하기`,
+          label: '이 미디어의 URL을 복사하기',
           click (item, focusedWindow) {
             clipboard.writeText(url);
             App.showMsgBox('클립보드에 미디어 URL을 복사했습니다', 'blue', 1000);
           },
         },
         {
-          label: `이 미디어를 저장하기`,
+          label: '이 미디어를 저장하기',
           click (item, focusedWindow) {
             ipcRenderer.send('save-media', url);
           },
@@ -1187,7 +1185,6 @@ function Tweet (tweet, quoted, event, source) {
       menu.popup(remote.getCurrentWindow());
     });
 
-    
     div.dispatchEvent(new CustomEvent('apply-filter'));
   }
 
@@ -1357,7 +1354,6 @@ function TweetUploader () {
     postButton.addEventListener('click', e => execTweet());
   }
 
-  
   var removeTempFiles = () => {
     // 임시폴더에 있는 파일은 지운다.
     var paths = this.mediaSelector.selectedFiles;
