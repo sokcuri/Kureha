@@ -1,6 +1,11 @@
 //const electron = require('electron');
 //const BrowserWindow = electron.BrowserWindow;
 var os = require('os');
+var dialogs = require('dialogs')({
+  cancel: '취소',
+  ok: '확인',
+  hostname: 'Kureha'
+});
 
 var cnt = 0;
 
@@ -128,8 +133,11 @@ var App = {
   confirmAuth: msg => {
     if (!msg) var msg = 'oauth 토큰이 유효하지 않습니다. 지금 토큰을 요청할까요?\r\n' +
                         '토큰을 요청하지 않으면 기능이 작동하지 않습니다.';
-    var result = confirm(msg);
-    if (result) App.getRequestToken(App.getConsumerKey(), App.getConsumerSecret());
+    // var result = confirm(msg);
+    // if (result) App.getRequestToken(App.getConsumerKey(), App.getConsumerSecret());
+    dialogs.confirm(msg, result => {
+      if (result) App.getRequestToken(App.getConsumerKey(), App.getConsumerSecret());
+    })
   },
 
   confirmAuthFirst: () => {
@@ -139,11 +147,14 @@ var App = {
   },
 
   promptPin: () => {
-    var pin;
+    dialogs.prompt('토큰 요청후 발급받은 핀번호를 입력하세요', '', pin => {
+      if (pin) App.getAccessToken(pin);
+    });
+    /*var pin;
     pin = prompt('토큰 요청후 발급받은 핀번호를 입력하세요');
 
     if (pin != null)
-      App.getAccessToken(pin);
+      App.getAccessToken(pin);*/
   },
 
   getConsumerKey: () => {
@@ -218,7 +229,7 @@ var App = {
         //    Util.puts(data);
         //});
 
-        ipcRenderer.send('save-config', config);
+        ipcRenderer.send('save-config', App.config);
         App.initializeClient(OAuth._consumerKey, OAuth._consumerSecret, access_token, access_secret);
         App.run();
       });
@@ -1092,7 +1103,7 @@ function Tweet (tweet, quoted, event, source) {
   var execDelete = () => {
     Client.post('statuses/destroy', {id: tweet.id_str}, (error, tweet, response) => {
       if (error) {
-        console.warN(error);
+        console.warn(error);
       } else {
         App.showMsgBox('해당 트윗을 삭제했습니다', 'blue', 1000);
       }

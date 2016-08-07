@@ -727,3 +727,10 @@ article.favorited button.like:hover {
 .navigator:hover {
   color: #55acee;
 }
+
+/* Dialog style hotfix
+ * ref: https://github.com/JamesKyburz/dialogs/pull/23 */
+body > div.dialog-widget[data-icon="true"].confirm > h3,
+body > div.dialog-widget[data-icon="true"].prompt > h3 {
+  margin-left: 0;
+}
