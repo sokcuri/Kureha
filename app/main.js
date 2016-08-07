@@ -1,12 +1,29 @@
 //const electron = require('electron');
 //const BrowserWindow = electron.BrowserWindow;
-var os = require('os');
-var dialogs = require('dialogs')({
+const os = require('os');
+const Twitter = require('twitter');
+const Twitter_text = require('twitter-text');
+const Util = require('util');
+const Tweet = require('../app/tweet');
+const symbol = require('../app/symbols');
+const _dialogs = require('dialogs');
+const _oauth = require('oauth');
+
+const dialogs = _dialogs({
   cancel: '취소',
   ok: '확인',
   hostname: 'Kureha'
 });
-var Tweet = require('../app/tweet');
+
+const OAuth = new _oauth.OAuth(
+  'https://api.twitter.com/oauth/request_token',
+  'https://api.twitter.com/oauth/access_token',
+  '',
+  '',
+  '1.0',
+  null, // callback URL
+  'HMAC-SHA1'
+);
 
 var cnt = 0;
 
@@ -69,21 +86,6 @@ Date.prototype.format = function (f) {
 var htl_scr01, htl_scr02;
 var ntl_scr01, ntl_scr02;
 var dtl_scr01, dtl_scr02;
-
-var Twitter = require('twitter');
-var Twitter_text = require('twitter-text');
-var Util = require('util');
-var OAuth = new (require('oauth').OAuth)(
-  'https://api.twitter.com/oauth/request_token',
-  'https://api.twitter.com/oauth/access_token',
-  '',
-  '',
-  '1.0',
-  null, // callback URL
-  'HMAC-SHA1'
-);
-
-var symbol = require('../app/symbols');
 
 var Client = new Twitter({
   consumer_key: '',
