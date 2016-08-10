@@ -2,20 +2,18 @@ const path = require('path');
 const fs = require('fs');
 
 const Config = {
+  _defaultConfigPath: path.join(__dirname, './default/def_conf.json'),,
   _filePath: path.join(__dirname, '../config.json'),
   load () {
-    console.info('filePath: "%s"', this._filePath);
+    var config = JSON.parse(fs.readFileSync(this._defaultConfigPath));
+    var userConfig = {};
     try {
-      let json = fs.readFileSync(this._filePath);
-      json = JSON.parse(json);
-      return json;
+      userConfig = JSON.parse(fs.readFileSync(this._filePath));
+    } catch (e) {
+      console.warn('Cannot read "config.json".');
     }
-    catch (e) {
-      console.warn("Cannot read `config.json`. Reading default configuration.");
-      let json = fs.readFileSync(path.join(__dirname, 'default/def_conf.json'));
-      json = JSON.parse(json);
-      return json;
-    }
+    Object.assign(config, userConfig);
+    return config;
   },
   save (newConfig) {
     const jsonStr = JSON.stringify(newConfig, null, 2);
