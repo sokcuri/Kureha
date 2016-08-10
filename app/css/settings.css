@@ -174,3 +174,11 @@ section .multicolumn > div {
 .settings-item input[type='color'] {
   width: 75px;
 }
+
+.settings-item textarea {
+  width: 100%;
+  min-height: 100px;
+  border: 1px solid gray;
+  border-radius: 2px;
+  resize: vertical;
+}

@@ -39,14 +39,31 @@
                  'click' : 'change';
         input.addEventListener(on, e => checkConfig(e.currentTarget));
       }
+      var textareas = document.getElementsByTagName('textarea');
+      for (textarea of textareas) {
+        textarea.addEventListener('change', e => checkConfig(e.currentTarget));
+      }
       refreshSettingUI();
     };
 
     function refreshSettingUI () {
       tweetOpacity.nextElementSibling.innerHTML = config.tweetOpacity + '%';
+      trimFilterTextarea();
+    }
+
+    function trimFilterTextarea () {
+      var result = '';
+      const text = filterWords.value;
+      const splitted = text.split('\n');
+      for (let word of splitted) {
+        result += word.trim();
+        result += '\n';
+      }
+      filterWords.value = result.trim();
     }
 
     function checkConfig (e) {
+      trimFilterTextarea();
       var form = document.forms[0];
       var key = e.name || e.id;
       switch (e.type) {
@@ -227,6 +244,23 @@
                     </label>
                   </div>
                 </div>
+              </div>
+            </div>
+          </section>
+          <section>
+            <header><span>단어 필터링</span></header>
+            <div class="contents">
+              <div class="settings-item">
+                <label>
+                  <input id="useWordFilter" type="checkbox"><label for="useWordFilter"><div></div></label>
+                  단어 필터링 사용하기
+                </label>
+              </div>
+              <div class="settings-item">
+                <label>
+                  필터링할 단어를 한 줄에 하나씩 입력해주세요. 영문 대/소문자를 구분하지 않습니다.슬래시(/)로 감싼 단어는 정규표현식으로 인식합니다.
+                  <textarea id="filterWords"></textarea>
+                </label>
               </div>
             </div>
           </section>

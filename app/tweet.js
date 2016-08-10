@@ -5,6 +5,7 @@ module.exports = (() => {
   var ex = {
     App: null,
     Tweet: function (tweet, quoted, event, source) {
+      var App = ex.App;
       var tweet = tweet;
       var quoted = quoted;
       var a = document.createElement('article');
@@ -35,7 +36,7 @@ module.exports = (() => {
       var mentioned_me = false;
       if (!tweet.retweeted_status)
         for (var name of Twitter_text.extractMentions(tweet.text))
-          if (name == ex.App.screen_name) mentioned_me = true;
+          if (name == App.screen_name) mentioned_me = true;
       if (mentioned_me) className += ' tweet_emp blue';
 
       // retweeted / favorited
@@ -43,7 +44,7 @@ module.exports = (() => {
       var favorited = '';
       if (tweet.favorited)
         favorited = 'favorited';
-      if (tweet.retweeted || tweet.retweeted_status && tweet.user.id_str == ex.App.id_str)
+      if (tweet.retweeted || tweet.retweeted_status && tweet.user.id_str == App.id_str)
         retweeted = 'retweeted';
 
       var id_str_org = tweet.id_str;
@@ -53,16 +54,16 @@ module.exports = (() => {
 
       if (event == 'retweeted_retweet') {
         div.innerHTML += `<div class="retweeted_retweeted_tweet">&nbsp;&nbsp;${symbol.retweet}
-                <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${source.screen_name}')">${source.name}</a> 님이 내가 리트윗한 트윗을 리트윗했습니다.</span>`;
+                <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${source.screen_name}')" data-screen-name="${source.screen_name}">${source.name}</a> 님이 내가 리트윗한 트윗을 리트윗했습니다.</span>`;
         if (tweet.retweeted_status) tweet = tweet.retweeted_status;
       }
       if (event == 'favorited_retweet') {
         div.innerHTML += `<div class="favorited_retweeted_tweet">&nbsp;&nbsp;${symbol.like}
-                <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${source.screen_name}')">${source.name}</a> 님이 내 리트윗을 마음에 들어 합니다.</span>`;
+                <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${source.screen_name}')" data-screen-name="${source.screen_name}">${source.name}</a> 님이 내 리트윗을 마음에 들어 합니다.</span>`;
         if (tweet.retweeted_status) tweet = tweet.retweeted_status;
       } else if (tweet.retweeted_status) {
         div.innerHTML += `<div class="retweeted_tweet">${symbol.retweet}<span class="retweeted_tweet_text">&nbsp;
-                <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}')">${tweet.user.name}</a> 님이 리트윗했습니다</span></div>`;
+                <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}')" data-screen-name="${tweet.user.screen_name}">${tweet.user.name}</a> 님이 리트윗했습니다</span></div>`;
         tweet = tweet.retweeted_status;
       } else if (tweet.in_reply_to_status_id_str !== null && !quoted) {
         // 자신의 트윗에 답글 단 경우 즉, 이어쓰기 트윗
@@ -73,7 +74,7 @@ module.exports = (() => {
           var replied_to = user_mentions[0].name;
         }
         div.innerHTML += `<div class="replied_tweet">${symbol.reply}<span class="replied_tweet_text">&nbsp;
-          <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.in_reply_to_screen_name}')">${replied_to}</a> 님에게 답글을 보냈습니다</span></div>`;
+          <a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.in_reply_to_screen_name}')" data-screen-name="${tweet.in_reply_to_screen_name}">${replied_to}</a> 님에게 답글을 보냈습니다</span></div>`;
       }
 
       var embed = {
@@ -111,12 +112,12 @@ module.exports = (() => {
       if (tweet.user.protected) tweet_protected = symbol.protected;
 
       div.innerHTML += `<img class="profile-image" src="${tweet.user.profile_image_url_https}"></img>
-              <div class="tweet-name"><a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}')">
-              <strong>${tweet.user.name}</strong>
+              <div class="tweet-name"><a href="javascript:void(0)" onclick="openPopup('https://twitter.com/${tweet.user.screen_name}')" data-screen-name="${tweet.user.screen_name}">
+              <strong class="tweet-nickname">${tweet.user.name}</strong>
               <span class="tweet-id">@${tweet.user.screen_name}</span></a><span class="user_protected">${tweet_protected}</div></div>
               <p class="tweet-text lpad">${text}</p>`;
 
-      var entities = tweet.extended_entities || tweet.entities || null;
+      var entities = tweet.extended_entities || tweet.entities || {};
       if (entities.media) {
         var container = document.createElement('div');
 
@@ -149,7 +150,7 @@ module.exports = (() => {
       }
 
       div.innerHTML += `<div class="tweet-date lpad">
-              <a href="javascript:void(0)" onclick="openPopup('${permalink}')">
+              <a href="javascript:void(0)" onclick="openPopup('${permalink}')" data-url="${permalink}">
               ${new Date(Date.parse(tweet.created_at)).format('a/p hh:mm - yyyy년 MM월 dd일')}
               </a> · ${tagRemove(tweet.source)}</div>`;
       if (!tweet.retweet_count)
@@ -201,12 +202,11 @@ module.exports = (() => {
           </div>
           <hr class="sep">
           <div class="menu-plugin">
-            <a class="item" href="#">(나중에 플러그인 시스템을 구현한다면) 여기에 플러그인 메뉴를 넣을지도?</a>
           </div>
         `;
-        
+
         var menuBasic = tweetMenu.querySelector('.menu-basic');
-        if (tweet.user.screen_name === ex.App.screen_name) {
+        if (tweet.user.screen_name === App.screen_name) {
           menuBasic.innerHTML += `<a class="item menuitem-delete" href="#">이 트윗 지우기</a>`;
         }
 
@@ -234,10 +234,10 @@ module.exports = (() => {
 
         tweetMenu.querySelector('.menuitem-copylink').addEventListener('click', evt => {
           clipboard.writeText(permalink);
-          ex.App.showMsgBox('클립보드에 트윗 링크를 복사했습니다', 'blue', 1000);
+          App.showMsgBox('클립보드에 트윗 링크를 복사했습니다', 'blue', 1000);
         }, true);
         
-        if (tweet.user.screen_name === ex.App.screen_name) {
+        if (tweet.user.screen_name === App.screen_name) {
           tweetMenu.querySelector('.menuitem-delete').addEventListener('click', evt => {
             if (confirm(`다음 트윗을 지우시겠습니까?\r\n\r\n${tweet.text}`)) {
               execDelete();
@@ -246,56 +246,191 @@ module.exports = (() => {
         }
 
         div.appendChild(tweetMenu);
+        div.addEventListener('apply-filter', evt => {
+          var tweetElement = evt.currentTarget;
+          var text;
+          {
+            // 'tweet.text' 대신 해당 요소의 'p.tweet-text'를 찾는다.
+            // 이렇게 하면 API의 결과값 대신 실제 표시되는 텍스트를 가지고 필터링을 하게 된다.
+            // (예를 들면, API상에선 URL이 t.co로 표시되나, 실제로는 원래 주소가 보인다.)
+            let t = tweetElement.querySelector('.tweet-text');
+            if (t) {
+              text = t.textContent;
+            }
+          }
+          var filtered = App.checkWordFilter(text);
+          var method = filtered ? 'add' : 'remove';
+          tweetElement.classList[method]('filtered');
+        });
+        
+        const linkContextMenu = url => {
+          return [
+            {
+              label: '이 링크 복사하기',
+              click (item, focusedWindow) {
+                clipboard.writeText(url);
+                App.showMsgBox('클립보드에 해당 링크의 주소를 복사했습니다', 'blue', 1000);
+              },
+            },
+          ];
+        };
+
+        const hashtagContextMenu = tag => {
+          return [
+            {
+              label: `해시태그(${tag})를 복사하기`,
+              click (item, focusedWindow) {
+                clipboard.writeText(tag);
+                App.showMsgBox('클립보드에 해시태그를 복사했습니다', 'blue', 1000);
+              },
+            },
+            {
+              label: `"${tag}"를 포함한 트윗 작성하기`,
+              click (item, focusedWindow) {
+                App.tweetUploader.openPanel();
+                App.tweetUploader.text = `${tag} `;
+              },
+            },
+          ];
+        };
+
+        const mentionContextMenu = username => {
+          return [
+            {
+              label: `유저ID 복사하기 (@${username})`,
+              click (item, focusedWindow) {
+                clipboard.writeText(`@${username}`);
+                App.showMsgBox('클립보드에 유저ID를 복사했습니다', 'blue', 1000);
+              },
+            },
+            {
+              label: `유저의 트위터 URL 복사하기 (https://twitter.com/${username})`,
+              click (item, focusedWindow) {
+                clipboard.writeText(`https://twitter.com/${username}`);
+                App.showMsgBox('클립보드에 URL을 복사했습니다', 'blue', 1000);
+              },
+            },
+            {
+              label: `@${username}에게 멘션하기`,
+              click (item, focusedWindow) {
+                App.tweetUploader.openPanel();
+                App.tweetUploader.text = `@${username} `;
+              },
+            },
+          ];
+        };
+        
+        const mediaContextMenu = mediaElem => {
+          let url = mediaElem.src;
+          if (/pbs\.twimg\.com\/media\/.+(?:jpg|png)/.test(url)) {
+            url = url + ':orig';
+          }
+          if (/pbs\.twimg\.com\/profile_images\/.+/.test(url)) {
+            url = url.replace('_normal', '_bigger');
+          }
+          if (mediaElem.tagName === 'VIDEO') {
+            url = mediaElem.currentSrc;
+          }
+          return [
+            {
+              label: '이 미디어의 URL을 복사하기',
+              click (item, focusedWindow) {
+                clipboard.writeText(url);
+                App.showMsgBox('클립보드에 미디어 URL을 복사했습니다', 'blue', 1000);
+              },
+            },
+            {
+              label: '이 미디어를 저장하기',
+              click (item, focusedWindow) {
+                ipcRenderer.send('save-media', url);
+              },
+            },
+          ];
+        };
+
+        div.addEventListener('contextmenu', e => {
+          const target = e.target;
+          let menu;
+          if (target.classList.contains('hashtag')) {
+            let tag = target.getAttribute('title');
+            menu = hashtagContextMenu(tag);
+          } else if (target.hasAttribute('data-screen-name')) {
+            let username = target.getAttribute('data-screen-name');
+            menu = mentionContextMenu(username);
+          } else if (target.classList.contains('tweet-nickname')
+            || target.classList.contains('tweet-id')
+          ) {
+            let username = target.parentElement.getAttribute('data-screen-name');
+            menu = mentionContextMenu(username);
+          } else if (target.tagName === 'A') {
+            let url = target.getAttribute(target.hasAttribute('data-url') ? 'data-url' : 'title');
+            menu = linkContextMenu(url);
+          } else if (target.classList.contains('js-display-url')) {
+            let link = target.parentElement;
+            let url = link.getAttribute('title');
+            menu = linkContextMenu(url);
+          } else if (target.tagName === 'IMG') {
+            menu = mediaContextMenu(target);
+          } else if (target.tagName === 'VIDEO') {
+            menu = mediaContextMenu(target);
+          } else {
+            return;
+          }
+          menu = Menu.buildFromTemplate(menu);
+          menu.popup(remote.getCurrentWindow());
+        });
+
+        div.dispatchEvent(new CustomEvent('apply-filter'));
       }
 
       a.appendChild(div);
       this.element = a;
 
       var tryReply = () => {
-        ex.App.tweetUploader.openPanel();
+        App.tweetUploader.openPanel();
         var usernames = [],
           tweet_author = tweet.user.screen_name;
-        if (tweet_author != ex.App.screen_name) usernames.push(tweet_author);
+        if (tweet_author != App.screen_name) usernames.push(tweet_author);
         for (var name of Twitter_text.extractMentions(tweet.text))
-          if (name != tweet_author && name != ex.App.screen_name)
+          if (name != tweet_author && name != App.screen_name)
             usernames.push(name);
 
-        ex.App.tweetUploader.text = usernames.map(x => '@' + x).join(' ');
-        if (ex.App.tweetUploader.text) ex.App.tweetUploader.text += ' ';
-        ex.App.tweetUploader.inReplyTo = {id: tweet.id_str, name: tweet.user.name, screen_name: tweet_author, text: tweet.text};
-        ex.App.resizeContainer();
+        App.tweetUploader.text = usernames.map(x => '@' + x).join(' ');
+        if (App.tweetUploader.text) App.tweetUploader.text += ' ';
+        App.tweetUploader.inReplyTo = {id: tweet.id_str, name: tweet.user.name, screen_name: tweet_author, text: tweet.text};
+        App.resizeContainer();
       };
 
       var execRetweet = () => {
         if (!this.isRetweeted) {
-          ex.App.showMsgBox('리트윗했습니다', 'blue', 1000);
-          ex.App.chkRetweet(tweet.id_str, true, 'auto');
+          App.showMsgBox('리트윗했습니다', 'blue', 1000);
+          App.chkRetweet(tweet.id_str, true, 'auto');
           Client.post(`statuses/retweet/${tweet.id_str}`, (error, tweet, response) => {
             if (error) {
               console.warn(error);
               switch (error[0].code) {
                 // already retweeted
                 case 327:
-                  ex.App.showMsgBox('이미 리트윗한 트윗입니다', 'tomato', 1000);
+                  App.showMsgBox('이미 리트윗한 트윗입니다', 'tomato', 1000);
                   return;
                 // rate limit reached
                 case 88:
-                  ex.App.showMessageBox('API 리밋입니다', 'tomato', 1000);
+                  App.showMessageBox('API 리밋입니다', 'tomato', 1000);
                   return;
                 default:
-                  ex.App.showMsgBox(`오류가 발생했습니다<br>${error[0].code}: ${error[0].message}`, 'tomato', 5000);
+                  App.showMsgBox(`오류가 발생했습니다<br>${error[0].code}: ${error[0].message}`, 'tomato', 5000);
               }
-              ex.App.chkRetweet(tweet.id_str, false, 'auto');
+              App.chkRetweet(tweet.id_str, false, 'auto');
             }
           });
         } else {
-          ex.App.showMsgBox('언리트윗했습니다', 'blue', 1000);
-          ex.App.chkRetweet(tweet.id_str, false, 'auto');
+          App.showMsgBox('언리트윗했습니다', 'blue', 1000);
+          App.chkRetweet(tweet.id_str, false, 'auto');
 
           Client.post('statuses/unretweet/' + tweet.id_str, (error, tweet, response) => {
             if (error) {
               console.warn(error);
-              ex.App.chkRetweet(tweet.id_str, true, 'auto');
+              App.chkRetweet(tweet.id_str, true, 'auto');
             }
           });
         }
@@ -303,30 +438,30 @@ module.exports = (() => {
       };
 
       var execFavorite = () => {
-        ex.App.showMsgBox('마음에 드는 트윗으로 지정했습니다', 'blue', 1000);
+        App.showMsgBox('마음에 드는 트윗으로 지정했습니다', 'blue', 1000);
         if (!this.isFavorited) {
-          ex.App.chkFavorite(tweet.id_str, true, 'auto');
+          App.chkFavorite(tweet.id_str, true, 'auto');
           Client.post('favorites/create', {id: tweet.id_str}, (error, tweet, response) => {
             if (error) {
               console.warn(error);
               switch (error[0].code) {
                 // already favorited
                 case 139:
-                  ex.App.showMsgBox('이미 마음에 드는 트윗으로 지정한 트윗입니다', 'tomato', 1000);
+                  App.showMsgBox('이미 마음에 드는 트윗으로 지정한 트윗입니다', 'tomato', 1000);
                   return;
                 // rate limit reached
                 case 88:
-                  ex.App.showMessageBox('API 리밋입니다', 'tomato', 1000);
+                  App.showMessageBox('API 리밋입니다', 'tomato', 1000);
                   return;
                 default:
-                  ex.App.showMsgBox(`오류가 발생했습니다<br />${error[0].code}: ${error[0].message}`, 'tomato', 5000);
+                  App.showMsgBox(`오류가 발생했습니다<br />${error[0].code}: ${error[0].message}`, 'tomato', 5000);
               }
-              ex.App.chkFavorite(tweet.id_str, false, 'auto');
+              App.chkFavorite(tweet.id_str, false, 'auto');
             }
           });
         } else {
-          ex.App.showMsgBox('마음에 드는 트윗을 해제했습니다', 'blue', 1000);
-          ex.App.chkFavorite(tweet.id_str, false, 'auto');
+          App.showMsgBox('마음에 드는 트윗을 해제했습니다', 'blue', 1000);
+          App.chkFavorite(tweet.id_str, false, 'auto');
 
           Client.post('favorites/destroy', {id: tweet.id_str}, (error, tweet, response) => {
             if (error) {
@@ -334,7 +469,7 @@ module.exports = (() => {
               // no status found
               if (error[0].code == 144)
                 return;
-              ex.App.chkFavorite(tweet.id_str, true, 'auto');
+              App.chkFavorite(tweet.id_str, true, 'auto');
             }
           });
         }
@@ -346,7 +481,7 @@ module.exports = (() => {
           if (error) {
             console.warn(error);
           } else {
-            ex.App.showMsgBox('해당 트윗을 삭제했습니다', 'blue', 1000);
+            App.showMsgBox('해당 트윗을 삭제했습니다', 'blue', 1000);
           }
         });
       };
@@ -355,3 +490,4 @@ module.exports = (() => {
 
   return ex;
 })();
+

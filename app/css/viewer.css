@@ -8,12 +8,12 @@ body {
   font-family: 'Segoe UI', 'Yu Gothic UI', 'Meiryo UI', 'Malgun Gothic', 'Tahoma', 'Gulim', sans-serif;
 }
 
-a.page:link {
+a.toolbar-item:link {
   color: white;
   text-decoration: none;
 }
 
-a.page.disabled:link {
+a.toolbar-item.disabled:link {
   color: gray;
   cursor: default;
 }
