@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 
 const Config = {
-  _defaultConfigPath: path.join(__dirname, './default/def_conf.json'),,
+  _defaultConfigPath: path.join(__dirname, './default/def_conf.json'),
   _filePath: path.join(__dirname, '../config.json'),
   load () {
     var config = JSON.parse(fs.readFileSync(this._defaultConfigPath));
