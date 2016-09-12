@@ -59,3 +59,6 @@ version
 !package.json
 
 node_modules
+
+# electron-packager package results
+build
