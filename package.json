@@ -21,6 +21,6 @@
   },
   "scripts": {
     "start": "node_modules/.bin/electron index.js",
-    "build": "electron-packager . --all --out=build --ignore=\"(build|.gitignore|.gidmodules|.gitattributes)\""
+    "build": "electron-packager . --all --out=build --ignore=\"(build|.gitignore|.gitmodules|.gitattributes)\""
   }
 }
